@@ -20,7 +20,7 @@ setup(
     name='tensorboard-pytorch',
     version='0.1',
     description='Log TensorBoard events without Tensorflow',
-    long_description=readme + '\n\n' + history,
+    long_description= history,
     author='Konstantin Lopuhin',
     author_email='huang.dexter@gmail.com',
     url='https://github.com/lanpa/tensorboard-pytorch',
