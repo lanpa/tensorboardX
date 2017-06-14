@@ -2,11 +2,11 @@
 
 Write tensorboard events with simple command.
 
-code adapted from:
+## install
 
-https://github.com/TeamHG-Memex/tensorboard_logger
+`pip install tensorboard-pytorch`
 
-https://github.com/dmlc/tensorboard
+
 
 ## usage
 ```python
@@ -37,3 +37,10 @@ To show more images in tensorboard's image tab, just
 modify the hardcoded `event_accumulator` in 
 `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py`
 as you wish.
+
+
+## reference:
+
+https://github.com/TeamHG-Memex/tensorboard_logger
+
+https://github.com/dmlc/tensorboard
