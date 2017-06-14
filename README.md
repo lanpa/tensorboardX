@@ -5,7 +5,7 @@ Write tensorboard events with simple command.
 ## install
 
 `pip install tensorboard-pytorch`
-
+`pip install tensorflow`
 
 
 ## usage
@@ -29,6 +29,8 @@ for n_iter in range(100):
             writer.add_histogram(name, param.clone().cpu().data.numpy().reshape(-1), n_iter)
 writer.close()
 ```
+
+` tensorboard --logdir runs`  
 
 ## TODO:
 push pytorch specific utilities.
