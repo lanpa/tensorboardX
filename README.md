@@ -5,6 +5,7 @@ Write tensorboard events with simple command.
 ## install
 
 `pip install tensorboard-pytorch`
+
 `pip install tensorflow`
 
 
@@ -32,14 +33,15 @@ writer.close()
 
 ` tensorboard --logdir runs`  
 
-## TODO:
-push pytorch specific utilities.
-
+## tweaks
 To show more images in tensorboard's image tab, just
 modify the hardcoded `event_accumulator` in 
 `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py`
 as you wish.
 
+
+## TODO
+push pytorch specific utilities.
 
 ## reference:
 
