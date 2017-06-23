@@ -40,7 +40,7 @@ from six import StringIO
 from six.moves import range
 from PIL import Image
 import numpy as np
-
+import torch
 # pylint: disable=unused-import
 from .src.summary_pb2 import Summary
 from .src.summary_pb2 import HistogramProto
@@ -169,22 +169,23 @@ def image(tag, tensor):
       buffer.
     """
     tag = _clean_tag(tag)
+    assert isinstance(tensor, np.ndarray) or isinstance(tensor, torch.cuda.FloatTensor) or isinstance(tensor, torch.FloatTensor), 'input tensor should be one of numpy.ndarray, torch.cuda.FloatTensor, torch.FloatTensor'
     if not isinstance(tensor, np.ndarray):
-        # try conversion, if failed then need handle by user.
-        tensor = np.ndarray(tensor, dtype=np.float32)
-    shape = tensor.shape
-    height, width, channel = shape[0], shape[1], shape[2]
-    if channel == 1:
-        # walk around. PIL's setting on dimension.
-        tensor = np.reshape(tensor, (height, width))
-    image = make_image(tensor, height, width, channel)
+        assert tensor.dim()<4 and tensor.dim()>1, 'input tensor should be 3 dimensional.'
+        if tensor.dim()==2:
+            tensor = tensor.unsqueeze(0)
+        tensor = tensor.cpu().permute(1,2,0).numpy()
+    else:
+        tensor = tensor.astype(np.float32)
+    tensor = (tensor*255).astype(np.uint8)
+    image = make_image(tensor)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def make_image(tensor, height, width, channel):
+def make_image(tensor):
     """Convert an numpy representation image to Image protobuf"""
+    height, width, channel = tensor.shape
     image = Image.fromarray(tensor)
-    #output = StringIO()
     import io
     output = io.BytesIO()
     image.save(output, format='PNG')
