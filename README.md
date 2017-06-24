@@ -23,11 +23,11 @@ for n_iter in range(100):
     M_global = torch.rand(1) # value to keep
     writer.add_scalar('M_global', M_global[0], n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
-    x = vutils.make_grid(x, normalize=True, scale_each=True)   
-    writer.add_image('Image', (x.permute(1,2,0).numpy()*255).astype(np.uint8), n_iter)
-    if n_iter==0:
+    if n_iter%10==0:
+        x = vutils.make_grid(x, normalize=True, scale_each=True)   
+        writer.add_image('Image', x, n_iter)
         for name, param in resnet18.named_parameters():
-            writer.add_histogram(name, param.clone().cpu().data.numpy().reshape(-1), n_iter)
+            writer.add_histogram(name, param.clone().cpu().data.numpy(), n_iter)
 writer.close()
 ```
 
