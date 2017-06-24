@@ -210,12 +210,22 @@ class SummaryWriter(object):
     """
     def __init__(self, log_dir):
         self.file_writer = FileWriter(logdir=log_dir)
-
+        v = 1E-12
+        buckets = []
+        neg_buckets = []
+        while v < 1E20:
+            buckets.append(v)
+            neg_buckets.append(-v)
+            v *= 1.1
+        self.default_bins = neg_buckets[::-1] + [0] + buckets
+        
     def add_scalar(self, name, scalar_value, global_step=None):
         self.file_writer.add_summary(scalar(name, scalar_value), global_step)
 
-    def add_histogram(self, name, values, global_step=None):
-        self.file_writer.add_summary(histogram(name, values), global_step)
+    def add_histogram(self, name, values, global_step=None, bins='tensorflow'):
+        if bins=='tensorflow':
+            bins = self.default_bins
+        self.file_writer.add_summary(histogram(name, values, bins), global_step)
 
     def add_image(self, tag, img_tensor, global_step=None):
         self.file_writer.add_summary(image(tag, img_tensor), global_step)

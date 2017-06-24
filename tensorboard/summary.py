@@ -89,7 +89,7 @@ def scalar(name, scalar, collections=None):
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
 
-def histogram(name, values, collections=None):
+def histogram(name, values, bins, collections=None):
     # pylint: disable=line-too-long
     """Outputs a `Summary` protocol buffer with a histogram.
     The generated
@@ -108,42 +108,25 @@ def histogram(name, values, collections=None):
       buffer.
     """
     name = _clean_tag(name)
-    hist = make_histogram(values.astype(float))
+    hist = make_histogram(values.astype(float), bins)
     return Summary(value=[Summary.Value(tag=name, histo=hist)])
 
 
-def make_histogram_buckets():
-    v = 1E-12
-    buckets = []
-    neg_buckets = []
-    while v < 1E20:
-        buckets.append(v)
-        neg_buckets.append(-v)
-        v *= 1.1
-    # Should include DBL_MAX, but won't bother for test data.
-    return neg_buckets[::-1] + [0] + buckets
 
-
-def make_histogram(values):
+def make_histogram(values, bins):
     """Convert values into a histogram proto using logic from histogram.cc."""
-    limits = make_histogram_buckets()
-    counts = [0] * len(limits)
-    for v in values:
-        idx = bisect.bisect_left(limits, v)
-        counts[idx] += 1
+    values = values.reshape(-1)
+    counts, limits = np.histogram(values, bins='auto')
+    limits = limits[1:]
 
-    limit_counts = [(limits[i], counts[i]) for i in range(len(limits))
-                   if counts[i]]
-    bucket_limit = [lc[0] for lc in limit_counts]
-    bucket = [lc[1] for lc in limit_counts]
-    sum_sq = sum(v * v for v in values)
-    return HistogramProto(min=min(values),
-                          max=max(values),
+    sum_sq = values.dot(values)
+    return HistogramProto(min=values.min(),
+                          max=values.max(),
                           num=len(values),
-                          sum=sum(values),
+                          sum=values.sum(),
                           sum_squares=sum_sq,
-                          bucket_limit=bucket_limit,
-                          bucket=bucket)
+                          bucket_limit=limits,
+                          bucket=counts)
 
 
 def image(tag, tensor):
