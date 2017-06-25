@@ -4,6 +4,8 @@ Write tensorboard events with simple command.
 
 ## install
 
+`#tested on anaconda3`
+
 `pip install tensorboard-pytorch`
 
 `pip install tensorflow`
