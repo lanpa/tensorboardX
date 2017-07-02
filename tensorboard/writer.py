@@ -23,7 +23,7 @@ import time
 from .src import event_pb2
 from .src import summary_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image
+from .summary import scalar, histogram, image, audio
 
 
 class SummaryToEventTransformer(object):
@@ -229,7 +229,8 @@ class SummaryWriter(object):
 
     def add_image(self, tag, img_tensor, global_step=None):
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
-
+    def add_audio(self, tag, snd_tensor, global_step=None):
+        self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
     def close(self):
         self.file_writer.flush()
         self.file_writer.close()

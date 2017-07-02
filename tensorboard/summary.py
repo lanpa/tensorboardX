@@ -179,52 +179,33 @@ def make_image(tensor):
                          colorspace=channel,
                          encoded_image_string=image_string)
 
+def audio(tag, tensor, sample_rate=44100):
+  tensor = tensor.squeeze()
+  assert tensor.dim()==1, 'input tensor should be 1 dimensional.'
+  tensor_list = [int(32767.0*x) for x in tensor]
+  import io
+  import wave
+  import struct
+  fio = io.BytesIO()
+  Wave_write = wave.open(fio, 'wb')
+  Wave_write.setnchannels(1)
+  Wave_write.setsampwidth(2)
+  Wave_write.setframerate(sample_rate)
+  tensor_enc = b''
+  for v in tensor_list:
+    tensor_enc += struct.pack('<h', v)
+  
+  Wave_write.writeframes(tensor_enc)
+  Wave_write.close()
+  audio_string = fio.getvalue()
+  fio.close()
+  audio = Summary.Audio(sample_rate=sample_rate, num_channels=1, length_frames=len(tensor_list), encoded_audio_string=audio_string, content_type='audio/wav')
+
+  return Summary(value=[Summary.Value(tag=tag, audio=audio)])
 
 
-'''TODO(zihaolucky). support more summary types later.
-def audio(name, tensor, sample_rate, max_outputs=3, collections=None):
-  # pylint: disable=line-too-long
-  """Outputs a `Summary` protocol buffer with audio.
-  The summary has up to `max_outputs` summary values containing audio. The
-  audio is built from `tensor` which must be 3-D with shape `[batch_size,
-  frames, channels]` or 2-D with shape `[batch_size, frames]`. The values are
-  assumed to be in the range of `[-1.0, 1.0]` with a sample rate of
-  `sample_rate`.
-  The `tag` in the outputted Summary.Value protobufs is generated based on the
-  name, with a suffix depending on the max_outputs setting:
-  *  If `max_outputs` is 1, the summary value tag is '*name*/audio'.
-  *  If `max_outputs` is greater than 1, the summary value tags are
-     generated sequentially as '*name*/audio/0', '*name*/audio/1', etc
-  Args:
-    name: A name for the generated node. Will also serve as a series name in
-      TensorBoard.
-    tensor: A 3-D `float32` `Tensor` of shape `[batch_size, frames, channels]`
-      or a 2-D `float32` `Tensor` of shape `[batch_size, frames]`.
-    sample_rate: A Scalar `float32` `Tensor` indicating the sample rate of the
-      signal in hertz.
-    max_outputs: Max number of batch elements to generate audio for.
-    collections: Optional list of ops.GraphKeys.  The collections to add the
-      summary to.  Defaults to [_ops.GraphKeys.SUMMARIES]
-  Returns:
-    A scalar `Tensor` of type `string`. The serialized `Summary` protocol
-    buffer.
-  """
-  # pylint: enable=line-too-long
-  name = _clean_tag(name)
-  with _ops.name_scope(name, None, [tensor]) as scope:
-    # pylint: disable=protected-access
-    sample_rate = _ops.convert_to_tensor(
-        sample_rate, dtype=_dtypes.float32, name='sample_rate')
-    val = _gen_logging_ops._audio_summary_v2(
-        tag=scope.rstrip('/'),
-        tensor=tensor,
-        max_outputs=max_outputs,
-        sample_rate=sample_rate,
-        name=scope)
-    _collect(val, collections, [_ops.GraphKeys.SUMMARIES])
-  return val
 
-
+'''
 def merge(inputs, collections=None, name=None):
   # pylint: disable=line-too-long
   """Merges summaries.
