@@ -32,7 +32,7 @@ for n_iter in range(100):
         writer.add_image('Image', x, n_iter)
         x = torch.zeros(sample_rate*2)
         for i in range(x.size(0)):
-            x[i] = math.cos(freqs[n_iter//10]*math.pi*float(i)/float(sample_rate)) # sound amplitude should in [-1, 1]
+            x[i] = np.cos(freqs[n_iter//10]*np.pi*float(i)/float(sample_rate)) # sound amplitude should in [-1, 1]
         writer.add_audio('Audio', x, n_iter)
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param.clone().cpu().data.numpy(), n_iter)
