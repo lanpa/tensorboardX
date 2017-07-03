@@ -13,16 +13,14 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from tensorboard.src import tensor_pb2 as tensorboard_dot_src_dot_tensor__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboard/src/summary.proto',
   package='tensorboard',
   syntax='proto3',
-  serialized_pb=_b('\n\x1dtensorboard/src/summary.proto\x12\x0btensorboard\x1a\x1ctensorboard/src/tensor.proto\"\'\n\x12SummaryDescription\x12\x11\n\ttype_hint\x18\x01 \x01(\t\"\x87\x01\n\x0eHistogramProto\x12\x0b\n\x03min\x18\x01 \x01(\x01\x12\x0b\n\x03max\x18\x02 \x01(\x01\x12\x0b\n\x03num\x18\x03 \x01(\x01\x12\x0b\n\x03sum\x18\x04 \x01(\x01\x12\x13\n\x0bsum_squares\x18\x05 \x01(\x01\x12\x18\n\x0c\x62ucket_limit\x18\x06 \x03(\x01\x42\x02\x10\x01\x12\x12\n\x06\x62ucket\x18\x07 \x03(\x01\x42\x02\x10\x01\"\xb4\x04\n\x07Summary\x12)\n\x05value\x18\x01 \x03(\x0b\x32\x1a.tensorboard.Summary.Value\x1aX\n\x05Image\x12\x0e\n\x06height\x18\x01 \x01(\x05\x12\r\n\x05width\x18\x02 \x01(\x05\x12\x12\n\ncolorspace\x18\x03 \x01(\x05\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a\xa4\x02\n\x05Value\x12\x11\n\tnode_name\x18\x07 \x01(\t\x12\x0b\n\x03tag\x18\x01 \x01(\t\x12\x16\n\x0csimple_value\x18\x02 \x01(\x02H\x00\x12&\n\x1cobsolete_old_style_histogram\x18\x03 \x01(\x0cH\x00\x12+\n\x05image\x18\x04 \x01(\x0b\x32\x1a.tensorboard.Summary.ImageH\x00\x12,\n\x05histo\x18\x05 \x01(\x0b\x32\x1b.tensorboard.HistogramProtoH\x00\x12+\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x1a.tensorboard.Summary.AudioH\x00\x12*\n\x06tensor\x18\x08 \x01(\x0b\x32\x18.tensorboard.TensorProtoH\x00\x42\x07\n\x05valueB.\n\x18org.tensorflow.frameworkB\rSummaryProtosP\x01\xf8\x01\x01\x62\x06proto3')
-  ,
-  dependencies=[tensorboard_dot_src_dot_tensor__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n\x1dtensorboard/src/summary.proto\x12\x0btensorboard\"\'\n\x12SummaryDescription\x12\x11\n\ttype_hint\x18\x01 \x01(\t\"\x87\x01\n\x0eHistogramProto\x12\x0b\n\x03min\x18\x01 \x01(\x01\x12\x0b\n\x03max\x18\x02 \x01(\x01\x12\x0b\n\x03num\x18\x03 \x01(\x01\x12\x0b\n\x03sum\x18\x04 \x01(\x01\x12\x13\n\x0bsum_squares\x18\x05 \x01(\x01\x12\x18\n\x0c\x62ucket_limit\x18\x06 \x03(\x01\x42\x02\x10\x01\x12\x12\n\x06\x62ucket\x18\x07 \x03(\x01\x42\x02\x10\x01\"\x88\x04\n\x07Summary\x12)\n\x05value\x18\x01 \x03(\x0b\x32\x1a.tensorboard.Summary.Value\x1aX\n\x05Image\x12\x0e\n\x06height\x18\x01 \x01(\x05\x12\r\n\x05width\x18\x02 \x01(\x05\x12\x12\n\ncolorspace\x18\x03 \x01(\x05\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a\xf8\x01\n\x05Value\x12\x11\n\tnode_name\x18\x07 \x01(\t\x12\x0b\n\x03tag\x18\x01 \x01(\t\x12\x16\n\x0csimple_value\x18\x02 \x01(\x02H\x00\x12&\n\x1cobsolete_old_style_histogram\x18\x03 \x01(\x0cH\x00\x12+\n\x05image\x18\x04 \x01(\x0b\x32\x1a.tensorboard.Summary.ImageH\x00\x12,\n\x05histo\x18\x05 \x01(\x0b\x32\x1b.tensorboard.HistogramProtoH\x00\x12+\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x1a.tensorboard.Summary.AudioH\x00\x42\x07\n\x05valueB.\n\x18org.tensorflow.frameworkB\rSummaryProtosP\x01\xf8\x01\x01\x62\x06proto3')
+)
 
 
 
@@ -53,8 +51,8 @@ _SUMMARYDESCRIPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=76,
-  serialized_end=115,
+  serialized_start=46,
+  serialized_end=85,
 )
 
 
@@ -126,8 +124,8 @@ _HISTOGRAMPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=118,
-  serialized_end=253,
+  serialized_start=88,
+  serialized_end=223,
 )
 
 
@@ -178,8 +176,8 @@ _SUMMARY_IMAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=310,
-  serialized_end=398,
+  serialized_start=280,
+  serialized_end=368,
 )
 
 _SUMMARY_AUDIO = _descriptor.Descriptor(
@@ -236,8 +234,8 @@ _SUMMARY_AUDIO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=400,
-  serialized_end=525,
+  serialized_start=370,
+  serialized_end=495,
 )
 
 _SUMMARY_VALUE = _descriptor.Descriptor(
@@ -296,13 +294,6 @@ _SUMMARY_VALUE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='tensor', full_name='tensorboard.Summary.Value.tensor', index=7,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -318,8 +309,8 @@ _SUMMARY_VALUE = _descriptor.Descriptor(
       name='value', full_name='tensorboard.Summary.Value.value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=528,
-  serialized_end=820,
+  serialized_start=498,
+  serialized_end=746,
 )
 
 _SUMMARY = _descriptor.Descriptor(
@@ -348,8 +339,8 @@ _SUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=256,
-  serialized_end=820,
+  serialized_start=226,
+  serialized_end=746,
 )
 
 _SUMMARY_IMAGE.containing_type = _SUMMARY
@@ -357,7 +348,6 @@ _SUMMARY_AUDIO.containing_type = _SUMMARY
 _SUMMARY_VALUE.fields_by_name['image'].message_type = _SUMMARY_IMAGE
 _SUMMARY_VALUE.fields_by_name['histo'].message_type = _HISTOGRAMPROTO
 _SUMMARY_VALUE.fields_by_name['audio'].message_type = _SUMMARY_AUDIO
-_SUMMARY_VALUE.fields_by_name['tensor'].message_type = tensorboard_dot_src_dot_tensor__pb2._TENSORPROTO
 _SUMMARY_VALUE.containing_type = _SUMMARY
 _SUMMARY_VALUE.oneofs_by_name['value'].fields.append(
   _SUMMARY_VALUE.fields_by_name['simple_value'])
@@ -374,9 +364,6 @@ _SUMMARY_VALUE.fields_by_name['histo'].containing_oneof = _SUMMARY_VALUE.oneofs_
 _SUMMARY_VALUE.oneofs_by_name['value'].fields.append(
   _SUMMARY_VALUE.fields_by_name['audio'])
 _SUMMARY_VALUE.fields_by_name['audio'].containing_oneof = _SUMMARY_VALUE.oneofs_by_name['value']
-_SUMMARY_VALUE.oneofs_by_name['value'].fields.append(
-  _SUMMARY_VALUE.fields_by_name['tensor'])
-_SUMMARY_VALUE.fields_by_name['tensor'].containing_oneof = _SUMMARY_VALUE.oneofs_by_name['value']
 _SUMMARY.fields_by_name['value'].message_type = _SUMMARY_VALUE
 DESCRIPTOR.message_types_by_name['SummaryDescription'] = _SUMMARYDESCRIPTION
 DESCRIPTOR.message_types_by_name['HistogramProto'] = _HISTOGRAMPROTO
