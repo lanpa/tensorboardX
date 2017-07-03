@@ -41,15 +41,15 @@ writer.close()
 
 ` tensorboard --logdir runs`  
 
-####scalar
+#### scalar
 ![scalar](screenshots/scalar.png)
-####image
+#### image
 ![image](screenshots/image.png)
-####audio
+#### audio
 ![audio](screenshots/audio.png)
-####distribution
+#### distribution
 ![distribution](screenshots/distribution.png)
-####histogram
+#### histogram
 ![histogram](screenshots/histogram.png)
 ## tweaks
 To show more images in tensorboard's image tab, just
