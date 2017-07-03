@@ -1,6 +1,11 @@
 History
 =======
+0.3 (2017-07-03)
+-----------------
+* supports audio summary
+
 0.2 (2017-06-24)
+-----------------
 * simplifies add_image API
 * speed up add_histogram API by 35x
 
