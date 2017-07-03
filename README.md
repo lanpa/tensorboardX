@@ -19,7 +19,7 @@ import numpy as np
 import torchvision.models as models
 from datetime import datetime
 from tensorboard import SummaryWriter
-resnet18 = models.resnet18()
+resnet18 = models.resnet18(True)
 writer = SummaryWriter('runs/'+datetime.now().strftime('%B%d  %H:%M:%S'))
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
@@ -41,6 +41,16 @@ writer.close()
 
 ` tensorboard --logdir runs`  
 
+####scalar
+![scalar](screenshots/scalar.png)
+####image
+![image](screenshots/image.png)
+####audio
+![audio](screenshots/audio.png)
+####distribution
+![distribution](screenshots/distribution.png)
+####histogram
+![histogram](screenshots/histogram.png)
 ## tweaks
 To show more images in tensorboard's image tab, just
 modify the hardcoded `event_accumulator` in 
