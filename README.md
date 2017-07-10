@@ -41,22 +41,29 @@ writer.close()
 
 ` tensorboard --logdir runs`  
 
-#### scalar
-![scalar](screenshots/scalar.png)
-#### image
-![image](screenshots/image.png)
-#### audio
-![audio](screenshots/audio.png)
-#### distribution
-![distribution](screenshots/distribution.png)
-#### histogram
-![histogram](screenshots/histogram.png)
+scalar</br>
+<img src="screenshots/scalar.png" height="200">
+
+image</br>
+<img src="screenshots/image.png" height="200">
+
+audio</br>
+<img src="screenshots/audio.png" height="100">
+
+distribution</br>
+<img src="screenshots/distribution.png" height="200">
+
+histogram</br>
+<img src="screenshots/histogram.png" height="400">
 ## tweaks
 To show more images in tensorboard's image tab, just
 modify the hardcoded `event_accumulator` in 
 `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py`
 as you wish.
 
+
+## live demo on google cloud platform (my implementation of BEGAN)
+[here](http:35.197.26.245:6006)
 
 ## TODO
 push pytorch specific utilities.
