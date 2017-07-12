@@ -1,5 +1,9 @@
 History
 =======
+0.4 (2017-07-12)
+-----------------
+* supports text summary
+
 0.3 (2017-07-03)
 -----------------
 * supports audio summary

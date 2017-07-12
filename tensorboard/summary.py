@@ -44,7 +44,9 @@ import torch
 # pylint: disable=unused-import
 from .src.summary_pb2 import Summary
 from .src.summary_pb2 import HistogramProto
-
+from .src.summary_pb2 import SummaryMetadata
+from .src.tensor_pb2 import TensorProto
+from .src.tensor_shape_pb2 import TensorShapeProto
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -203,7 +205,13 @@ def audio(tag, tensor, sample_rate=44100):
 
   return Summary(value=[Summary.Value(tag=tag, audio=audio)])
 
-
+def text(tag, text):
+  import json
+  PluginData = [SummaryMetadata.PluginData(plugin_name='text')]
+  smd = SummaryMetadata(plugin_data=PluginData)
+  tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')])
+  return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
+  
 
 '''
 def merge(inputs, collections=None, name=None):

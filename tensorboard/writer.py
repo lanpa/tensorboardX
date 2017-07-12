@@ -19,11 +19,12 @@ from __future__ import division
 from __future__ import print_function
 
 import time
-
+import json
+import os
 from .src import event_pb2
 from .src import summary_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image, audio
+from .summary import scalar, histogram, image, audio, text
 
 
 class SummaryToEventTransformer(object):
@@ -218,7 +219,7 @@ class SummaryWriter(object):
             neg_buckets.append(-v)
             v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
-        
+        self.text_tags = []
     def add_scalar(self, name, scalar_value, global_step=None):
         self.file_writer.add_summary(scalar(name, scalar_value), global_step)
 
@@ -231,6 +232,15 @@ class SummaryWriter(object):
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
     def add_audio(self, tag, snd_tensor, global_step=None):
         self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
+    def add_text(self, tag, text_string, global_step=None):
+        self.file_writer.add_summary(text(tag, text_string), global_step)
+        if tag not in self.text_tags:
+            self.text_tags.append(tag)
+            extensionDIR = self.file_writer.get_logdir()+'/plugins/tensorboard_text/'
+            if not os.path.exists(extensionDIR):
+                os.makedirs(extensionDIR)
+            with open(extensionDIR + 'tensors.json', 'w') as fp:
+                json.dump(self.text_tags, fp)
     def close(self):
         self.file_writer.flush()
         self.file_writer.close()
