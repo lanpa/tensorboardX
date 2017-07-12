@@ -56,6 +56,9 @@ distribution</br>
 
 histogram</br>
 <img src="screenshots/histogram.png" height="400">
+
+text</br>
+<img src="screenshots/text.png" height="200">
 ## tweaks
 To show more images in tensorboard's image tab, just
 modify the hardcoded `event_accumulator` in 
