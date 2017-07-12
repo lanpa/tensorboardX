@@ -2,17 +2,15 @@
 
 Write tensorboard events with simple command.
 
+## see [demo](http:35.197.26.245:6006) (my implementation of BEGAN and result of `demo.py`)
+
 ## install
 
-`#tested on anaconda3 and tensorflow 1.2.1`
+`#tested on anaconda3, tensorflow 1.2.1, pytorch 0.1.12, torchvision 0.1.8`
 
 `pip install tensorboard-pytorch`
 
-`pip install tensorflow`
-
-or
-
-`pip install tensorflow-gpu`
+`pip install tensorflow`   or   `pip install tensorflow-gpu`
 
 ## usage
 ```python
@@ -65,8 +63,6 @@ modify the hardcoded `event_accumulator` in
 as you wish.
 
 
-## live demo on google cloud platform (my implementation of BEGAN)
-[here](http:35.197.26.245:6006)
 
 ## TODO
 push pytorch specific utilities.
