@@ -87,9 +87,10 @@ as you wish.
 > ###### parameter:
 > * `t` (*torch.Tensor*) - one dimensional torch tensor. The value should between [-1, 1]. The sample rate is currently fixed at 44100 KHz.
 
->`add_histogram(str tag, numpy.ndarray values, int global_step=None)`
+>`add_histogram(str tag, numpy.ndarray values, int global_step=None, bins='tensorflow')`
 > ###### parameter:
 > * `values` (*numpy.ndarray*) - one dimensional numpy array.
+> * `bins` (*str*) - one of {'tensorflow', [numpy_arguments](https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html)}, determines how the bins are made.
 
 >`add_text(str tag, str text_to_save, int  global_step=None)`
 > ###### parameter:

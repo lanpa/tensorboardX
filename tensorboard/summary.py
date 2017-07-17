@@ -118,7 +118,7 @@ def histogram(name, values, bins, collections=None):
 def make_histogram(values, bins):
     """Convert values into a histogram proto using logic from histogram.cc."""
     values = values.reshape(-1)
-    counts, limits = np.histogram(values, bins='auto')
+    counts, limits = np.histogram(values, bins=bins)
     limits = limits[1:]
 
     sum_sq = values.dot(values)
