@@ -1,5 +1,10 @@
 History
 =======
+0.5 (2017-07-18)
+-----------------
+* supports graph summary
+* fixed np.histogram issue
+
 0.4 (2017-07-12)
 -----------------
 * supports text summary

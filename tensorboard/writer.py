@@ -23,8 +23,10 @@ import json
 import os
 from .src import event_pb2
 from .src import summary_pb2
+from .src import graph_pb2
 from .event_file_writer import EventFileWriter
 from .summary import scalar, histogram, image, audio, text
+from .graph import graph
 
 
 class SummaryToEventTransformer(object):
@@ -90,6 +92,12 @@ class SummaryToEventTransformer(object):
             summary = summ
         event = event_pb2.Event(summary=summary)
         self._add_event(event, global_step)
+
+    def add_graph(self, graph):
+        """Adds a `Graph` protocol buffer to the event file.
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self._add_event(event, None)
 
     def add_session_log(self, session_log, global_step=None):
         """Adds a `SessionLog` protocol buffer to the event file.
@@ -241,6 +249,16 @@ class SummaryWriter(object):
                 os.makedirs(extensionDIR)
             with open(extensionDIR + 'tensors.json', 'w') as fp:
                 json.dump(self.text_tags, fp)
+    def add_graph(self, model, lastVar):
+        # prohibit second call?
+        # no, let tensorboard handles it and show its warning message.
+        import torch
+        if not hasattr(torch.autograd.Variable, 'grad_fn'):
+            print('pytorch version is too old, how about build by yourself?')
+            return
+        self.file_writer.add_graph(graph(model, lastVar))
+
+
     def close(self):
         self.file_writer.flush()
         self.file_writer.close()
