@@ -76,25 +76,41 @@ as you wish.
 * `log_dir` (*str*) - the location of the log folder.
 
 > `add_scalar(str tag, float value, int global_step=None)`
-> ###### parameter:
+>> ###### parameter:
 > * `value` (*float*) - the value to keep.
  
 > `add_image(str tag, torch.Tensor t, int global_step=None)`
-> ###### parameter:
+>> ###### parameter:
 > * `t` (*torch.Tensor*) - torch tensor of size (3,H,W). I suggest use `torchvision.utils.make_grid()` to prepare it. 
 
 > `add_audio(str tag, torch.Tensor t, int global_step=None)`
-> ###### parameter:
+>> ###### parameter:
 > * `t` (*torch.Tensor*) - one dimensional torch tensor. The value should between [-1, 1]. The sample rate is currently fixed at 44100 KHz.
 
 >`add_histogram(str tag, numpy.ndarray values, int global_step=None, bins='tensorflow')`
-> ###### parameter:
+>> ###### parameter:
 > * `values` (*numpy.ndarray*) - one dimensional numpy array.
 > * `bins` (*str*) - one of {'tensorflow', [numpy_arguments](https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html)}, determines how the bins are made.
 
 >`add_text(str tag, str text_to_save, int  global_step=None)`
-> ###### parameter:
+>> ###### parameter:
 > * `text_to_save ` (*str*) - the string to keep.
+
+>`add_graph(torch.nn.Module model, torch.autograd.Variable lastnode)`
+>> ###### parameter:
+> * `model ` (*torch.nn.Module*) - the model to draw.
+> * `lastnode ` (*torch.autograd.Variable*) - the output variable of the model.
+
+>> see `demo_graph.py`
+
+>`add_embedding(torch.Tensor t, str save_path, list metadata=None, torch.Tensor label_img=None)`
+>> ###### parameter:
+> * `t ` (*torch.Tensor*) - A two dimensional tensor. Each row corresponds to one feature vector.
+> * `save_path` (*str*) - save path
+> * `metadata` (*list*) - a list of label composed of number or string. `len(metadata)` should equal the number of rows of `t`
+> * `label_img` (*torch.Tensor*) - 4-D tensor (NCHW). `label_img.size(0)` should equal the number of rows of `t`
+
+>> see `demo_embedding.py`
 
 > ### Common parameters:
 > * `tag` (*str*) - values with same tag group together.
@@ -103,8 +119,7 @@ as you wish.
 
 ## TODO
 audio sample rate
-histogram binning method
-embedding
+
 
 ## reference:
 
