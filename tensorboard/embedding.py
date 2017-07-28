@@ -54,8 +54,11 @@ def add_embedding(mat, save_path, metadata=None, label_img=None):
         make_sprite(label_img, save_path)
     import tensorflow as tf
     tf.reset_default_graph()
-    emb = tf.Variable(mat.tolist(), name="embedding")
-    with tf.Session() as sess:
+    with tf.device('/cpu:0'):
+        emb = tf.Variable(mat.tolist(), name="embedding")
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    with tf.Session(config=config) as sess:
         sess.run(emb.initializer)
         saver = tf.train.Saver()
         saver.save(sess, save_path=os.path.join(save_path, 'model.ckpt'), global_step=None, write_meta_graph=False)

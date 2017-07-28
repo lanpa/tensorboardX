@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='tensorboard-pytorch',
-    version='0.6',
+    version='0.61',
     description='Log TensorBoard events with pytorch',
     long_description= history,
     author='Tzu-Wei Huang',
@@ -42,4 +42,4 @@ setup(
     tests_require=test_requirements
 )
 
-# python setup.py bdist_wheel sdist upload
+# python setup.py bdist_wheel upload
