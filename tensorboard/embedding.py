@@ -12,7 +12,7 @@ def make_tsv(metadata, save_path):
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
     import math
-    nrow = math.floor(math.sqrt(label_img.size(0)))
+    nrow = int(math.floor(math.sqrt(label_img.size(0))))
     xx = torchvision.utils.make_grid(torch.Tensor(1,3,32,32), padding=0)
     if xx.size(2)==33: # https://github.com/pytorch/vision/issues/206
         sprite = torchvision.utils.make_grid(label_img, nrow=nrow, padding=0)
@@ -45,7 +45,10 @@ label_img: 4D torch tensor. label_img.size(0) equals mat.size(0).
 '''
 
 def add_embedding(mat, save_path, metadata=None, label_img=None):
-    os.makedirs(save_path, exist_ok=True)
+    try:
+        os.makedirs(save_path)
+    except OSError:
+        print('warning: dir exists')
     if metadata is not None:
         assert mat.size(0)==len(metadata), '#labels should equal with #data points'
         make_tsv(metadata, save_path)

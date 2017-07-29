@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='tensorboard-pytorch',
-    version='0.61',
+    version='0.62',
     description='Log TensorBoard events with pytorch',
     long_description= history,
     author='Tzu-Wei Huang',
@@ -34,9 +34,12 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',        
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
     tests_require=test_requirements
