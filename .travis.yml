@@ -33,6 +33,6 @@ install:
 script:
   - pytest
   # Your test script goes here
-  - pip uninstall tensorboard-pytorch
+  - pip uninstall -y tensorboard-pytorch
   - pip install tensorboard-pytorch
   - pytest
