@@ -1,5 +1,10 @@
 History
 =======
+0.6.5 (2017-07-30)
+-----------------
+* add travis test (py2.7, py3.6)
+* add support for python2 (in PyPI)
+
 0.6 (2017-07-18)
 -----------------
 * supports embedding

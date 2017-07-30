@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='tensorboard-pytorch',
-    version='0.62',
+    version='0.6.5',
     description='Log TensorBoard events with pytorch',
     long_description= history,
     author='Tzu-Wei Huang',
