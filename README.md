@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/lanpa/tensorboard-pytorch.svg?branch=master)](https://travis-ci.org/lanpa/tensorboard-pytorch)
+[![PyPI version](https://badge.fury.io/py/tensorboard-pytorch.svg)](https://badge.fury.io/py/tensorboard-pytorch)
+![Downloads](https://img.shields.io/badge/pip--downloads-4500-brightgreen.svg)
 # tensorboard-pytorch
 
 Write tensorboard events with simple command.

@@ -45,4 +45,4 @@ setup(
     tests_require=test_requirements
 )
 
-# python setup.py bdist_wheel upload
+# python setup.py bdist_wheel --universal upload
