@@ -1,5 +1,4 @@
 import torch
-import torchvision
 import os
 
 def make_tsv(metadata, save_path):
@@ -12,6 +11,7 @@ def make_tsv(metadata, save_path):
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
     import math
+    import torchvision
     nrow = int(math.floor(math.sqrt(label_img.size(0))))
     xx = torchvision.utils.make_grid(torch.Tensor(1,3,32,32), padding=0)
     if xx.size(2)==33: # https://github.com/pytorch/vision/issues/206
@@ -66,5 +66,4 @@ def add_embedding(mat, save_path, metadata=None, label_img=None):
         saver = tf.train.Saver()
         saver.save(sess, save_path=os.path.join(save_path, 'model.ckpt'), global_step=None, write_meta_graph=False)
     make_pbtxt(save_path, metadata, label_img)
-
 
