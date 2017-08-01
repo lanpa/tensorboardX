@@ -109,14 +109,14 @@ as you wish.
 
 >> see `demo_graph.py`
 
->`add_embedding(torch.Tensor t, str save_path, list metadata=None, torch.Tensor label_img=None)`
->> ###### parameter:
-> * `t ` (*torch.Tensor*) - A two dimensional tensor. Each row corresponds to one feature vector.
-> * `save_path` (*str*) - save path
-> * `metadata` (*list*) - a list of label composed of number or string. `len(metadata)` should equal the number of rows of `t`
-> * `label_img` (*torch.Tensor*) - 4-D tensor (NCHW). `label_img.size(0)` should equal the number of rows of `t`
+`add_embedding(torch.Tensor t, str save_path, list metadata=None, torch.Tensor label_img=None)`
+> ###### parameter:
+ * `t ` (*torch.Tensor*) - A two dimensional tensor. Each row corresponds to one feature vector.
+ * `save_path` (*str*) - save path
+ * `metadata` (*list*) - a list of label composed of number or string. `len(metadata)` should equal the number of rows of `t`
+ * `label_img` (*torch.Tensor*) - 4-D tensor (NCHW). `label_img.size(0)` should equal the number of rows of `t`
 
->> see `demo_embedding.py`
+> see `demo_embedding.py`
 
 > ### Common parameters:
 > * `tag` (*str*) - values with same tag group together.
