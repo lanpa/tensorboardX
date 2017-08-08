@@ -45,6 +45,26 @@ label_img: 4D torch tensor. label_img.size(0) equals mat.size(0).
 '''
 
 def add_embedding(mat, save_path, metadata=None, label_img=None):
+    """add embedding
+
+    Args:
+        mat (torch.Tensor): Data identifier
+        save_path (string): Save location
+        metadata (list): A list of label
+        label_img (torch.Tensor): Images correspond to each point
+    Shape:
+        mat
+
+
+    .. note::
+        needs tensorflow
+
+    Examples::
+
+    >>> # With square kernels and equal stride
+    >>> m = nn.Conv2d(16, 33, 3, stride=2)
+
+    """
     try:
         os.makedirs(save_path)
     except OSError:

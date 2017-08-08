@@ -218,6 +218,12 @@ class SummaryWriter(object):
     training.
     """
     def __init__(self, log_dir):
+        """
+
+        Args:
+            log_dir (string): save location
+
+        """
         self.file_writer = FileWriter(logdir=log_dir)
         v = 1E-12
         buckets = []
@@ -229,18 +235,60 @@ class SummaryWriter(object):
         self.default_bins = neg_buckets[::-1] + [0] + buckets
         self.text_tags = []
     def add_scalar(self, name, scalar_value, global_step=None):
+        """Add scalar data to summary.
+
+        Args:
+            tag (string): Data identifier
+            scalar_value (float): value to save
+            global_step (int): global step value to record
+
+        """
         self.file_writer.add_summary(scalar(name, scalar_value), global_step)
 
     def add_histogram(self, name, values, global_step=None, bins='tensorflow'):
+        """Add histogram to summary.
+
+        Args:
+            tag (string): Data identifier
+            values (numpy.array): 
+            global_step (int): global step value to record
+
+        """
         if bins=='tensorflow':
             bins = self.default_bins
         self.file_writer.add_summary(histogram(name, values, bins), global_step)
 
     def add_image(self, tag, img_tensor, global_step=None):
+        """Add image data to summary.
+
+        Args:
+            tag (string): Data identifier
+            img_tensor (torch.Tensor): 
+            global_step (int): global step value to record
+        Shape:
+            img_tensor: :math:`(C, H, W)`
+        """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
     def add_audio(self, tag, snd_tensor, global_step=None):
+        """Add audio data to summary.
+
+        Args:
+            tag (string): Data identifier
+            snd_tensor (torch.Tensor): 
+            global_step (int): global step value to record
+
+        - snd_tensor: :math:`(1, L)`
+        """
         self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
     def add_text(self, tag, text_string, global_step=None):
+        """Add text data to summary.
+
+        Args:
+            tag (string): Data identifier
+            text_string (string): 
+            global_step (int): global step value to record
+
+        """        
         self.file_writer.add_summary(text(tag, text_string), global_step)
         if tag not in self.text_tags:
             self.text_tags.append(tag)
@@ -252,6 +300,12 @@ class SummaryWriter(object):
     def add_graph(self, model, lastVar):
         # prohibit second call?
         # no, let tensorboard handles it and show its warning message.
+        """Add graph data to summary.
+
+        Args:
+            model (torch.nn.Module): model to draw. 
+            lastVar (torch.autograd.Variable): the root node start from.
+        """      
         import torch
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
             print('pytorch version is too old, how about build by yourself?')
