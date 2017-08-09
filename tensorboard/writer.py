@@ -319,7 +319,7 @@ class SummaryWriter(object):
             lastVar (torch.autograd.Variable): the root node start from.
 
         .. note::
-            This is experimental feature. Graph drawing is based on autograd’s backward tracing. 
+            This is experimental feature. Graph drawing is based on autograd's backward tracing. 
             It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes. 
             In some cases, the result is strange. See  https://github.com/lanpa/tensorboard-pytorch/issues/7
         """      
