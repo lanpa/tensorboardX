@@ -21,7 +21,7 @@ import os
 import sys
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import tensorboard
+#import tensorboard #uncomment to shadow pip installation
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

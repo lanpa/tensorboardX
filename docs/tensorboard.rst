@@ -4,4 +4,6 @@ tensorboard-pytorch
 
 .. autoclass:: SummaryWriter
     :members:
+    
+    .. automethod:: __init__
 .. autofunction:: tensorboard.embedding.add_embedding

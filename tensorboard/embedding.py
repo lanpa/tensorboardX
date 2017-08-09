@@ -36,34 +36,51 @@ def make_pbtxt(save_path, metadata, label_img):
         f.write('}\n')
 
 
-'''
-mat: torch tensor. mat.size(0) is the number of data. mat.size(1) is the cardinality of feature dimensions
-save_path: self-explained.
-metadata: a list of {int, string} of length equals mat.size(0)
-label_img: 4D torch tensor. label_img.size(0) equals mat.size(0). 
-
-'''
 
 def add_embedding(mat, save_path, metadata=None, label_img=None):
     """add embedding
 
     Args:
-        mat (torch.Tensor): Data identifier
-        save_path (string): Save location
-        metadata (list): A list of label
-        label_img (torch.Tensor): Images correspond to each point
+        mat (torch.Tensor): A matrix which each row is the feature vector of the data point
+        save_path (string): Save path (use ``writer.file_writer.get_logdir()`` to show embedding along with other summaries)
+        metadata (list): A list of labels, each element will be convert to string
+        label_img (torch.Tensor): Images correspond to each data point
     Shape:
-        mat
+        mat: :math:`(N, D)`, where N is number of data and D is feature dimension
 
+        label_img: :math:`(N, C, H, W)`
 
     .. note::
-        needs tensorflow
+        This function needs tensorflow installed. It invokes tensorflow to dump data. 
+        Therefore I separate it from the SummaryWriter class. Please pass ``writer.file_writer.get_logdir()`` to ``save_path`` to prevent glitches.
+
+        If ``save_path`` is different than SummaryWritter's save path, you need to pass the leave directory to tensorboard's logdir argument, 
+        otherwise it cannot display anything. e.g. if ``save_path`` equals 'path/to/embedding', 
+        you need to call 'tensorboard --logdir=path/to/embedding', instead of 'tensorboard --logdir=path'.
+
+        Finally, this funtion breaks PyTorch if you have 'torch.nn.DataParallel' in your code. Use it after training completes.
+        See https://github.com/pytorch/pytorch/issues/2230
 
     Examples::
 
-    >>> # With square kernels and equal stride
-    >>> m = nn.Conv2d(16, 33, 3, stride=2)
+        from tensorboard.embedding import add_embedding
+        import keyword
+        import torch
+        meta = []
+        while len(meta)<100:
+            meta = meta+keyword.kwlist # get some strings
+        meta = meta[:100]
 
+        for i, v in enumerate(meta):
+            meta[i] = v+str(i)
+
+        label_img = torch.rand(100, 3, 10, 32)
+        for i in range(100):
+            label_img[i]*=i/100.0
+            
+        add_embedding(torch.randn(100, 5), 'embedding1', metadata=meta, label_img=label_img)
+        add_embedding(torch.randn(100, 5), 'embedding2', label_img=label_img)
+        add_embedding(torch.randn(100, 5), 'embedding3', metadata=meta)
     """
     try:
         os.makedirs(save_path)

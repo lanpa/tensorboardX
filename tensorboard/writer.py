@@ -239,8 +239,8 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            scalar_value (float): value to save
-            global_step (int): global step value to record
+            scalar_value (float): Value to save
+            global_step (int): Global step value to record
 
         """
         self.file_writer.add_summary(scalar(name, scalar_value), global_step)
@@ -250,8 +250,9 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            values (numpy.array): 
-            global_step (int): global step value to record
+            values (numpy.array): Values to build histogram
+            global_step (int): Global step value to record
+            bins (string): one of {'tensorflow','auto', 'fd', ...}, this determines how the bins are made. You can find other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
 
         """
         if bins=='tensorflow':
@@ -263,10 +264,10 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            img_tensor (torch.Tensor): 
-            global_step (int): global step value to record
+            img_tensor (torch.Tensor): Image data
+            global_step (int): Global step value to record
         Shape:
-            img_tensor: :math:`(C, H, W)`
+            img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
     def add_audio(self, tag, snd_tensor, global_step=None):
@@ -274,10 +275,11 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            snd_tensor (torch.Tensor): 
-            global_step (int): global step value to record
+            snd_tensor (torch.Tensor): Sound data
+            global_step (int): Global step value to record
 
-        - snd_tensor: :math:`(1, L)`
+        Shape:
+            snd_tensor: :math:`(1, L)`. The values should between [-1, 1]. The sample rate is currently fixed at 44100 KHz.
         """
         self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
     def add_text(self, tag, text_string, global_step=None):
@@ -285,8 +287,13 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            text_string (string): 
-            global_step (int): global step value to record
+            text_string (string): String to save
+            global_step (int): Global step value to record
+
+        Examples::
+
+            writer.add_text('lstm', 'This is an lstm', 0)
+            writer.add_text('rnn', 'This is an rnn', 10)
 
         """        
         self.file_writer.add_summary(text(tag, text_string), global_step)
@@ -302,9 +309,19 @@ class SummaryWriter(object):
         # no, let tensorboard handles it and show its warning message.
         """Add graph data to summary.
 
+            To draw the graph, you need a model ``m`` and an input variable ``t`` that have correct size for ``m``. 
+            Say you have runned ``r = m(t)``, then you can use ``writer.add_graph(m, r)`` to save the graph. 
+            By default, the input tensor does not require gradient, therefore it will be omitted when back tracing. 
+            To draw the input node, pass an additional parameter ``requires_grad=True`` when creating the input tensor.
+
         Args:
             model (torch.nn.Module): model to draw. 
             lastVar (torch.autograd.Variable): the root node start from.
+
+        .. note::
+            This is experimental feature. Graph drawing is based on autograd’s backward tracing. 
+            It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes. 
+            In some cases, the result is strange. See  https://github.com/lanpa/tensorboard-pytorch/issues/7
         """      
         import torch
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
