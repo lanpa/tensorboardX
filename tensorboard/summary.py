@@ -40,7 +40,6 @@ from six import StringIO
 from six.moves import range
 from PIL import Image
 import numpy as np
-import torch
 # pylint: disable=unused-import
 from .src.summary_pb2 import Summary
 from .src.summary_pb2 import HistogramProto
@@ -153,6 +152,7 @@ def image(tag, tensor):
       A scalar `Tensor` of type `string`. The serialized `Summary` protocol
       buffer.
     """
+    import torch  
     tag = _clean_tag(tag)
     assert isinstance(tensor, np.ndarray) or isinstance(tensor, torch.cuda.FloatTensor) or isinstance(tensor, torch.FloatTensor), 'input tensor should be one of numpy.ndarray, torch.cuda.FloatTensor, torch.FloatTensor'
     if not isinstance(tensor, np.ndarray):

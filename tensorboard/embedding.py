@@ -1,4 +1,3 @@
-import torch
 import os
 
 def make_tsv(metadata, save_path):
@@ -11,6 +10,7 @@ def make_tsv(metadata, save_path):
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
     import math
+    import torch
     import torchvision
     nrow = int(math.floor(math.sqrt(label_img.size(0))))
     xx = torchvision.utils.make_grid(torch.Tensor(1,3,32,32), padding=0)
