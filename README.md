@@ -56,20 +56,8 @@ writer.close()
 `tensorboard --logdir runs`  
 
 ## Screenshots
-scalar</br>
-<img src="screenshots/scalar.png" height="200">
+<img src="screenshots/Demo.gif">
 
-image</br>
-<img src="screenshots/image.png" height="200">
-
-audio</br>
-<img src="screenshots/audio.png" height="100">
-
-histogram</br>
-<img src="screenshots/histogram.png" height="400">
-
-text</br>
-<img src="screenshots/text.png" height="200">
 
 ## Tweaks
 To show more images in tensorboard's image tab, just
