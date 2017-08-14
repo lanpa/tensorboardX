@@ -26,7 +26,7 @@ install:
   - source activate test-environment
   - which python
   - conda list
-  - pip install tensorflow
+  #- pip install tensorflow
   - pip install --upgrade pytest
   - python setup.py install
 
