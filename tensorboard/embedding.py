@@ -12,7 +12,8 @@ def make_sprite(label_img, save_path):
     import math
     import torch
     import torchvision
-    # this ensures the sprite image has enough space for the image labels
+    # this ensures the sprite image has correct dimension as described in 
+    # https://www.tensorflow.org/get_started/embedding_viz
     nrow = int(math.ceil((label_img.size(0)) ** 0.5))
     
     # augment images so that #images equals nrow*nrow
@@ -26,7 +27,6 @@ def make_sprite(label_img, save_path):
         torchvision.utils.save_image(sprite, os.path.join(save_path, 'sprite.png'))
     else:
         torchvision.utils.save_image(label_img, os.path.join(save_path, 'sprite.png'), nrow=nrow, padding=0)
-
 
 def make_pbtxt(save_path, metadata, label_img):
     with open(os.path.join(save_path, 'projector_config.pbtxt'), 'w') as f:
@@ -43,13 +43,11 @@ def make_pbtxt(save_path, metadata, label_img):
             f.write('}\n')
         f.write('}\n')
 
-
 def make_mat(matlist, save_path):
     with open(os.path.join(save_path, 'tensors.tsv'), 'w') as f:
         for x in matlist:
             x = [str(i) for i in x]
             f.write('\t'.join(x) + '\n')
-
 
 def add_embedding(mat, save_path, metadata=None, label_img=None):
     """add embedding
