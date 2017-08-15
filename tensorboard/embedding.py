@@ -1,6 +1,5 @@
 import os
 
-
 def make_tsv(metadata, save_path):
     metadata = [str(x) for x in metadata]
     with open(os.path.join(save_path, 'metadata.tsv'), 'w') as f:
@@ -10,17 +9,18 @@ def make_tsv(metadata, save_path):
 
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
-    # we have to make labels_img squared!
     import math
     import torch
     import torchvision
-    # this ensure we have enought space for the images
+    # this ensures the sprite image has enough space for the image labels
     nrow = int(math.ceil((label_img.size(0)) ** 0.5))
-    # cat the images to reach the square of base_size
+    
+    # augment images so that #images equals nrow*nrow
     label_img = torch.cat((label_img, torch.randn(nrow ** 2 - label_img.size(0), *label_img.size()[1:]) * 255), 0)
-    # this ensure no pixel are appended by make_grid call in save_image (such a stupid function)
+    
+    # Dirty fix: no pixel are appended by make_grid call in save_image (https://github.com/pytorch/vision/issues/206)
     xx = torchvision.utils.make_grid(torch.Tensor(1, 3, 32, 32), padding=0)
-    if xx.size(2) == 33:  # https://github.com/pytorch/vision/issues/206
+    if xx.size(2) == 33:
         sprite = torchvision.utils.make_grid(label_img, nrow=nrow, padding=0)
         sprite = sprite[:, 1:, 1:]
         torchvision.utils.save_image(sprite, os.path.join(save_path, 'sprite.png'))
@@ -99,12 +99,12 @@ def add_embedding(mat, save_path, metadata=None, label_img=None):
     except OSError:
         print('warning: dir exists')
     if metadata is not None:
-        assert mat.size(0) == len(metadata), '#labels should equal with #data points'
+        assert mat.size(0)==len(metadata), '#labels should equal with #data points'
         make_tsv(metadata, save_path)
     if label_img is not None:
-        assert mat.size(0) == label_img.size(0), '#images should equal with #data points'
+        assert mat.size(0)==label_img.size(0), '#images should equal with #data points'
         make_sprite(label_img, save_path)
-    assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
+    assert mat.dim()==2, 'mat should be 2D, where mat.size(0) is the number of data points'
     make_mat(mat.tolist(), save_path)
     make_pbtxt(save_path, metadata, label_img)
 
