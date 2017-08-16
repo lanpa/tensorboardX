@@ -60,7 +60,7 @@ writer = SummaryWriter(os.path.join("runs",writer_name))
 #our brand new embwriter in the same dir
 embedding_writer = EmbeddingWriter(os.path.join("runs",writer_name))
 #TRAIN
-for i in xrange(num_epochs):
+for i in range(num_epochs):
     for j,sample in enumerate(gen):
         #reset grad
         m.zero_grad()
