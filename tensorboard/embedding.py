@@ -106,3 +106,70 @@ def add_embedding(mat, save_path, metadata=None, label_img=None):
     make_mat(mat.tolist(), save_path)
     make_pbtxt(save_path, metadata, label_img)
 
+def append_pbtxt(f, metadata, label_img,path):
+
+    f.write('embeddings {\n')
+    f.write('tensor_name: "{}"\n'.format(os.path.join(path,"embedding")))
+    f.write('tensor_path: "{}"\n'.format(os.path.join(path,"tensors.tsv")))
+    if metadata is not None:
+        f.write('metadata_path: "{}"\n'.format(os.path.join(path,"metadata.tsv")))
+    if label_img is not None:
+        f.write('sprite {\n')
+        f.write('image_path: "{}"\n'.format(os.path.join(path,"sprite.png")))
+        f.write('single_image_dim: {}\n'.format(label_img.size(3)))
+        f.write('single_image_dim: {}\n'.format(label_img.size(2)))
+        f.write('}\n')
+    f.write('}\n')
+
+
+class EmbeddingWriter(object):
+    """
+    Class to allow writing embeddings ad defined timestep
+
+    """
+    def __init__(self,save_path):
+        """
+
+        :param save_path: should be the same path of you SummaryWriter
+        """
+        self.save_path = save_path
+        #make dir if needed, it should not
+        try:
+            os.makedirs(save_path)
+        except OSError:
+            print('warning: dir exists')
+        #create config file to store all embeddings conf
+        self.f = open(os.path.join(save_path, 'projector_config.pbtxt'), 'w')
+
+    def add_embedding(self,mat, metadata=None, label_img=None,timestep=0):
+        """
+        add an embedding at the defined timestep
+
+        :param mat:
+        :param metadata:
+        :param label_img:
+        :param timestep:
+        :return:
+        """
+        # TODO make doc
+        #path to the new subdir
+        timestep_path = "{}".format(timestep)
+        # TODO should this be handled?
+        os.makedirs(os.path.join(self.save_path,timestep_path))
+        #check other info
+        #save all this metadata in the new subfolder
+        if metadata is not None:
+            assert mat.size(0) == len(metadata), '#labels should equal with #data points'
+            make_tsv(metadata, os.path.join(self.save_path,timestep_path))
+        if label_img is not None:
+            assert mat.size(0) == label_img.size(0), '#images should equal with #data points'
+            make_sprite(label_img, os.path.join(self.save_path,timestep_path))
+        assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
+        make_mat(mat.tolist(), os.path.join(self.save_path,timestep_path))
+        #new funcion to append to the config file a new embedding
+        append_pbtxt(self.f, metadata, label_img,timestep_path)
+
+
+    def __del__(self):
+        #close the file at the end of the script
+        self.f.close()
