@@ -6,4 +6,3 @@ tensorboard-pytorch
     :members:
     
     .. automethod:: __init__
-.. autofunction:: tensorboard.embedding.add_embedding

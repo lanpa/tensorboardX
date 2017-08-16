@@ -7,7 +7,6 @@ from collections import OrderedDict
 from tensorboard import SummaryWriter
 from datetime import datetime
 from torch.utils.data import TensorDataset,DataLoader
-from tensorboard.embedding import EmbeddingWriter
 import os
 
 #EMBEDDING VISUALIZATION FOR A TWO-CLASSES PROBLEM
@@ -52,37 +51,38 @@ loss = torch.nn.NLLLoss()
 optimizer = Adam(params=m.parameters())
 #settings for train and log
 num_epochs = 20
-num_batches = len(gen)
 embedding_log = 5
-#WE NEED A WRITER! BECAUSE TB LOOK FOR IT!
 writer_name = datetime.now().strftime('%B%d  %H:%M:%S')
 writer = SummaryWriter(os.path.join("runs",writer_name))
-#our brand new embwriter in the same dir
-embedding_writer = EmbeddingWriter(os.path.join("runs",writer_name))
+
 #TRAIN
-for i in range(num_epochs):
+for epoch in range(num_epochs):
     for j,sample in enumerate(gen):
+        n_iter = (epoch*len(gen))+j
         #reset grad
         m.zero_grad()
         optimizer.zero_grad()
         #get batch data
-        data_batch = Variable(sample[0],requires_grad=True).float()
-        label_batch = Variable(sample[1],requires_grad=False).long()
+        data_batch = Variable(sample[0], requires_grad=True).float()
+        label_batch = Variable(sample[1], requires_grad=False).long()
         #FORWARD
         out = m(data_batch)
-        loss_value = loss(out,label_batch)
+        loss_value = loss(out, label_batch)
         #BACKWARD
         loss_value.backward()
         optimizer.step()
         #LOGGING
+        writer.add_scalar('loss', loss_value.data[0], n_iter)
+
         if j % embedding_log == 0:
             print("loss_value:{}".format(loss_value.data[0]))
             #we need 3 dimension for tensor to visualize it!
             out = torch.cat((out,torch.ones(len(out),1)),1)
             #write the embedding for the timestep
-            embedding_writer.add_embedding(out.data,metadata=label_batch.data,label_img=data_batch.data,timestep=(i*num_batches)+j)
+            writer.add_embedding(out.data, metadata=label_batch.data, label_img=data_batch.data, global_step=n_iter)
 
 writer.close()
 
 #tensorboard --logdir runs
-#you should now see a dropdown list with all the timestep, latest timestep should have a visible separation between the two classes
+#you should now see a dropdown list with all the timestep,
+# last timestep should have a visible separation between the two classes
