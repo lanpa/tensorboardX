@@ -76,7 +76,7 @@ for i in xrange(num_epochs):
         optimizer.step()
         #LOGGING
         if j % embedding_log == 0:
-            print "loss_value:{}".format(loss_value.data[0])
+            print("loss_value:{}".format(loss_value.data[0]))
             #we need 3 dimension for tensor to visualize it!
             out = torch.cat((out,torch.ones(len(out),1)),1)
             #write the embedding for the timestep
