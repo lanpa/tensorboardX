@@ -2,10 +2,9 @@ import torch
 import torchvision.utils as vutils
 import numpy as np
 import torchvision.models as models
-from datetime import datetime
 from tensorboard import SummaryWriter
-resnet18 = models.resnet18(True)
-writer = SummaryWriter('runs/'+datetime.now().strftime('%B%d  %H:%M:%S'))
+resnet18 = models.resnet18(False)
+writer = SummaryWriter()
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
 for n_iter in range(100):

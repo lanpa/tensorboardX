@@ -218,13 +218,17 @@ class SummaryWriter(object):
     to add data to the file directly from the training loop, without slowing down
     training.
     """
-    def __init__(self, log_dir):
+    def __init__(self, log_dir=None, comment=''):
         """
 
         Args:
-            log_dir (string): save location
-
+            log_dir (string): save location, defaults to current runs/DATE_TIME_HOSTNAME
+            comment (string): comment that appends to the default log_dir
         """
+        if log_dir == None:
+            import socket
+            from datetime import datetime
+            log_dir = os.path.join('runs', datetime.now().strftime('%b%d_%H-%M-%S')+'_'+socket.gethostname()+comment)
         self.file_writer = FileWriter(logdir=log_dir)
         v = 1E-12
         buckets = []

@@ -4,7 +4,6 @@ import torchvision.utils as vutils
 import numpy as np
 import torch.nn.functional as F
 import torchvision.models as models
-from datetime import datetime
 from tensorboard import SummaryWriter
 
 class Mnist(nn.Module):
@@ -33,7 +32,7 @@ model = Mnist()
 # if you want to show the input tensor, set requires_grad=True
 res = model(torch.autograd.Variable(torch.Tensor(1,1,28,28), requires_grad=True))
 
-writer = SummaryWriter('runs/'+datetime.now().strftime('%B%d  %H:%M:%S'))
+writer = SummaryWriter()
 writer.add_graph(model, res)
 
 writer.close()

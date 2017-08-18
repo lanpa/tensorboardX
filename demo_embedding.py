@@ -1,38 +1,35 @@
 import torch
 import torch.nn as nn
-from torch.optim import Adam
-from torch.autograd.variable import Variable
 import torch.nn.functional as F
-from collections import OrderedDict
-from tensorboard import SummaryWriter
-from datetime import datetime
-from torch.utils.data import TensorDataset,DataLoader
 import os
+from torch.autograd.variable import Variable
+from tensorboard import SummaryWriter
+from torch.utils.data import TensorDataset, DataLoader
 
 #EMBEDDING VISUALIZATION FOR A TWO-CLASSES PROBLEM
 
 #just a bunch of layers
 class M(nn.Module):
     def __init__(self):
-        super(M,self).__init__()
-        self.cn1 = nn.Conv2d(in_channels=1,out_channels=64,kernel_size=3)
-        self.cn2 = nn.Conv2d(in_channels=64,out_channels=32,kernel_size=3)
-        self.fc1 = nn.Linear(in_features=128,out_features=2)
-    def forward(self,i):
+        super(M, self).__init__()
+        self.cn1 = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3)
+        self.cn2 = nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3)
+        self.fc1 = nn.Linear(in_features=128, out_features=2)
+    def forward(self, i):
         i = self.cn1(i)
         i = F.relu(i)
-        i = F.max_pool2d(i,2)
+        i = F.max_pool2d(i, 2)
         i =self.cn2(i)
         i = F.relu(i)
-        i = F.max_pool2d(i,2)
-        i = i.view(len(i),-1)
+        i = F.max_pool2d(i, 2)
+        i = i.view(len(i), -1)
         i = self.fc1(i)
         i = F.log_softmax(i)
         return i
 
 #get some random data around value
-def get_data(value,shape):
-    data= torch.ones(shape)*value
+def get_data(value, shape):
+    data = torch.ones(shape)*value
     #add some noise
     data += torch.randn(shape)**2
     return data
@@ -47,13 +44,12 @@ gen = DataLoader(TensorDataset(data,labels),batch_size=25,shuffle=True)
 #network
 m = M()
 #loss and optim
-loss = torch.nn.NLLLoss()
-optimizer = Adam(params=m.parameters())
+loss = nn.NLLLoss()
+optimizer = torch.optim.Adam(params=m.parameters())
 #settings for train and log
 num_epochs = 20
 embedding_log = 5
-writer_name = datetime.now().strftime('%B%d  %H:%M:%S')
-writer = SummaryWriter(os.path.join("runs",writer_name))
+writer = SummaryWriter()
 
 #TRAIN
 for epoch in range(num_epochs):
@@ -77,12 +73,11 @@ for epoch in range(num_epochs):
         if j % embedding_log == 0:
             print("loss_value:{}".format(loss_value.data[0]))
             #we need 3 dimension for tensor to visualize it!
-            out = torch.cat((out,torch.ones(len(out),1)),1)
-            #write the embedding for the timestep
+            out = torch.cat((out, torch.ones(len(out), 1)), 1)
             writer.add_embedding(out.data, metadata=label_batch.data, label_img=data_batch.data, global_step=n_iter)
 
 writer.close()
 
-#tensorboard --logdir runs
-#you should now see a dropdown list with all the timestep,
+# tensorboard --logdir runs
+# you should now see a dropdown list with all the timestep,
 # last timestep should have a visible separation between the two classes
