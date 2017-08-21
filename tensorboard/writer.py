@@ -222,7 +222,7 @@ class SummaryWriter(object):
         """
 
         Args:
-            log_dir (string): save location, defaults to current runs/DATE_TIME_HOSTNAME
+            log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
         """
         if log_dir == None:
@@ -239,7 +239,7 @@ class SummaryWriter(object):
             v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
         self.text_tags = []
-    def add_scalar(self, name, scalar_value, global_step=None):
+    def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
 
         Args:
@@ -248,9 +248,9 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
 
         """
-        self.file_writer.add_summary(scalar(name, scalar_value), global_step)
+        self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
 
-    def add_histogram(self, name, values, global_step=None, bins='tensorflow'):
+    def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
         """Add histogram to summary.
 
         Args:
@@ -262,7 +262,7 @@ class SummaryWriter(object):
         """
         if bins=='tensorflow':
             bins = self.default_bins
-        self.file_writer.add_summary(histogram(name, values, bins), global_step)
+        self.file_writer.add_summary(histogram(tag, values, bins), global_step)
 
     def add_image(self, tag, img_tensor, global_step=None):
         """Add image data to summary.
@@ -335,7 +335,7 @@ class SummaryWriter(object):
         self.file_writer.add_graph(graph(model, lastVar))
 
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None):
-        """add embedding
+        """Add embedding projector data to summary.
 
         Args:
             mat (torch.Tensor): A matrix which each row is the feature vector of the data point
