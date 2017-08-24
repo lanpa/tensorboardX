@@ -1,5 +1,11 @@
 History
 =======
+0.7 (2017-08-22)
+-----------------
+* remove tensorflow dependency for embedding function
+* fixed incorrect image<->label pairing in embedding function (#12)
+* unifies API call and adds docstring. Documentation is available at: http://tensorboard-pytorch.readthedocs.io/
+
 0.6.5 (2017-07-30)
 -----------------
 * add travis test (py2.7, py3.6)

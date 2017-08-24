@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/lanpa/tensorboard-pytorch.svg?branch=master)](https://travis-ci.org/lanpa/tensorboard-pytorch)
 [![PyPI version](https://badge.fury.io/py/tensorboard-pytorch.svg)](https://badge.fury.io/py/tensorboard-pytorch)
-[![Downloads](https://img.shields.io/badge/pip--downloads-4500-brightgreen.svg)](https://bigquery.cloud.google.com/savedquery/966219917372:edb59a0d70c54eb687ab2a9417a778ee)
+[![Downloads](https://img.shields.io/badge/pip--downloads-5K+-brightgreen.svg)](https://bigquery.cloud.google.com/savedquery/966219917372:edb59a0d70c54eb687ab2a9417a778ee)
 # tensorboard-pytorch
 
 Write tensorboard events with simple command.
@@ -11,13 +11,13 @@ see [demo](http:35.197.26.245:6006) (result of `demo.py` and some images generat
 
 ## Install
 
-`#tested on anaconda2/anaconda3, tensorflow 1.2.1, pytorch 0.1.12, torchvision 0.1.8`
+`#tested on anaconda2/anaconda3, pytorch 0.2, torchvision 0.1.9`
 
 `pip install tensorboard-pytorch`
+`pip install tensorflow-tensorboard` (for tensorboard web server)
 
-`pip install tensorflow`   or   `pip install tensorflow-gpu`
-
-As this time (v0.1.12), to use the graph drawing feature, you need to build pytorch from source.
+or build from source:
+`pip install git+https://github.com/lanpa/tensorboard-pytorch`
 
 ## API
 http://tensorboard-pytorch.readthedocs.io/en/latest/tensorboard.html
@@ -28,26 +28,36 @@ import torch
 import torchvision.utils as vutils
 import numpy as np
 import torchvision.models as models
-from datetime import datetime
-from tensorboard import SummaryWriter
-resnet18 = models.resnet18(True)
-writer = SummaryWriter('runs/'+datetime.now().strftime('%B%d  %H:%M:%S'))
+from torchvision import datasets
+from tensorboard import SummaryWriter  #
+# if error use: from tensorboardX import SummaryWriter  see:#17
+resnet18 = models.resnet18(False)
+writer = SummaryWriter()
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
+
 for n_iter in range(100):
-    M_global = torch.rand(1) # value to keep
-    writer.add_scalar('M_global', M_global[0], n_iter)
+    s1 = torch.rand(1) # value to keep
+    s2 = torch.rand(1)
+    writer.add_scalar('data/scalar1', s1[0], n_iter) #data grouping by `slash`
+    writer.add_scalar('data/scalar2', s2[0], n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
     if n_iter%10==0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)   
-        writer.add_image('Image', x, n_iter)
+        writer.add_image('Image', x, n_iter) 
         x = torch.zeros(sample_rate*2)
         for i in range(x.size(0)):
             x[i] = np.cos(freqs[n_iter//10]*np.pi*float(i)/float(sample_rate)) # sound amplitude should in [-1, 1]
-        writer.add_audio('Audio', x, n_iter)
-        writer.add_text('Text', 'testtext', n_iter)
+        writer.add_audio('myAudio', x, n_iter)
+        writer.add_text('Text', 'text logged at step:'+str(n_iter), n_iter)
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param.clone().cpu().data.numpy(), n_iter)
+
+dataset = datasets.MNIST('mnist', train=False, download=True)
+images = dataset.test_data[:100].float()
+label = dataset.test_labels[:100]
+features = images.view(100, 784)
+writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))
 writer.close()
 ```
 
