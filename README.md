@@ -29,8 +29,10 @@ import torchvision.utils as vutils
 import numpy as np
 import torchvision.models as models
 from torchvision import datasets
-from tensorboard import SummaryWriter  #
-# if error use: from tensorboardX import SummaryWriter  see:#17
+from tensorboard import SummaryWriter
+# if error, uninstall tensorboard-pytorch and install tensorboardX
+# then use: from tensorboardX import SummaryWriter  see:#20
+
 resnet18 = models.resnet18(False)
 writer = SummaryWriter()
 sample_rate = 44100
