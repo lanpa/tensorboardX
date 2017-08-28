@@ -6,9 +6,9 @@ option java_outer_classname = "TensorProtos";
 option java_multiple_files = true;
 option java_package = "org.tensorflow.framework";
 
-import "tensorboard/src/resource_handle.proto";
-import "tensorboard/src/tensor_shape.proto";
-import "tensorboard/src/types.proto";
+import "tensorboardX/src/resource_handle.proto";
+import "tensorboardX/src/tensor_shape.proto";
+import "tensorboardX/src/types.proto";
 
 // Protocol buffer representing a tensor.
 message TensorProto {

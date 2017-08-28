@@ -1,3 +1,6 @@
 proto_src/
 __pycache__
 docs/_*
+build
+dist
+*.egg-info
