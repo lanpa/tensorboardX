@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import os
 from torch.autograd.variable import Variable
-from tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 from torch.utils.data import TensorDataset, DataLoader
 
 #EMBEDDING VISUALIZATION FOR A TWO-CLASSES PROBLEM

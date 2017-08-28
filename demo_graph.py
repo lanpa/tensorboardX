@@ -4,7 +4,7 @@ import torchvision.utils as vutils
 import numpy as np
 import torch.nn.functional as F
 import torchvision.models as models
-from tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 
 class Mnist(nn.Module):
     def __init__(self):

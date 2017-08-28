@@ -84,9 +84,7 @@ def scalar(name, scalar, collections=None):
       ValueError: If tensor has the wrong shape or type.
     """
     name = _clean_tag(name)
-    if not isinstance(scalar, float):
-        # try conversion, if failed then need handle by user.
-        scalar = float(scalar)
+    scalar = float(scalar)
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
 
@@ -182,8 +180,6 @@ def make_image(tensor):
                          encoded_image_string=image_string)
 
 def audio(tag, tensor, sample_rate=44100):
-  tensor = tensor.squeeze()
-  assert tensor.dim()==1, 'input tensor should be 1 dimensional.'
   tensor_list = [int(32767.0*x) for x in tensor]
   import io
   import wave
@@ -212,69 +208,3 @@ def text(tag, text):
   tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')])
   return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
   
-
-'''
-def merge(inputs, collections=None, name=None):
-  # pylint: disable=line-too-long
-  """Merges summaries.
-  This op creates a
-  [`Summary`](https://www.tensorflow.org/code/tensorflow/core/framework/summary.proto)
-  protocol buffer that contains the union of all the values in the input
-  summaries.
-  When the Op is run, it reports an `InvalidArgument` error if multiple values
-  in the summaries to merge use the same tag.
-  Args:
-    inputs: A list of `string` `Tensor` objects containing serialized `Summary`
-      protocol buffers.
-    collections: Optional list of graph collections keys. The new summary op is
-      added to these collections. Defaults to `[GraphKeys.SUMMARIES]`.
-    name: A name for the operation (optional).
-  Returns:
-    A scalar `Tensor` of type `string`. The serialized `Summary` protocol
-    buffer resulting from the merging.
-  """
-  # pylint: enable=line-too-long
-  name = _clean_tag(name)
-  with _ops.name_scope(name, 'Merge', inputs):
-    # pylint: disable=protected-access
-    val = _gen_logging_ops._merge_summary(inputs=inputs, name=name)
-    _collect(val, collections, [])
-  return val
-
-
-def merge_all(key=_ops.GraphKeys.SUMMARIES):
-  """Merges all summaries collected in the default graph.
-  Args:
-    key: `GraphKey` used to collect the summaries.  Defaults to
-      `GraphKeys.SUMMARIES`.
-  Returns:
-    If no summaries were collected, returns None.  Otherwise returns a scalar
-    `Tensor` of type `string` containing the serialized `Summary` protocol
-    buffer resulting from the merging.
-  """
-  summary_ops = _ops.get_collection(key)
-  if not summary_ops:
-    return None
-  else:
-    return merge(summary_ops)
-
-
-def get_summary_description(node_def):
-  """Given a TensorSummary node_def, retrieve its SummaryDescription.
-  When a Summary op is instantiated, a SummaryDescription of associated
-  metadata is stored in its NodeDef. This method retrieves the description.
-  Args:
-    node_def: the node_def_pb2.NodeDef of a TensorSummary op
-  Returns:
-    a summary_pb2.SummaryDescription
-  Raises:
-    ValueError: if the node is not a summary op.
-  """
-
-  if node_def.op != 'TensorSummary':
-    raise ValueError("Can't get_summary_description on %s" % node_def.op)
-  description_str = _compat.as_str_any(node_def.attr['description'].s)
-  summary_description = SummaryDescription()
-  _json_format.Parse(description_str, summary_description)
-  return summary_description
-'''

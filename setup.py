@@ -18,9 +18,9 @@ test_requirements = [
 ]
 
 setup(
-    name='tensorboard-pytorch',
-    version='0.7.1',
-    description='Log TensorBoard events with pytorch',
+    name='tensorboardX',
+    version='0.7.5',
+    description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description= history,
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
