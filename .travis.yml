@@ -26,13 +26,12 @@ install:
   - source activate test-environment
   - which python
   - conda list
-  #- pip install tensorflow
   - pip install --upgrade pytest
   - python setup.py install
 
 script:
   - pytest
   # Your test script goes here
-  - pip uninstall -y tensorboard-pytorch
-  - pip install tensorboard-pytorch
+  - pip uninstall -y tensorboardX
+  - pip install tensorboardX
   - pytest
