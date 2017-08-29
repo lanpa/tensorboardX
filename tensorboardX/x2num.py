@@ -13,6 +13,9 @@ def makenp(x, modality=None):
     if 'torch' in str(type(x)):
         return pytorch_np(x, modality)
 
+    if 'mxnet' in str(type(x)):
+        return mxnet_np(x, modality)
+
 def pytorch_np(x, modality):
     import torch
     if isinstance(x, torch.autograd.variable.Variable):
@@ -34,8 +37,9 @@ def theano_np(x):
 def caffe2_np(x):
     pass
 
-def mxnet_np(x):
-    pass
+def mxnet_np(x, modality):
+    return x.asnumpy()
+    
 
 def chainer_np(x):
     import chainer
