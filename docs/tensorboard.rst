@@ -1,6 +1,6 @@
 tensorboard-pytorch
 ===================================
-.. automodule:: tensorboard
+.. automodule:: tensorboardX
 
 .. autoclass:: SummaryWriter
     :members:
