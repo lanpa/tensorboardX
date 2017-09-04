@@ -24,3 +24,8 @@ def test_pytorch_np():
     assert(isinstance(x2num.makenp(0), np.ndarray))
     assert(isinstance(x2num.makenp(0.1), np.ndarray))
 
+shapes = [(77, 3, 13, 7), (77, 1, 13, 7), (3, 13, 7), (1, 13, 7), (13, 7)]
+def test_pytorch_img():
+    for s in shapes:
+        x = torch.Tensor(np.random.random_sample(s))
+        assert x2num.makenp(x, 'IMG').shape[2]==3

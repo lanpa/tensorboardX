@@ -150,16 +150,9 @@ def image(tag, tensor):
       A scalar `Tensor` of type `string`. The serialized `Summary` protocol
       buffer.
     """
-    import torch  
     tag = _clean_tag(tag)
-    assert isinstance(tensor, np.ndarray) or isinstance(tensor, torch.cuda.FloatTensor) or isinstance(tensor, torch.FloatTensor), 'input tensor should be one of numpy.ndarray, torch.cuda.FloatTensor, torch.FloatTensor'
-    if not isinstance(tensor, np.ndarray):
-        assert tensor.dim()<4 and tensor.dim()>1, 'input tensor should be 3 dimensional.'
-        if tensor.dim()==2:
-            tensor = tensor.unsqueeze(0)
-        tensor = tensor.cpu().permute(1,2,0).numpy()
-    else:
-        tensor = tensor.astype(np.float32)
+    assert isinstance(tensor, np.ndarray), 'input tensor should be numpy.ndarray'
+    tensor = tensor.astype(np.float32)
     tensor = (tensor*255).astype(np.uint8)
     image = make_image(tensor)
     return Summary(value=[Summary.Value(tag=tag, image=image)])

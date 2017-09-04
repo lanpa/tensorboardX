@@ -22,7 +22,7 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytorch torchvision -c soumith
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytorch torchvision -c soumith chainer
   - source activate test-environment
   - which python
   - conda list
@@ -32,6 +32,6 @@ install:
 script:
   - pytest
   # Your test script goes here
-  - pip uninstall -y tensorboardX
-  - pip install tensorboardX
-  - pytest
+#  - pip uninstall -y tensorboardX
+#  - pip install tensorboardX
+#  - pytest
