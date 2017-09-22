@@ -193,14 +193,12 @@ class FileWriter(SummaryToEventTransformer):
         Call this method to make sure that all pending events have been written to
         disk.
         """
-        # print("flushing writer", self.get_logdir())
         self.event_writer.flush()
 
     def close(self):
         """Flushes the event file to disk and close the file.
         Call this method when you do not need the summary writer anymore.
         """
-        # print("closing writer", self.get_logdir())
         self.event_writer.close()
 
     def reopen(self):
@@ -219,22 +217,9 @@ class SummaryWriter(object):
     file contents asynchronously. This allows a training program to call methods
     to add data to the file directly from the training loop, without slowing down
     training.
-
-
-    Extended to include offline-support for the following tasks:
-          * visualizing multiple scalar streams in the same plot
-          * exporting/importing  all the scalar streams from/to a single JSON
-            file, with the following format:
-            {writer_id : [[timestamp, step, value], ...], ...}
-       For that, it includes the following methods:
-       add_scalars, export_scalars_to_json, import_scalars_from_json
-       This class doesn't affect the functionality of any other part of the
-       package, so every other method holds the same interface.
-    
     """
     def __init__(self, log_dir=None, comment=''):
         """
-
         Args:
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
@@ -261,7 +246,7 @@ class SummaryWriter(object):
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
                                 timestamp):
         """This adds an entry to the self.scalar_dict datastructure with format
-           {writer_id : [[timestamp, step, value], ...], ...}.
+        {writer_id : [[timestamp, step, value], ...], ...}.
         """
         if not tag in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
@@ -269,7 +254,6 @@ class SummaryWriter(object):
  
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
-
         Args:
             tag (string): Data identifier
             scalar_value (float): Value to save
@@ -283,11 +267,11 @@ class SummaryWriter(object):
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Usage example:
-           logger.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
-                                         'xcosx':i*np.cos(i/r),
-                                         'arctanx': numsteps*np.arctan(i/r)}, i)
-           This function adds three values to the same scalar plot with the tag
-           'run_14h' in TensorBoard's scalar section.
+        writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
+                                      'xcosx':i*np.cos(i/r),
+                                      'arctanx': numsteps*np.arctan(i/r)}, i)
+        This function adds three values to the same scalar plot with the tag
+        'run_14h' in TensorBoard's scalar section.
         """
         timestamp = time.time()
         fw_logdir = self.file_writer.get_logdir()
@@ -303,8 +287,8 @@ class SummaryWriter(object):
 
     def export_scalars_to_json(self, path):
         """Exports to the given path an ASCII file containing all the scalars written
-           so far by this instance, with the following format:
-           {writer_id : [[timestamp, step, value], ...], ...}
+        so far by this instance, with the following format:
+        {writer_id : [[timestamp, step, value], ...], ...}
         """
         with open(path, "w") as f:
                 json.dump(self.scalar_dict, f)
