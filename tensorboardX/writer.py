@@ -275,7 +275,7 @@ class SummaryWriter(object):
         """
         timestamp = time.time()
         fw_logdir = self.file_writer.get_logdir()
-        for tag,scalar_value in tag_scalar_dict.iteritems():
+        for tag,scalar_value in tag_scalar_dict.items():
             fw_tag = fw_logdir+"/"+main_tag+"/"+tag
             if fw_tag in self.all_writers.keys():
                 fw = self.all_writers[fw_tag]
@@ -438,12 +438,12 @@ class SummaryWriter(object):
     def close(self):
         self.file_writer.flush()
         self.file_writer.close()
-        for path, writer in self.all_writers.iteritems():
+        for path, writer in self.all_writers.items():
             writer.flush()
             writer.close()
 
     def __del__(self):
         if self.file_writer is not None:
             self.file_writer.close()
-        for writer in self.all_writers.itervalues():
+        for writer in self.all_writers.values():
             writer.close()
