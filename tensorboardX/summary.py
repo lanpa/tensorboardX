@@ -46,7 +46,6 @@ from .src.summary_pb2 import HistogramProto
 from .src.summary_pb2 import SummaryMetadata
 from .src.tensor_pb2 import TensorProto
 from .src.tensor_shape_pb2 import TensorShapeProto
-from .x2num import makenp
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -85,8 +84,6 @@ def scalar(name, scalar, collections=None):
       ValueError: If tensor has the wrong shape or type.
     """
     name = _clean_tag(name)
-    scalar = makenp(scalar)
-    assert(scalar.squeeze().ndim==0), 'scalar should be 0D'
     scalar = float(scalar)
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
@@ -110,7 +107,6 @@ def histogram(name, values, bins, collections=None):
       buffer.
     """
     name = _clean_tag(name)
-    values = makenp(values)
     hist = make_histogram(values.astype(float), bins)
     return Summary(value=[Summary.Value(tag=name, histo=hist)])
 
@@ -155,7 +151,7 @@ def image(tag, tensor):
       buffer.
     """
     tag = _clean_tag(tag)
-    tensor = makenp(tensor, 'IMG')
+    assert isinstance(tensor, np.ndarray), 'input tensor should be numpy.ndarray'
     tensor = tensor.astype(np.float32)
     tensor = (tensor*255).astype(np.uint8)
     image = make_image(tensor)
@@ -177,10 +173,6 @@ def make_image(tensor):
                          encoded_image_string=image_string)
 
 def audio(tag, tensor, sample_rate=44100):
-  tensor = makenp(tensor)
-  tensor = tensor.squeeze()
-  assert(tensor.ndim==1), 'input tensor should be 1 dimensional.'
-
   tensor_list = [int(32767.0*x) for x in tensor]
   import io
   import wave
