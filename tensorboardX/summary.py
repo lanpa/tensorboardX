@@ -38,7 +38,6 @@ import re as _re
 import bisect
 from six import StringIO
 from six.moves import range
-from PIL import Image
 import numpy as np
 # pylint: disable=unused-import
 from .src.summary_pb2 import Summary
@@ -160,6 +159,7 @@ def image(tag, tensor):
 
 def make_image(tensor):
     """Convert an numpy representation image to Image protobuf"""
+    from PIL import Image
     height, width, channel = tensor.shape
     image = Image.fromarray(tensor)
     import io
