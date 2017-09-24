@@ -28,7 +28,6 @@ from .event_file_writer import EventFileWriter
 from .summary import scalar, histogram, image, audio, text
 from .graph import graph
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
-from .x2num import makenp
 
 class SummaryToEventTransformer(object):
     """Abstractly implements the SummaryWriter API.
@@ -260,8 +259,6 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
 
         """
-        scalar_value = makenp(scalar_value)
-        assert(scalar_value.squeeze().ndim==0), 'input of add_scalar should be 0D'
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
         self.__append_to_scalar_dict(tag, float(scalar_value), global_step, time.time())
 
@@ -305,7 +302,6 @@ class SummaryWriter(object):
         """
         if bins=='tensorflow':
             bins = self.default_bins
-        values = makenp(values)
         self.file_writer.add_summary(histogram(tag, values, bins), global_step)
 
     def add_image(self, tag, img_tensor, global_step=None):
@@ -318,7 +314,6 @@ class SummaryWriter(object):
         Shape:
             img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
-        img_tensor = makenp(img_tensor, 'IMG')
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
     def add_audio(self, tag, snd_tensor, global_step=None):
         """Add audio data to summary.
@@ -331,10 +326,6 @@ class SummaryWriter(object):
         Shape:
             snd_tensor: :math:`(1, L)`. The values should between [-1, 1]. The sample rate is currently fixed at 44100 KHz.
         """
-        snd_tensor = makenp(snd_tensor)
-        snd_tensor = snd_tensor.squeeze()
-        assert(snd_tensor.ndim==1), 'input tensor should be 1 dimensional.'
-        
         self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
     def add_text(self, tag, text_string, global_step=None):
         """Add text data to summary.
