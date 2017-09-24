@@ -260,10 +260,10 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
 
         """
-        np_scalar_value = makenp(scalar_value)
-        assert(np_scalar_value.squeeze().ndim==0), 'input of add_scalar should be 0D'
-        self.file_writer.add_summary(scalar(tag, np_scalar_value), global_step)
-        self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
+        scalar_value = makenp(scalar_value)
+        assert(scalar_value.squeeze().ndim==0), 'input of add_scalar should be 0D'
+        self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
+        self.__append_to_scalar_dict(tag, float(scalar_value), global_step, time.time())
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Usage example:
