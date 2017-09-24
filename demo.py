@@ -16,7 +16,9 @@ for n_iter in range(100):
     s1 = torch.rand(1) # value to keep
     s2 = torch.rand(1)
     writer.add_scalar('data/scalar1', s1[0], n_iter) # data grouping by `slash`
-    writer.add_scalar('data/scalar2', s2, n_iter) # passing Tensor is OK!
+    writer.add_scalars('data/scalar_group', {"xsinx":n_iter*np.sin(n_iter),
+                                             "xcosx":n_iter*np.cos(n_iter),
+                                             "arctanx": np.arctan(n_iter)}, n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
     if n_iter%10==0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)   
@@ -32,6 +34,9 @@ for n_iter in range(100):
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param, n_iter)
 
+# export scalar data to JSON for external processing
+writer.export_scalars_to_json("./all_scalars.json")
+            
 dataset = datasets.MNIST('mnist', train=False, download=True)
 images = dataset.test_data[:100].float()
 label = dataset.test_labels[:100]
