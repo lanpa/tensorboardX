@@ -307,6 +307,8 @@ class SummaryWriter(object):
     def add_image(self, tag, img_tensor, global_step=None):
         """Add image data to summary.
 
+        Note that this requires the ``pillow`` package.
+
         Args:
             tag (string): Data identifier
             img_tensor (torch.Tensor): Image data
