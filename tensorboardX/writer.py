@@ -376,7 +376,7 @@ class SummaryWriter(object):
             return
         self.file_writer.add_graph(graph(model, lastVar))
 
-    def add_embedding(self, mat, metadata=None, label_img=None, global_step=None):
+    def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
         """Add embedding projector data to summary.
 
         Args:
@@ -384,6 +384,7 @@ class SummaryWriter(object):
             metadata (list): A list of labels, each element will be convert to string
             label_img (torch.Tensor): Images correspond to each data point
             global_step (int): Global step value to record
+            tag (string): Name for the embedding
         Shape:
             mat: :math:`(N, D)`, where N is number of data and D is feature dimension
 
@@ -426,7 +427,7 @@ class SummaryWriter(object):
         assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat.tolist(), save_path)
         #new funcion to append to the config file a new embedding
-        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5))
+        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5), tag)
 
     def close(self):
         self.file_writer.flush()

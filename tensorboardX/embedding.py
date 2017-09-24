@@ -28,11 +28,11 @@ def make_sprite(label_img, save_path):
     else:
         torchvision.utils.save_image(label_img, os.path.join(save_path, 'sprite.png'), nrow=nrow, padding=0)
 
-def append_pbtxt(metadata, label_img, save_path, global_step):
+def append_pbtxt(metadata, label_img, save_path, global_step, tag):
     with open(os.path.join(save_path, 'projector_config.pbtxt'), 'a') as f:
         #step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
-        f.write('tensor_name: "embedding:{}"\n'.format(global_step))
+        f.write('tensor_name: "{}:{}"\n'.format(tag, global_step))
         f.write('tensor_path: "{}"\n'.format(os.path.join(global_step,"tensors.tsv")))
         if metadata is not None:
             f.write('metadata_path: "{}"\n'.format(os.path.join(global_step,"metadata.tsv")))

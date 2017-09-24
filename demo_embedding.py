@@ -49,7 +49,7 @@ optimizer = torch.optim.Adam(params=m.parameters())
 #settings for train and log
 num_epochs = 20
 embedding_log = 5
-writer = SummaryWriter()
+writer = SummaryWriter(comment='mnist_embedding_training')
 
 #TRAIN
 for epoch in range(num_epochs):

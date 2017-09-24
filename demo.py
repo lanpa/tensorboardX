@@ -42,4 +42,5 @@ images = dataset.test_data[:100].float()
 label = dataset.test_labels[:100]
 features = images.view(100, 784)
 writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))        
+writer.add_embedding(features, global_step=1, tag='noMetadata')        
 writer.close()
