@@ -220,7 +220,6 @@ class SummaryWriter(object):
     """
     def __init__(self, log_dir=None, comment=''):
         """
-
         Args:
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
@@ -239,9 +238,22 @@ class SummaryWriter(object):
             v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
         self.text_tags = []
+        #
+        self.all_writers = {self.file_writer.get_logdir() : self.file_writer}
+        self.scalar_dict = {} # {writer_id : [[timestamp, step, value],...],...}
+
+
+    def __append_to_scalar_dict(self, tag, scalar_value, global_step,
+                                timestamp):
+        """This adds an entry to the self.scalar_dict datastructure with format
+        {writer_id : [[timestamp, step, value], ...], ...}.
+        """
+        if not tag in self.scalar_dict.keys():
+            self.scalar_dict[tag] = []
+        self.scalar_dict[tag].append([timestamp, global_step, scalar_value])
+ 
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
-
         Args:
             tag (string): Data identifier
             scalar_value (float): Value to save
@@ -251,6 +263,35 @@ class SummaryWriter(object):
         scalar_value = makenp(scalar_value)
         assert(scalar_value.squeeze().ndim==0), 'input of add_scalar should be 0D'
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
+        self.__append_to_scalar_dict(tag, float(scalar_value), global_step, time.time())
+
+    def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
+        """Usage example:
+        writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
+                                      'xcosx':i*np.cos(i/r),
+                                      'arctanx': numsteps*np.arctan(i/r)}, i)
+        This function adds three values to the same scalar plot with the tag
+        'run_14h' in TensorBoard's scalar section.
+        """
+        timestamp = time.time()
+        fw_logdir = self.file_writer.get_logdir()
+        for tag,scalar_value in tag_scalar_dict.items():
+            fw_tag = fw_logdir+"/"+main_tag+"/"+tag
+            if fw_tag in self.all_writers.keys():
+                fw = self.all_writers[fw_tag]
+            else:
+                fw  = FileWriter(logdir=fw_tag)
+                self.all_writers[fw_tag] = fw
+            fw.add_summary(scalar(main_tag, scalar_value), global_step)
+            self.__append_to_scalar_dict(fw_tag, scalar_value, global_step, timestamp)
+
+    def export_scalars_to_json(self, path):
+        """Exports to the given path an ASCII file containing all the scalars written
+        so far by this instance, with the following format:
+        {writer_id : [[timestamp, step, value], ...], ...}
+        """
+        with open(path, "w") as f:
+                json.dump(self.scalar_dict, f)
 
     def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
         """Add histogram to summary.
@@ -397,8 +438,12 @@ class SummaryWriter(object):
     def close(self):
         self.file_writer.flush()
         self.file_writer.close()
+        for path, writer in self.all_writers.items():
+            writer.flush()
+            writer.close()
 
     def __del__(self):
         if self.file_writer is not None:
             self.file_writer.close()
-
+        for writer in self.all_writers.values():
+            writer.close()

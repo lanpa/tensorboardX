@@ -43,6 +43,9 @@ for n_iter in range(100):
     s2 = torch.rand(1)
     writer.add_scalar('data/scalar1', s1[0], n_iter) #data grouping by `slash`
     writer.add_scalar('data/scalar2', s2[0], n_iter)
+    writer.add_scalars('data/scalar_group', {"xsinx":n_iter*np.sin(n_iter),
+                                             "xcosx":n_iter*np.cos(n_iter),
+                                             "arctanx": np.arctan(n_iter)}, n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
     if n_iter%10==0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)   
@@ -60,6 +63,10 @@ images = dataset.test_data[:100].float()
 label = dataset.test_labels[:100]
 features = images.view(100, 784)
 writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))
+
+# export scalar data to JSON for external processing
+writer.export_scalars_to_json("./all_scalars.json")
+
 writer.close()
 ```
 
