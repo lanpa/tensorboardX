@@ -32,6 +32,6 @@ install:
 script:
   - pytest
   # Your test script goes here
-#  - pip uninstall -y tensorboardX
-#  - pip install tensorboardX
-#  - pytest
+  - pip uninstall -y tensorboardX
+  - pip install tensorboardX
+  - pytest

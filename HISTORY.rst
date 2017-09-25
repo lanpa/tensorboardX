@@ -1,5 +1,15 @@
 History
 =======
+0.8 (2017-09-25)
+-----------------
+* Package name renamed to tensorboardX to fix namespace confliction with tensorflow's tensorboard
+* Supports multi-scalars and JSON export
+* Multiple Embeddings in One Experiment 
+* Supports Chainer and mxnet
+
+* fixed incorrect image<->label pairing in embedding function (#12)
+* unifies API call and adds docstring. Documentation is available at: http://tensorboard-pytorch.readthedocs.io/
+
 0.7 (2017-08-22)
 -----------------
 * remove tensorflow dependency for embedding function
