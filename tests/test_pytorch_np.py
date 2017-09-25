@@ -18,7 +18,7 @@ def test_pytorch_np():
 
         # CUDA variable
         if torch.cuda.device_count()>0:
-            assert isinstance(x2num.makenp(torch.autograd.variable.Variable(tensor)).cuda(), np.ndarray)
+            assert isinstance(x2num.makenp(torch.autograd.variable.Variable(tensor).cuda()), np.ndarray)
 
     # python primitive type
     assert(isinstance(x2num.makenp(0), np.ndarray))
