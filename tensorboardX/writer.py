@@ -250,7 +250,7 @@ class SummaryWriter(object):
         if not tag in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
         self.scalar_dict[tag].append([timestamp, global_step, scalar_value])
- 
+
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
         Args:
@@ -317,18 +317,19 @@ class SummaryWriter(object):
             img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
-    def add_audio(self, tag, snd_tensor, global_step=None):
+    def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):
         """Add audio data to summary.
 
         Args:
             tag (string): Data identifier
             snd_tensor (torch.Tensor): Sound data
             global_step (int): Global step value to record
+            sample_rate (int): sample rate in Hz
 
         Shape:
-            snd_tensor: :math:`(1, L)`. The values should between [-1, 1]. The sample rate is currently fixed at 44100 KHz.
+            snd_tensor: :math:`(1, L)`. The values should between [-1, 1].
         """
-        self.file_writer.add_summary(audio(tag, snd_tensor), global_step)
+        self.file_writer.add_summary(audio(tag, snd_tensor, sample_rate=sample_rate), global_step)
     def add_text(self, tag, text_string, global_step=None):
         """Add text data to summary.
 
@@ -342,7 +343,7 @@ class SummaryWriter(object):
             writer.add_text('lstm', 'This is an lstm', 0)
             writer.add_text('rnn', 'This is an rnn', 10)
 
-        """        
+        """
         self.file_writer.add_summary(text(tag, text_string), global_step)
         if tag not in self.text_tags:
             self.text_tags.append(tag)
@@ -356,20 +357,20 @@ class SummaryWriter(object):
         # no, let tensorboard handles it and show its warning message.
         """Add graph data to summary.
 
-            To draw the graph, you need a model ``m`` and an input variable ``t`` that have correct size for ``m``. 
-            Say you have runned ``r = m(t)``, then you can use ``writer.add_graph(m, r)`` to save the graph. 
-            By default, the input tensor does not require gradient, therefore it will be omitted when back tracing. 
+            To draw the graph, you need a model ``m`` and an input variable ``t`` that have correct size for ``m``.
+            Say you have runned ``r = m(t)``, then you can use ``writer.add_graph(m, r)`` to save the graph.
+            By default, the input tensor does not require gradient, therefore it will be omitted when back tracing.
             To draw the input node, pass an additional parameter ``requires_grad=True`` when creating the input tensor.
 
         Args:
-            model (torch.nn.Module): model to draw. 
+            model (torch.nn.Module): model to draw.
             lastVar (torch.autograd.Variable): the root node start from.
 
         .. note::
-            This is experimental feature. Graph drawing is based on autograd's backward tracing. 
-            It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes. 
+            This is experimental feature. Graph drawing is based on autograd's backward tracing.
+            It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes.
             In some cases, the result is strange. See  https://github.com/lanpa/tensorboard-pytorch/issues/7 and https://github.com/lanpa/tensorboard-pytorch/issues/9
-        """      
+        """
         import torch
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
             print('pytorch version is too old, how about build by yourself?')
