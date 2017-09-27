@@ -431,14 +431,17 @@ class SummaryWriter(object):
         append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5), tag)
 
     def close(self):
+        if self.file_writer is None:
+            return  # ignore double close
         self.file_writer.flush()
         self.file_writer.close()
         for path, writer in self.all_writers.items():
             writer.flush()
             writer.close()
+        self.file_writer = self.all_writers = None
 
-    def __del__(self):
-        if self.file_writer is not None:
-            self.file_writer.close()
-        for writer in self.all_writers.values():
-            writer.close()
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
