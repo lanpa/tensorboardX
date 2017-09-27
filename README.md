@@ -46,12 +46,12 @@ for n_iter in range(100):
                                              "arctanx": np.arctan(n_iter)}, n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
     if n_iter%10==0:
-        x = vutils.make_grid(x, normalize=True, scale_each=True)   
-        writer.add_image('Image', x, n_iter) 
+        x = vutils.make_grid(x, normalize=True, scale_each=True)
+        writer.add_image('Image', x, n_iter)
         x = torch.zeros(sample_rate*2)
         for i in range(x.size(0)):
             x[i] = np.cos(freqs[n_iter//10]*np.pi*float(i)/float(sample_rate)) # sound amplitude should in [-1, 1]
-        writer.add_audio('myAudio', x, n_iter)
+        writer.add_audio('myAudio', x, n_iter, sample_rate=sample_rate)
         writer.add_text('Text', 'text logged at step:'+str(n_iter), n_iter)
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param.clone().cpu().data.numpy(), n_iter)
@@ -70,7 +70,7 @@ writer.close()
 
 `python demo.py`
 
-`tensorboard --logdir runs`  
+`tensorboard --logdir runs`
 
 ## Screenshots
 <img src="screenshots/Demo.gif">
@@ -78,14 +78,9 @@ writer.close()
 
 ## Tweaks
 To show more images in tensorboard's image tab, just
-modify the hardcoded `event_accumulator` in 
+modify the hardcoded `event_accumulator` in
 `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py`
 as you wish.
-
-
-## TODO
-audio sample rate
-
 
 ## Reference:
 
