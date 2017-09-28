@@ -8,7 +8,7 @@ def makenp(x, modality=None):
         if modality == 'IMG' and x.dtype == np.uint8:
             return x.astype(np.float32)/255.0
         return x
-    if isinstance(x, float) or isinstance(x, int):
+    if np.isscalar(x):
         return np.array([x])
     if 'torch' in str(type(x)):
         return pytorch_np(x, modality)
