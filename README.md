@@ -14,7 +14,7 @@ see [demo](http:35.197.26.245:6006) (result of `demo.py` and some images generat
 `#tested on anaconda2/anaconda3, pytorch 0.2, torchvision 0.1.9`
 
 `pip install tensorboardX`
-`pip install tensorflow-tensorboard` (for tensorboard web server)
+`pip install tensorflow` (for tensorboard web server)
 
 or build from source:
 `pip install git+https://github.com/lanpa/tensorboard-pytorch`
