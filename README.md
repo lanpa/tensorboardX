@@ -3,7 +3,7 @@
 [![Downloads](https://img.shields.io/badge/pip--downloads-5K+-brightgreen.svg)](https://bigquery.cloud.google.com/savedquery/966219917372:edb59a0d70c54eb687ab2a9417a778ee)
 # tensorboard-pytorch
 
-Write tensorboard events with simple command.
+Write tensorboard events with simple function call.
 
 including scalar, image, histogram, audio, text, graph and embedding.
 
@@ -14,6 +14,7 @@ see [demo](http:35.197.26.245:6006) (result of `demo.py` and some images generat
 `#tested on anaconda2/anaconda3, pytorch 0.2, torchvision 0.1.9`
 
 `pip install tensorboardX`
+
 `pip install tensorflow` (for tensorboard web server)
 
 or build from source:
