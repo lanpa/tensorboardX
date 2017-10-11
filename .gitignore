@@ -4,3 +4,4 @@ docs/_*
 build
 dist
 *.egg-info
+runs/*

@@ -27,6 +27,7 @@ from .src import graph_pb2
 from .event_file_writer import EventFileWriter
 from .summary import scalar, histogram, image, audio, text
 from .graph import graph
+from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 
 class SummaryToEventTransformer(object):
@@ -92,6 +93,12 @@ class SummaryToEventTransformer(object):
             summary = summ
         event = event_pb2.Event(summary=summary)
         self._add_event(event, global_step)
+
+    def add_graph_onnx(self, graph):
+        """Adds a `Graph` protocol buffer to the event file.
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self._add_event(event, None)
 
     def add_graph(self, graph):
         """Adds a `Graph` protocol buffer to the event file.
@@ -352,6 +359,10 @@ class SummaryWriter(object):
                 os.makedirs(extensionDIR)
             with open(extensionDIR + 'tensors.json', 'w') as fp:
                 json.dump(self.text_tags, fp)
+
+    def add_graph_onnx(self, prototxt):
+        self.file_writer.add_graph_onnx(gg(prototxt))
+
     def add_graph(self, model, lastVar):
         # prohibit second call?
         # no, let tensorboard handles it and show its warning message.
