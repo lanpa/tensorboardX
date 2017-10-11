@@ -4,8 +4,8 @@ from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
 from .src.onnx_pb2 import ModelProto
-import onnx
 def gg(fname):
+    import onnx
     m = onnx.load(fname)
     onnx.checker.check_model(m)
     nodes_proto = []
@@ -77,7 +77,7 @@ def findnode(nodes, name):
 def parser(s, nodes, node):
     print(s)
     if len(s)==0:
-        return print('==  len[s]=0  ==')
+        return
     if len(s)>0:
         if s[0]==node.op:
             print(s[0], node.name, s[1], node.input)
