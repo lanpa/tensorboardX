@@ -90,7 +90,7 @@ def parser(s, nodes, node):
 
 # TODO: use recursive parse
 
-def smartGrouping(nodes, mapping): # (╯°□°)╯︵┻━┻ onnx
+def smartGrouping(nodes, mapping):
     # a Fully Conv is: (TODO: check var1.size(0)==var2.size(0))
     # GEMM <-- Variable (c1)
     #  ^-- Transpose (c2) <-- Variable (c3) 
