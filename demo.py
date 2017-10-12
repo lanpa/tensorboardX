@@ -30,7 +30,7 @@ for n_iter in range(100):
             x[i] = np.cos(freqs[n_iter//10]*np.pi*float(i)/float(sample_rate)) # sound amplitude should in [-1, 1]
         writer.add_audio('myAudio', x, n_iter)
         writer.add_text('Text', 'text logged at step:'+str(n_iter), n_iter)
-        writer.add_text('another Text', 'another text logged at step:'+str(n_iter), n_iter)
+        writer.add_text('markdown Text', '''a|b\n-|-\nc|d''', n_iter)
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param, n_iter)
 

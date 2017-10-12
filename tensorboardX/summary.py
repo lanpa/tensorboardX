@@ -206,6 +206,6 @@ def text(tag, text):
   import json
   PluginData = [SummaryMetadata.PluginData(plugin_name='text')]
   smd = SummaryMetadata(plugin_data=PluginData)
-  tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')])
+  tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')], tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=1)]))
   return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
   
