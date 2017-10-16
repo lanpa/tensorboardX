@@ -257,7 +257,7 @@ class SummaryWriter(object):
         from .x2num import makenp
         if not tag in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
-        self.scalar_dict[tag].append([timestamp, global_step, makenp(scalar_value)])
+        self.scalar_dict[tag].append([timestamp, global_step, float(makenp(scalar_value))])
 
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
