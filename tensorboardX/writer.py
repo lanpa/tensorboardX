@@ -254,9 +254,10 @@ class SummaryWriter(object):
         """This adds an entry to the self.scalar_dict datastructure with format
         {writer_id : [[timestamp, step, value], ...], ...}.
         """
+        from .x2num import makenp
         if not tag in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
-        self.scalar_dict[tag].append([timestamp, global_step, scalar_value])
+        self.scalar_dict[tag].append([timestamp, global_step, makenp(scalar_value)])
 
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
@@ -267,7 +268,7 @@ class SummaryWriter(object):
 
         """
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
-        self.__append_to_scalar_dict(tag, float(scalar_value), global_step, time.time())
+        self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Usage example:

@@ -1,4 +1,4 @@
-from tensorboardX import x2num
+from tensorboardX import x2num, SummaryWriter
 import torch
 import numpy as np
 tensors = [torch.rand(3, 10, 10), torch.rand(1), torch.rand(1, 2, 3, 4, 5)]
@@ -29,3 +29,7 @@ def test_pytorch_img():
     for s in shapes:
         x = torch.Tensor(np.random.random_sample(s))
         assert x2num.makenp(x, 'IMG').shape[2]==3
+
+def test_pytorch_write():
+    with SummaryWriter() as w:
+        w.add_scalar('scalar', torch.autograd.variable.Variable(torch.rand(1)), 0)

@@ -1,4 +1,4 @@
-from tensorboardX import x2num
+from tensorboardX import x2num, SummaryWriter
 import chainer
 import numpy as np
 chainer.Variable
@@ -21,3 +21,7 @@ def test_chainer_img():
     for s in shapes:
         x = chainer.Variable(np.random.random_sample(s))
         assert x2num.makenp(x, 'IMG').shape[2]==3
+
+def test_chainer_write():
+    with SummaryWriter() as w:
+        w.add_scalar('scalar', chainer.Variable(np.random.rand(1)), 0)
