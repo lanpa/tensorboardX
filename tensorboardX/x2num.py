@@ -7,6 +7,8 @@ def makenp(x, modality=None):
     if isinstance(x, np.ndarray):
         if modality == 'IMG' and x.dtype == np.uint8:
             return x.astype(np.float32)/255.0
+        if len(x.shape) == 0:
+            return x.reshape(1)
         return x
     if np.isscalar(x):
         return np.array([x])
