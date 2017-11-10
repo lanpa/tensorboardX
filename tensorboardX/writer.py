@@ -261,6 +261,7 @@ class SummaryWriter(object):
 
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
+
         Args:
             tag (string): Data identifier
             scalar_value (float): Value to save
@@ -271,12 +272,21 @@ class SummaryWriter(object):
         self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
-        """Usage example:
-        writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
-                                      'xcosx':i*np.cos(i/r),
-                                      'arctanx': numsteps*np.arctan(i/r)}, i)
-        This function adds three values to the same scalar plot with the tag
-        'run_14h' in TensorBoard's scalar section.
+        """Adds many scalar data to summary.
+
+        Args:
+            tag (string): Data identifier
+            main_tag (float): The parent name for the tags
+            tag_scalar_dict (dict): Key-value pair storing the tag and corresponding values
+            global_step (int): Global step value to record
+
+        Examples::
+
+            writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
+                                          'xcosx':i*np.cos(i/r),
+                                          'arctanx': numsteps*np.arctan(i/r)}, i)
+            #This function adds three values to the same scalar plot with the tag
+            #'run_14h' in TensorBoard's scalar section.
         """
         timestamp = time.time()
         fw_logdir = self.file_writer.get_logdir()
@@ -382,6 +392,8 @@ class SummaryWriter(object):
             This is experimental feature. Graph drawing is based on autograd's backward tracing.
             It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes.
             In some cases, the result is strange. See  https://github.com/lanpa/tensorboard-pytorch/issues/7 and https://github.com/lanpa/tensorboard-pytorch/issues/9
+            
+            The implementation will be based to onnx backend as soon as onnx is stable enough.
         """
         import torch
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
