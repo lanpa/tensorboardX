@@ -45,6 +45,7 @@ from .src.summary_pb2 import HistogramProto
 from .src.summary_pb2 import SummaryMetadata
 from .src.tensor_pb2 import TensorProto
 from .src.tensor_shape_pb2 import TensorShapeProto
+from .src.plugin_pr_curve_pb2 import PrCurvePluginData
 from .x2num import makenp
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -208,4 +209,46 @@ def text(tag, text):
   smd = SummaryMetadata(plugin_data=PluginData)
   tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')], tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=1)]))
   return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
-  
+
+def pr_curve(tag, labels, predictions, num_thresholds=127, weights=None):
+  if num_thresholds>127: # wierd, value > 127 breaks protobuf
+    num_thresholds = 127 
+  data = compute_curve(labels, predictions, num_thresholds=num_thresholds, weights=weights)
+  pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
+  PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]  
+  smd = SummaryMetadata(plugin_data=PluginData)
+  tensor = TensorProto(dtype='DT_FLOAT', float_val=data.reshape(-1).tolist(),\
+                       tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=data.shape[0]), TensorShapeProto.Dim(size=data.shape[1])]))
+  return Summary(value=[Summary.Value(tag=tag, metadata=smd, tensor=tensor)])
+
+# https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/summary.py
+def compute_curve(labels, predictions, num_thresholds=None, weights=None):
+
+  _MINIMUM_COUNT = 1e-7
+
+  if weights is None:
+    weights = 1.0
+
+  # Compute bins of true positives and false positives.
+  bucket_indices = np.int32(np.floor(predictions * (num_thresholds - 1)))
+  float_labels = labels.astype(np.float)
+  histogram_range = (0, num_thresholds - 1)
+  tp_buckets, _ = np.histogram(
+      bucket_indices,
+      bins=num_thresholds,
+      range=histogram_range,
+      weights=float_labels * weights)
+  fp_buckets, _ = np.histogram(
+      bucket_indices,
+      bins=num_thresholds,
+      range=histogram_range,
+      weights=(1.0 - float_labels) * weights)
+
+  # Obtain the reverse cumulative sum.
+  tp = np.cumsum(tp_buckets[::-1])[::-1]
+  fp = np.cumsum(fp_buckets[::-1])[::-1]
+  tn = fp[0] - fp
+  fn = tp[0] - tp
+  precision = tp / np.maximum(_MINIMUM_COUNT, tp + fp)
+  recall = tp / np.maximum(_MINIMUM_COUNT, tp + fn)
+  return np.stack((tp, fp, tn, fn, precision, recall))

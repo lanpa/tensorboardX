@@ -33,6 +33,7 @@ for n_iter in range(100):
         writer.add_text('markdown Text', '''a|b\n-|-\nc|d''', n_iter)
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param, n_iter)
+        writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(100), n_iter) #needs tensorboard 0.4RC or later
 
 # export scalar data to JSON for external processing
 writer.export_scalars_to_json("./all_scalars.json")

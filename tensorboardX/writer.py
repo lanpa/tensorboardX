@@ -25,7 +25,7 @@ from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image, audio, text
+from .summary import scalar, histogram, image, audio, text, pr_curve
 from .graph import graph
 from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
@@ -441,6 +441,21 @@ class SummaryWriter(object):
         make_mat(mat.tolist(), save_path)
         #new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5), tag)
+
+
+    def add_pr_curve(self, tag, labels, predictions, global_step=None, num_thresholds=127, weights=None):
+        """Adds precision recall curve.
+
+        Args:
+            tag (string): Data identifier
+            labels (torch.Tensor): Ground thuth data. Binary label for each element.
+            predictions (torch.Tensor): The probability that an element be classified as true. Value should in [0, 1]
+            global_step (int): Global step value to record
+            num_thresholds (int): Number of thresholds used to draw the curve.
+
+        """
+        from .x2num import makenp
+        self.file_writer.add_summary(pr_curve(tag, makenp(labels), makenp(predictions), num_thresholds, weights), global_step)
 
     def close(self):
         if self.file_writer is None:
