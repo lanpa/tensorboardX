@@ -1,5 +1,11 @@
 History
 =======
+0.9 (2017-11-11)
+-----------------
+* Supports markdown for add_text function
+* It's ready to log precision recall curve (needs tensorboard>=0.4)
+* Adds context manager for the SummaryWriter class
+
 0.8 (2017-09-25)
 -----------------
 * Package name renamed to tensorboardX to fix namespace confliction with tensorflow's tensorboard
