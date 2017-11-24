@@ -3,11 +3,10 @@ from .src.node_def_pb2 import NodeDef
 from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
-from .src.onnx_pb2 import ModelProto
+#from .src.onnx_pb2 import ModelProto
 def gg(fname):
-    import onnx
+    import onnx # 0.2.1 
     m = onnx.load(fname)
-    onnx.checker.check_model(m)
     nodes_proto = []
     nodes = []    
     g = m.graph
