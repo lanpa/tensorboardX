@@ -9,7 +9,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'numpy',
-    'protobuf',
+    'protobuf >= 0.3.2',
     'six',
 ]
 
