@@ -396,8 +396,12 @@ class SummaryWriter(object):
             The implementation will be based to onnx backend as soon as onnx is stable enough.
         """
         import torch
+        from distutils.version import LooseVersion
+        if LooseVersion(torch.__version__)>=LooseVersion("0.3"):
+            print('add_graph() only supports PyTorch v0.2. For PyTorch>=0.3, use add_graph_onnx()')
+            return
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
-            print('pytorch version is too old, how about build by yourself?')
+            print('add_graph() only supports PyTorch v0.2.')
             return
         self.file_writer.add_graph(graph(model, lastVar))
 
