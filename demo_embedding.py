@@ -73,8 +73,8 @@ for epoch in range(num_epochs):
         if j % embedding_log == 0:
             print("loss_value:{}".format(loss_value.data[0]))
             #we need 3 dimension for tensor to visualize it!
-            out = torch.cat((out, torch.ones(len(out), 1)), 1)
-            writer.add_embedding(out.data, metadata=label_batch.data, label_img=data_batch.data, global_step=n_iter)
+            out = torch.cat((out.data, torch.ones(len(out), 1)), 1)
+            writer.add_embedding(out, metadata=label_batch.data, label_img=data_batch.data, global_step=n_iter)
 
 writer.close()
 
