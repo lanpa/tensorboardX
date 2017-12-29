@@ -13,7 +13,7 @@ If the demo code `onnx_graph.py` is not working, you have to build pytorch and o
 
 ## Install
 
-`#tested on anaconda2/anaconda3, pytorch 0.2, torchvision 0.1.9`
+`#tested on anaconda2/anaconda3, pytorch 0.3, torchvision 0.2`
 
 `pip install tensorboardX`
 
