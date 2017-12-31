@@ -30,6 +30,7 @@ from .graph import graph
 from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 
+
 class SummaryToEventTransformer(object):
     """Abstractly implements the SummaryWriter API.
     This API basically implements a number of endpoints (add_summary,
@@ -227,13 +228,15 @@ class SummaryWriter(object):
     def __init__(self, log_dir=None, comment=''):
         """
         Args:
-            log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
+            log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each
+              run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
         """
-        if log_dir == None:
+        if not log_dir:
             import socket
             from datetime import datetime
-            log_dir = os.path.join('runs', datetime.now().strftime('%b%d_%H-%M-%S')+'_'+socket.gethostname()+comment)
+            current_time = datetime.now().strftime('%b%d_%H-%M-%S')
+            log_dir = os.path.join('runs', current_time + '_' + socket.gethostname() + comment)
         self.file_writer = FileWriter(logdir=log_dir)
         v = 1E-12
         buckets = []
@@ -245,9 +248,8 @@ class SummaryWriter(object):
         self.default_bins = neg_buckets[::-1] + [0] + buckets
         self.text_tags = []
         #
-        self.all_writers = {self.file_writer.get_logdir() : self.file_writer}
-        self.scalar_dict = {} # {writer_id : [[timestamp, step, value],...],...}
-
+        self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
+        self.scalar_dict = {}  # {writer_id : [[timestamp, step, value],...],...}
 
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
                                 timestamp):
@@ -255,7 +257,7 @@ class SummaryWriter(object):
         {writer_id : [[timestamp, step, value], ...], ...}.
         """
         from .x2num import makenp
-        if not tag in self.scalar_dict.keys():
+        if tag not in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
         self.scalar_dict[tag].append([timestamp, global_step, float(makenp(scalar_value))])
 
@@ -266,7 +268,6 @@ class SummaryWriter(object):
             tag (string): Data identifier
             scalar_value (float): Value to save
             global_step (int): Global step value to record
-
         """
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
         self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
@@ -285,17 +286,17 @@ class SummaryWriter(object):
             writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
                                           'xcosx':i*np.cos(i/r),
                                           'arctanx': numsteps*np.arctan(i/r)}, i)
-            #This function adds three values to the same scalar plot with the tag
-            #'run_14h' in TensorBoard's scalar section.
+            # This function adds three values to the same scalar plot with the tag
+            # 'run_14h' in TensorBoard's scalar section.
         """
         timestamp = time.time()
         fw_logdir = self.file_writer.get_logdir()
-        for tag,scalar_value in tag_scalar_dict.items():
-            fw_tag = fw_logdir+"/"+main_tag+"/"+tag
+        for tag, scalar_value in tag_scalar_dict.items():
+            fw_tag = fw_logdir + "/" + main_tag + "/" + tag
             if fw_tag in self.all_writers.keys():
                 fw = self.all_writers[fw_tag]
             else:
-                fw  = FileWriter(logdir=fw_tag)
+                fw = FileWriter(logdir=fw_tag)
                 self.all_writers[fw_tag] = fw
             fw.add_summary(scalar(main_tag, scalar_value), global_step)
             self.__append_to_scalar_dict(fw_tag, scalar_value, global_step, timestamp)
@@ -306,7 +307,7 @@ class SummaryWriter(object):
         {writer_id : [[timestamp, step, value], ...], ...}
         """
         with open(path, "w") as f:
-                json.dump(self.scalar_dict, f)
+            json.dump(self.scalar_dict, f)
 
     def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
         """Add histogram to summary.
@@ -315,10 +316,10 @@ class SummaryWriter(object):
             tag (string): Data identifier
             values (numpy.array): Values to build histogram
             global_step (int): Global step value to record
-            bins (string): one of {'tensorflow','auto', 'fd', ...}, this determines how the bins are made. You can find other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
-
+            bins (string): one of {'tensorflow','auto', 'fd', ...}, this determines how the bins are made. You can find
+              other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
         """
-        if bins=='tensorflow':
+        if bins == 'tensorflow':
             bins = self.default_bins
         self.file_writer.add_summary(histogram(tag, values, bins), global_step)
 
@@ -335,6 +336,7 @@ class SummaryWriter(object):
             img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
+
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):
         """Add audio data to summary.
 
@@ -348,6 +350,7 @@ class SummaryWriter(object):
             snd_tensor: :math:`(1, L)`. The values should between [-1, 1].
         """
         self.file_writer.add_summary(audio(tag, snd_tensor, sample_rate=sample_rate), global_step)
+
     def add_text(self, tag, text_string, global_step=None):
         """Add text data to summary.
 
@@ -360,15 +363,14 @@ class SummaryWriter(object):
 
             writer.add_text('lstm', 'This is an lstm', 0)
             writer.add_text('rnn', 'This is an rnn', 10)
-
         """
         self.file_writer.add_summary(text(tag, text_string), global_step)
         if tag not in self.text_tags:
             self.text_tags.append(tag)
-            extensionDIR = self.file_writer.get_logdir()+'/plugins/tensorboard_text/'
-            if not os.path.exists(extensionDIR):
-                os.makedirs(extensionDIR)
-            with open(extensionDIR + 'tensors.json', 'w') as fp:
+            extension_dir = self.file_writer.get_logdir() + '/plugins/tensorboard_text/'
+            if not os.path.exists(extension_dir):
+                os.makedirs(extension_dir)
+            with open(extension_dir + 'tensors.json', 'w') as fp:
                 json.dump(self.text_tags, fp)
 
     def add_graph_onnx(self, prototxt):
@@ -391,13 +393,14 @@ class SummaryWriter(object):
         .. note::
             This is experimental feature. Graph drawing is based on autograd's backward tracing.
             It goes along the ``next_functions`` attribute in a variable recursively, drawing each encountered nodes.
-            In some cases, the result is strange. See  https://github.com/lanpa/tensorboard-pytorch/issues/7 and https://github.com/lanpa/tensorboard-pytorch/issues/9
-            
+            In some cases, the result is strange. See https://github.com/lanpa/tensorboard-pytorch/issues/7 and
+            https://github.com/lanpa/tensorboard-pytorch/issues/9
+
             The implementation will be based to onnx backend as soon as onnx is stable enough.
         """
         import torch
         from distutils.version import LooseVersion
-        if LooseVersion(torch.__version__)>=LooseVersion("0.3"):
+        if LooseVersion(torch.__version__) >= LooseVersion("0.3"):
             print('add_graph() only supports PyTorch v0.2. For PyTorch>=0.3, use add_graph_onnx()')
             return
         if not hasattr(torch.autograd.Variable, 'grad_fn'):
@@ -439,10 +442,10 @@ class SummaryWriter(object):
             writer.add_embedding(torch.randn(100, 5), label_img=label_img)
             writer.add_embedding(torch.randn(100, 5), metadata=meta)
         """
-        if global_step == None:
+        if global_step is None:
             global_step = 0
             # clear pbtxt?
-        save_path =  os.path.join(self.file_writer.get_logdir(), str(global_step).zfill(5))
+        save_path = os.path.join(self.file_writer.get_logdir(), str(global_step).zfill(5))
         try:
             os.makedirs(save_path)
         except OSError:
@@ -455,9 +458,8 @@ class SummaryWriter(object):
             make_sprite(label_img, save_path)
         assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat.tolist(), save_path)
-        #new funcion to append to the config file a new embedding
+        # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5), tag)
-
 
     def add_pr_curve(self, tag, labels, predictions, global_step=None, num_thresholds=127, weights=None):
         """Adds precision recall curve.
@@ -471,7 +473,9 @@ class SummaryWriter(object):
 
         """
         from .x2num import makenp
-        self.file_writer.add_summary(pr_curve(tag, makenp(labels), makenp(predictions), num_thresholds, weights), global_step)
+        labels = makenp(labels)
+        predictions = makenp(predictions)
+        self.file_writer.add_summary(pr_curve(tag, labels, predictions, num_thresholds, weights), global_step)
 
     def close(self):
         if self.file_writer is None:

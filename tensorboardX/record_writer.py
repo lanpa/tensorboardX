@@ -45,4 +45,3 @@ def make_valid_tf_name(name):
         # Must make it valid somehow, but don't want to remove stuff
         name = '.' + name
     return '_'.join(_VALID_OP_NAME_PART.findall(name))
-
