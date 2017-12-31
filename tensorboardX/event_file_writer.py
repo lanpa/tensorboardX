@@ -45,8 +45,7 @@ class EventsWriter(object):
         Events files have a name of the form
         '/some/file/path/events.out.tfevents.[timestamp].[hostname]'
         '''
-        self._file_prefix = file_prefix + ".out.tfevents." \
-                            + str(time.time())[:10] + "." + socket.gethostname()
+        self._file_prefix = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." + socket.gethostname()
 
         # Open(Create) the log file with the particular form of name.
         logging.basicConfig(filename=self._file_prefix)

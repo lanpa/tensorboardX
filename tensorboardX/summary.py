@@ -52,22 +52,20 @@ _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
 
 def _clean_tag(name):
-  # In the past, the first argument to summary ops was a tag, which allowed
-  # arbitrary characters. Now we are changing the first argument to be the node
-  # name. This has a number of advantages (users of summary ops now can
-  # take advantage of the tf name scope system) but risks breaking existing
-  # usage, because a much smaller set of characters are allowed in node names.
-  # This function replaces all illegal characters with _s, and logs a warning.
-  # It also strips leading slashes from the name.
-  if name is not None:
-    new_name = _INVALID_TAG_CHARACTERS.sub('_', name)
-    new_name = new_name.lstrip('/')  # Remove leading slashes
-    if new_name != name:
-      logging.info(
-          'Summary name %s is illegal; using %s instead.' %
-          (name, new_name))
-      name = new_name
-  return name
+    # In the past, the first argument to summary ops was a tag, which allowed
+    # arbitrary characters. Now we are changing the first argument to be the node
+    # name. This has a number of advantages (users of summary ops now can
+    # take advantage of the tf name scope system) but risks breaking existing
+    # usage, because a much smaller set of characters are allowed in node names.
+    # This function replaces all illegal characters with _s, and logs a warning.
+    # It also strips leading slashes from the name.
+    if name is not None:
+        new_name = _INVALID_TAG_CHARACTERS.sub('_', name)
+        new_name = new_name.lstrip('/')  # Remove leading slashes
+        if new_name != name:
+            logging.info('Summary name %s is illegal; using %s instead.' % (name, new_name))
+            name = new_name
+    return name
 
 
 def scalar(name, scalar, collections=None):
@@ -86,7 +84,7 @@ def scalar(name, scalar, collections=None):
     """
     name = _clean_tag(name)
     scalar = makenp(scalar)
-    assert(scalar.squeeze().ndim==0), 'scalar should be 0D'
+    assert(scalar.squeeze().ndim == 0), 'scalar should be 0D'
     scalar = float(scalar)
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
@@ -113,7 +111,6 @@ def histogram(name, values, bins, collections=None):
     values = makenp(values)
     hist = make_histogram(values.astype(float), bins)
     return Summary(value=[Summary.Value(tag=name, histo=hist)])
-
 
 
 def make_histogram(values, bins):
@@ -157,7 +154,7 @@ def image(tag, tensor):
     tag = _clean_tag(tag)
     tensor = makenp(tensor, 'IMG')
     tensor = tensor.astype(np.float32)
-    tensor = (tensor*255).astype(np.uint8)
+    tensor = (tensor * 255).astype(np.uint8)
     image = make_image(tensor)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
@@ -177,78 +174,88 @@ def make_image(tensor):
                          colorspace=channel,
                          encoded_image_string=image_string)
 
+
 def audio(tag, tensor, sample_rate=44100):
-  tensor = makenp(tensor)
-  tensor = tensor.squeeze()
-  assert(tensor.ndim==1), 'input tensor should be 1 dimensional.'
+    tensor = makenp(tensor)
+    tensor = tensor.squeeze()
+    assert(tensor.ndim == 1), 'input tensor should be 1 dimensional.'
 
-  tensor_list = [int(32767.0*x) for x in tensor]
-  import io
-  import wave
-  import struct
-  fio = io.BytesIO()
-  Wave_write = wave.open(fio, 'wb')
-  Wave_write.setnchannels(1)
-  Wave_write.setsampwidth(2)
-  Wave_write.setframerate(sample_rate)
-  tensor_enc = b''
-  for v in tensor_list:
-    tensor_enc += struct.pack('<h', v)
-  
-  Wave_write.writeframes(tensor_enc)
-  Wave_write.close()
-  audio_string = fio.getvalue()
-  fio.close()
-  audio = Summary.Audio(sample_rate=sample_rate, num_channels=1, length_frames=len(tensor_list), encoded_audio_string=audio_string, content_type='audio/wav')
+    tensor_list = [int(32767.0 * x) for x in tensor]
+    import io
+    import wave
+    import struct
+    fio = io.BytesIO()
+    Wave_write = wave.open(fio, 'wb')
+    Wave_write.setnchannels(1)
+    Wave_write.setsampwidth(2)
+    Wave_write.setframerate(sample_rate)
+    tensor_enc = b''
+    for v in tensor_list:
+        tensor_enc += struct.pack('<h', v)
 
-  return Summary(value=[Summary.Value(tag=tag, audio=audio)])
+    Wave_write.writeframes(tensor_enc)
+    Wave_write.close()
+    audio_string = fio.getvalue()
+    fio.close()
+    audio = Summary.Audio(sample_rate=sample_rate,
+                          num_channels=1,
+                          length_frames=len(tensor_list),
+                          encoded_audio_string=audio_string,
+                          content_type='audio/wav')
+    return Summary(value=[Summary.Value(tag=tag, audio=audio)])
+
 
 def text(tag, text):
-  import json
-  PluginData = [SummaryMetadata.PluginData(plugin_name='text')]
-  smd = SummaryMetadata(plugin_data=PluginData)
-  tensor = TensorProto(dtype='DT_STRING', string_val=[text.encode(encoding='utf_8')], tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=1)]))
-  return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
+    import json
+    PluginData = [SummaryMetadata.PluginData(plugin_name='text')]
+    smd = SummaryMetadata(plugin_data=PluginData)
+    tensor = TensorProto(dtype='DT_STRING',
+                         string_val=[text.encode(encoding='utf_8')],
+                         tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=1)]))
+    return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
+
 
 def pr_curve(tag, labels, predictions, num_thresholds=127, weights=None):
-  if num_thresholds>127: # wierd, value > 127 breaks protobuf
-    num_thresholds = 127 
-  data = compute_curve(labels, predictions, num_thresholds=num_thresholds, weights=weights)
-  pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
-  PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]  
-  smd = SummaryMetadata(plugin_data=PluginData)
-  tensor = TensorProto(dtype='DT_FLOAT', float_val=data.reshape(-1).tolist(),\
-                       tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=data.shape[0]), TensorShapeProto.Dim(size=data.shape[1])]))
-  return Summary(value=[Summary.Value(tag=tag, metadata=smd, tensor=tensor)])
+    if num_thresholds > 127:  # wierd, value > 127 breaks protobuf
+        num_thresholds = 127
+    data = compute_curve(labels, predictions, num_thresholds=num_thresholds, weights=weights)
+    pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
+    PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    smd = SummaryMetadata(plugin_data=PluginData)
+    tensor = TensorProto(dtype='DT_FLOAT',
+                         float_val=data.reshape(-1).tolist(),
+                         tensor_shape=TensorShapeProto(
+                             dim=[TensorShapeProto.Dim(size=data.shape[0]), TensorShapeProto.Dim(size=data.shape[1])]))
+    return Summary(value=[Summary.Value(tag=tag, metadata=smd, tensor=tensor)])
+
 
 # https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/summary.py
 def compute_curve(labels, predictions, num_thresholds=None, weights=None):
+    _MINIMUM_COUNT = 1e-7
 
-  _MINIMUM_COUNT = 1e-7
+    if weights is None:
+        weights = 1.0
 
-  if weights is None:
-    weights = 1.0
+    # Compute bins of true positives and false positives.
+    bucket_indices = np.int32(np.floor(predictions * (num_thresholds - 1)))
+    float_labels = labels.astype(np.float)
+    histogram_range = (0, num_thresholds - 1)
+    tp_buckets, _ = np.histogram(
+        bucket_indices,
+        bins=num_thresholds,
+        range=histogram_range,
+        weights=float_labels * weights)
+    fp_buckets, _ = np.histogram(
+        bucket_indices,
+        bins=num_thresholds,
+        range=histogram_range,
+        weights=(1.0 - float_labels) * weights)
 
-  # Compute bins of true positives and false positives.
-  bucket_indices = np.int32(np.floor(predictions * (num_thresholds - 1)))
-  float_labels = labels.astype(np.float)
-  histogram_range = (0, num_thresholds - 1)
-  tp_buckets, _ = np.histogram(
-      bucket_indices,
-      bins=num_thresholds,
-      range=histogram_range,
-      weights=float_labels * weights)
-  fp_buckets, _ = np.histogram(
-      bucket_indices,
-      bins=num_thresholds,
-      range=histogram_range,
-      weights=(1.0 - float_labels) * weights)
-
-  # Obtain the reverse cumulative sum.
-  tp = np.cumsum(tp_buckets[::-1])[::-1]
-  fp = np.cumsum(fp_buckets[::-1])[::-1]
-  tn = fp[0] - fp
-  fn = tp[0] - tp
-  precision = tp / np.maximum(_MINIMUM_COUNT, tp + fp)
-  recall = tp / np.maximum(_MINIMUM_COUNT, tp + fn)
-  return np.stack((tp, fp, tn, fn, precision, recall))
+    # Obtain the reverse cumulative sum.
+    tp = np.cumsum(tp_buckets[::-1])[::-1]
+    fp = np.cumsum(fp_buckets[::-1])[::-1]
+    tn = fp[0] - fp
+    fn = tp[0] - tp
+    precision = tp / np.maximum(_MINIMUM_COUNT, tp + fp)
+    recall = tp / np.maximum(_MINIMUM_COUNT, tp + fn)
+    return np.stack((tp, fp, tn, fn, precision, recall))
