@@ -276,7 +276,7 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            main_tag (float): The parent name for the tags
+            main_tag (string): The parent name for the tags
             tag_scalar_dict (dict): Key-value pair storing the tag and corresponding values
             global_step (int): Global step value to record
 
