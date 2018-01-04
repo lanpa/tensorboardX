@@ -3,11 +3,9 @@ from .src.node_def_pb2 import NodeDef
 from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
-import torch
 
 
 def replace(name, scope):
-    print(type(name), name)
     return '/'.join([scope[name], name])
 
 
@@ -32,7 +30,6 @@ def parse(graph):
         nodes.append({'name': replace(uname, scope), 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
-        print(n.type())
         uname = n.uniqueName()
         nodes.append({'name': replace(uname, scope), 'op': 'Parameter', 'inputs': [], 'attr': str(n.type())})
 
@@ -40,16 +37,15 @@ def parse(graph):
 
 
 def graph(model, args):
+    import torch
     with torch.onnx.set_training(model, False):
         trace, _ = torch.jit.trace(model, args)
     torch.onnx._optimize_trace(trace, False)
     graph = trace.graph()
-    print(graph)
     list_of_nodes = parse(graph)
     nodes = []
     for node in list_of_nodes:
         nodes.append(
             NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
                     attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
-    print(nodes)
     return GraphDef(node=nodes, versions=VersionDef(producer=22))

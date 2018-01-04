@@ -25,7 +25,7 @@ class Net1(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        x = F.softmax(x)
+        x = F.softmax(x, dim=1)
         return x
 
 
@@ -46,7 +46,7 @@ class Net2(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         # x = F.log_softmax(x) no scopename(JIT bug)
-        x = F.softmax(x)
+        x = F.softmax(x, dim=1)
         return x
 
 dummy_input = Variable(torch.rand(13, 1, 28, 28))
