@@ -3,47 +3,53 @@ from .src.node_def_pb2 import NodeDef
 from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
-
-global id2name
-global list_of_nodes
+import torch
 
 
-def make_name(obj):
-    if hasattr(obj, 'variable'):  # weight/bias in module
-        if obj.variable is not None:
-            return id2name[id(obj.variable)] + '_' + str(id(obj.variable))
-        else:
-            return 'inputTensor_' + str(id(obj))
-    else:
-        return type(obj).__name__.replace('Backward', '_') + str(id(obj))
+def replace(name, scope):
+    print(type(name), name)
+    return '/'.join([scope[name], name])
 
 
-def make_list_of_nodes(fn):
-    if fn is None:
-        return
-    inputs = []
-    for next_fn, _ in fn.next_functions:
-        inputs.append(make_name(next_fn))
-        make_list_of_nodes(next_fn)
-    attrshape = []
-    if hasattr(fn, 'variable'):  # weight/bias in module
-        if fn.variable is not None:
-            attrshape = list(fn.variable.size())
-    list_of_nodes.append({'name': make_name(fn), 'op': type(fn).__name__, 'inputs': inputs, 'attr.shape': attrshape})
+def parse(graph):
+    scope = {}
+    for n in graph.nodes():
+        inputs = [i.uniqueName() for i in n.inputs()]
+        for i in range(1, len(inputs)):
+            scope[inputs[i]] = n.scopeName()
 
+        uname = next(n.outputs()).uniqueName()
+        assert n.scopeName() != '', print(n, 'has empty scope name')
+        scope[uname] = n.scopeName()
+    scope['0'] = 'input'
 
-def graph(model, lastVar):
-    global id2name
-    global list_of_nodes
-    id2name = {id(m): n.replace('.', '/') + '(parameters)' for n, m in model.named_parameters()}
     nodes = []
-    list_of_nodes = []
+    for n in graph.nodes():
+        attrs = {k: n[k] for k in n.attributeNames()}
+        attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
+        inputs = [replace(i.uniqueName(), scope) for i in n.inputs()]
+        uname = next(n.outputs()).uniqueName()
+        nodes.append({'name': replace(uname, scope), 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
-    make_list_of_nodes(lastVar.grad_fn)
+    for n in graph.inputs():
+        print(n.type())
+        uname = n.uniqueName()
+        nodes.append({'name': replace(uname, scope), 'op': 'Parameter', 'inputs': [], 'attr': str(n.type())})
+
+    return nodes
+
+
+def graph(model, args):
+    with torch.onnx.set_training(model, False):
+        trace, _ = torch.jit.trace(model, args)
+    torch.onnx._optimize_trace(trace, False)
+    graph = trace.graph()
+    print(graph)
+    list_of_nodes = parse(graph)
+    nodes = []
     for node in list_of_nodes:
-        # shape = TensorShapeProto(dim=[TensorShapeProto.Dim(size=i) for i in node['attr.shape']])  ugly...
-        shape_str = str(node['attr.shape']).encode(encoding='utf_8')
         nodes.append(
             NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
-                    attr={'shape': AttrValue(s=shape_str)}))  # , 'T':AttrValue(type="DT_FLOAT")}))
+                    attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
+    print(nodes)
     return GraphDef(node=nodes, versions=VersionDef(producer=22))

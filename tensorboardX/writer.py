@@ -400,12 +400,15 @@ class SummaryWriter(object):
         """
         import torch
         from distutils.version import LooseVersion
-        if LooseVersion(torch.__version__) >= LooseVersion("0.3"):
-            print('add_graph() only supports PyTorch v0.2. For PyTorch>=0.3, use add_graph_onnx()')
-            return
-        if not hasattr(torch.autograd.Variable, 'grad_fn'):
-            print('add_graph() only supports PyTorch v0.2.')
-            return
+        if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
+            pass
+        else:
+            if LooseVersion(torch.__version__) >= LooseVersion("0.3"):
+                print('add_graph() only supports PyTorch v0.2. For PyTorch>=0.3, use add_graph_onnx()')
+                return
+            if not hasattr(torch.autograd.Variable, 'grad_fn'):
+                print('add_graph() only supports PyTorch v0.2.')
+                return
         self.file_writer.add_graph(graph(model, lastVar))
 
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
