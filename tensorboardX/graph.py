@@ -19,7 +19,7 @@ def parse(graph):
             scope[inputs[i]] = n.scopeName()
 
         uname = next(n.outputs()).uniqueName()
-        assert n.scopeName() != '', print(n, 'has empty scope name')
+        assert n.scopeName() != '', '{} has empty scope name'.format(n)
         scope[uname] = n.scopeName()
     scope['0'] = 'input'
 
