@@ -31,17 +31,21 @@ def parse(graph):
 
     for n in graph.inputs():
         uname = n.uniqueName()
+        if uname not in scope.keys():
+            scope[uname] = 'unused'
         nodes.append({'name': replace(uname, scope), 'op': 'Parameter', 'inputs': [], 'attr': str(n.type())})
 
     return nodes
 
 
-def graph(model, args):
+def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
         trace, _ = torch.jit.trace(model, args)
     torch.onnx._optimize_trace(trace, False)
     graph = trace.graph()
+    if verbose:
+        print(graph)
     list_of_nodes = parse(graph)
     nodes = []
     for node in list_of_nodes:

@@ -376,7 +376,7 @@ class SummaryWriter(object):
     def add_graph_onnx(self, prototxt):
         self.file_writer.add_graph_onnx(gg(prototxt))
 
-    def add_graph(self, model, input_to_model):
+    def add_graph(self, model, input_to_model, verbose=False):
         # prohibit second call?
         # no, let tensorboard handles it and show its warning message.
         """Add graph data to summary.
@@ -397,7 +397,7 @@ class SummaryWriter(object):
             if not hasattr(torch.autograd.Variable, 'grad_fn'):
                 print('add_graph() only supports PyTorch v0.2.')
                 return
-        self.file_writer.add_graph(graph(model, input_to_model))
+        self.file_writer.add_graph(graph(model, input_to_model, verbose))
 
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
         """Add embedding projector data to summary.
