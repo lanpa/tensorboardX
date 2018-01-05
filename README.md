@@ -1,4 +1,4 @@
-# tensorboard X
+# tensorboardX (tensorboard-pytorch)
 
 [![Build Status](https://travis-ci.org/lanpa/tensorboard-pytorch.svg?branch=master)](https://travis-ci.org/lanpa/tensorboard-pytorch)
 [![PyPI version](https://badge.fury.io/py/tensorboardX.svg)](https://badge.fury.io/py/tensorboardX)
@@ -6,9 +6,6 @@
 
 Write TensorBoard events with simple function call.
 
-[Documents](http://tensorboard-pytorch.readthedocs.io/en/latest/tensorboard.html)
-
-* Support `PyTorch`, `Chainer`
 * Support `scalar`, `image`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding` and `pr_curve` summaries.
 
 
@@ -20,12 +17,12 @@ Write TensorBoard events with simple function call.
 
 ## Requirement
 
-* TensorFlow (for TensorBoard web server)
+
 
 
 ## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 0.3 and torchvision 0.2
+Tested on anaconda2 / anaconda3, with PyTorch 0.3 / torchvision 0.2 / tensorflow-tensorboard 0.4
 
 `pip install tensorboardX`
 
@@ -37,7 +34,7 @@ or build from source:
 ## Example
 
 * Run the demo script: `python demo.py`
-* Use TensorBoard with `tensorboard --logdir runs`
+* Use TensorBoard with `tensorboard --logdir runs`  (needs to install TensorFlow)
 
 ```python
 # demo.py
@@ -103,9 +100,7 @@ writer.close()
 
 ## Tweaks
 
-*built-in feature in `tensorflow-tensorboard 0.4rc`.*
-
-To show more images in TensorBoard's image tab, just modify the hardcoded `event_accumulator` in `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py` as you wish.
+To add more ticks for the slider (show more image history), you can modify the hardcoded `event_accumulator` in `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py` as you wish.
 
 For `tensorflow-tensorboard` > 0.17 see https://github.com/lanpa/tensorboard-pytorch/issues/44
 
