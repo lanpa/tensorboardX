@@ -1,5 +1,8 @@
 History
 =======
+1.0 (2018-01-18)
+* Supports graph (the pretty one)
+
 0.9 (2017-11-11)
 -----------------
 * Supports markdown for add_text function
