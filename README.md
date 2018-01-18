@@ -9,9 +9,7 @@ Write TensorBoard events with simple function call.
 * Support `scalar`, `image`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding` and `pr_curve` summaries.
 
 
-## Demo
-
-[demo site](http://35.197.26.245:6006) (TensorBoard output for `demo.py` and `demo_graph.py`)
+## [Demo](http://35.197.26.245:6006)
 
 *`demo_graph.py` needs pytorch v0.4, so you have to build pytorch from source(commit newer than 040336f, which supports scoping).*
 
