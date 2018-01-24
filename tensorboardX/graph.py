@@ -38,10 +38,10 @@ def parse(graph):
     return nodes
 
 
-def graph(model, args, verbose=False):
+def graph(model, args, verbose=False, kwargs=None):
     import torch
     with torch.onnx.set_training(model, False):
-        trace, _ = torch.jit.trace(model, args)
+        trace, _ = torch.jit.trace(model, args, kwargs=kwargs)
     torch.onnx._optimize_trace(trace, False)
     graph = trace.graph()
     if verbose:
