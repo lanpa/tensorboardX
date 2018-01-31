@@ -457,7 +457,7 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            labels (torch.Tensor): Ground thuth data. Binary label for each element.
+            labels (torch.Tensor): Ground truth data. Binary label for each element.
             predictions (torch.Tensor): The probability that an element be classified as true. Value should in [0, 1]
             global_step (int): Global step value to record
             num_thresholds (int): Number of thresholds used to draw the curve.
