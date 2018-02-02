@@ -13,10 +13,11 @@ Write TensorBoard events with simple function call.
 
 * `demo_graph.py` needs tensorboardX>=1.0, pytorch >=0.4 to work, so you have to build pytorch from source(commit newer than 040336f, which supports scoping).
 
+* [FAQ](https://github.com/lanpa/tensorboard-pytorch/wiki)
 
 ## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 0.3 / torchvision 0.2 / tensorflow-tensorboard 0.4
+Tested on anaconda2 / anaconda3, with PyTorch 0.3 / torchvision 0.2 / tensorflow-tensorboard 1.5.0
 
 `pip install tensorboardX`
 
