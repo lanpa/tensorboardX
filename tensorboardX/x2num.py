@@ -21,7 +21,7 @@ def makenp(x, modality=None):
 
 def pytorch_np(x, modality):
     import torch
-    if isinstance(x, torch.autograd.variable.Variable):
+    if isinstance(x, torch.autograd.Variable):
         x = x.data
     x = x.cpu().numpy()
     if modality == 'IMG':
