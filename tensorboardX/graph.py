@@ -42,7 +42,11 @@ def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
         trace, _ = torch.jit.trace(model, args)
-    torch.onnx._optimize_trace(trace, False)
+    from distutils.version import LooseVersion
+    if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
+        torch.onnx._optimize_trace(trace, False)
+    else:
+        torch.onnx._optimize_trace(trace)
     graph = trace.graph()
     if verbose:
         print(graph)
