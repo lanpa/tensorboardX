@@ -388,11 +388,11 @@ class SummaryWriter(object):
         """
         import torch
         from distutils.version import LooseVersion
-        if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
+        if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
             pass
         else:
-            if LooseVersion(torch.__version__) >= LooseVersion("0.3"):
-                print('You are using PyTorch==0.3, use add_graph_onnx()')
+            if LooseVersion(torch.__version__) >= LooseVersion("0.3.0"):
+                print('You are using PyTorch==0.3.0, use add_graph_onnx()')
                 return
             if not hasattr(torch.autograd.Variable, 'grad_fn'):
                 print('add_graph() only supports PyTorch v0.2.')
