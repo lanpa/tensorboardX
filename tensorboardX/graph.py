@@ -4,6 +4,8 @@ from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
 
+import torch
+from distutils.version import LooseVersion
 
 def replace(name, scope):
     return '/'.join([scope[name], name])
@@ -16,17 +18,22 @@ def parse(graph):
         for i in range(1, len(inputs)):
             scope[inputs[i]] = n.scopeName()
 
-        uname = next(n.outputs()).uniqueName()
+        uname = next(iter(n.outputs())).uniqueName()
         assert n.scopeName() != '', '{} has empty scope name'.format(n)
         scope[uname] = n.scopeName()
-    scope['0'] = 'input'
-
+    if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
+        scope['0'] = 'input'
+    else:
+        scope['1'] = 'input'
+        
     nodes = []
     for n in graph.nodes():
         attrs = {k: n[k] for k in n.attributeNames()}
         attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
+        if any(i.uniqueName() not in scope.keys() for i in n.inputs()): #0.3.1 workaround
+            continue
         inputs = [replace(i.uniqueName(), scope) for i in n.inputs()]
-        uname = next(n.outputs()).uniqueName()
+        uname = next(iter(n.outputs())).uniqueName() #FIXME: only first output is considered 
         nodes.append({'name': replace(uname, scope), 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
@@ -39,10 +46,8 @@ def parse(graph):
 
 
 def graph(model, args, verbose=False):
-    import torch
     with torch.onnx.set_training(model, False):
         trace, _ = torch.jit.trace(model, args)
-    from distutils.version import LooseVersion
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
