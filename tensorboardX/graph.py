@@ -4,7 +4,6 @@ from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
 
-import torch
 from distutils.version import LooseVersion
 
 
@@ -13,6 +12,7 @@ def replace(name, scope):
 
 
 def parse(graph):
+    import torch
     scope = {}
     for n in graph.nodes():
         inputs = [i.uniqueName() for i in n.inputs()]
@@ -47,6 +47,7 @@ def parse(graph):
 
 
 def graph(model, args, verbose=False):
+    import torch
     with torch.onnx.set_training(model, False):
         trace, _ = torch.jit.trace(model, args)
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
