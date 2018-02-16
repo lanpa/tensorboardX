@@ -14,11 +14,11 @@ def test_pytorch_np():
             assert isinstance(x2num.makenp(tensor.cuda()), np.ndarray)
 
         # regular variable
-        assert isinstance(x2num.makenp(torch.autograd.variable.Variable(tensor)), np.ndarray)
+        assert isinstance(x2num.makenp(torch.autograd.Variable(tensor)), np.ndarray)
 
         # CUDA variable
         if torch.cuda.device_count()>0:
-            assert isinstance(x2num.makenp(torch.autograd.variable.Variable(tensor).cuda()), np.ndarray)
+            assert isinstance(x2num.makenp(torch.autograd.Variable(tensor).cuda()), np.ndarray)
 
     # python primitive type
     assert(isinstance(x2num.makenp(0), np.ndarray))
@@ -32,4 +32,4 @@ def test_pytorch_img():
 
 def test_pytorch_write():
     with SummaryWriter() as w:
-        w.add_scalar('scalar', torch.autograd.variable.Variable(torch.rand(1)), 0)
+        w.add_scalar('scalar', torch.autograd.Variable(torch.rand(1)), 0)
