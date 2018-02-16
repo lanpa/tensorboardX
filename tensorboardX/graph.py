@@ -7,6 +7,7 @@ from .src.tensor_shape_pb2 import TensorShapeProto
 import torch
 from distutils.version import LooseVersion
 
+
 def replace(name, scope):
     return '/'.join([scope[name], name])
 
@@ -25,15 +26,15 @@ def parse(graph):
         scope['0'] = 'input'
     else:
         scope['1'] = 'input'
-        
+
     nodes = []
     for n in graph.nodes():
         attrs = {k: n[k] for k in n.attributeNames()}
         attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
-        if any(i.uniqueName() not in scope.keys() for i in n.inputs()): #0.3.1 workaround
+        if any(i.uniqueName() not in scope.keys() for i in n.inputs()):  # 0.3.1 workaround
             continue
         inputs = [replace(i.uniqueName(), scope) for i in n.inputs()]
-        uname = next(iter(n.outputs())).uniqueName() #FIXME: only first output is considered 
+        uname = next(iter(n.outputs())).uniqueName()  # FIXME: only first output is considered
         nodes.append({'name': replace(uname, scope), 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
