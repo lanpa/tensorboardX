@@ -178,7 +178,7 @@ def make_image(tensor):
 def audio(tag, tensor, sample_rate=44100):
     tensor = makenp(tensor)
     tensor = tensor.squeeze()
-    if abs(tensor).max()>1:
+    if abs(tensor).max() > 1:
         print('warning: audio amplitude out of range, auto clipped.')
         tensor = tensor.clip(-1, 1)
     assert(tensor.ndim == 1), 'input tensor should be 1 dimensional.'
