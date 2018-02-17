@@ -347,7 +347,7 @@ class SummaryWriter(object):
             sample_rate (int): sample rate in Hz
 
         Shape:
-            snd_tensor: :math:`(1, L)`. The values should between [-1, 1].
+            snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
         """
         self.file_writer.add_summary(audio(tag, snd_tensor, sample_rate=sample_rate), global_step)
 
