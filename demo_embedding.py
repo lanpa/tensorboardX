@@ -24,7 +24,7 @@ class M(nn.Module):
         i = F.max_pool2d(i, 2)
         i = i.view(len(i), -1)
         i = self.fc1(i)
-        i = F.log_softmax(i)
+        i = F.log_softmax(i, dim=1)
         return i
 
 #get some random data around value

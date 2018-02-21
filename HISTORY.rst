@@ -1,6 +1,11 @@
 History
 =======
+1.1 (2018-02-21)
+-----------------
+* Supports pytorch 0.3.1 (hacky)
+
 1.0 (2018-01-18)
+-----------------
 * Supports graph (the pretty one)
 
 0.9 (2017-11-11)

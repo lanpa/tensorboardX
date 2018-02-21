@@ -19,7 +19,7 @@ test_requirements = [
 
 setup(
     name='tensorboardX',
-    version='1.0',
+    version='1.1',
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description= history,
     author='Tzu-Wei Huang',
@@ -46,5 +46,5 @@ setup(
     tests_require=test_requirements
 )
 
-# python setup.py sdist bdist_wheel --universal upload
+# python setup.py sdist bdist_wheel --universal
 # twine upload dist/*
