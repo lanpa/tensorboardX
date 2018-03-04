@@ -399,6 +399,11 @@ class SummaryWriter(object):
                 return
         self.file_writer.add_graph(graph(model, input_to_model, verbose))
 
+    @staticmethod
+    def _encode(rawstr):
+        # I'd use urllib but, I'm unsure about the differences from python3 to python2, etc.
+        return rawstr.replace("%", "%%%02x" % (ord("%"))).replace("/", "%%%02x" % (ord("/"))).replace("\\", "%%%02x" % (ord("\\")))
+
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
         """Add embedding projector data to summary.
 
@@ -436,7 +441,10 @@ class SummaryWriter(object):
         if global_step is None:
             global_step = 0
             # clear pbtxt?
-        save_path = os.path.join(self.file_writer.get_logdir(), str(global_step).zfill(5))
+        # Maybe we should encode the tag so slashes don't trip us up?
+        # I don't think this will mess us up, but better safe than sorry.
+        subdir = "%s-%s" % (self._encode(tag), str(global_step).zfill(5))
+        save_path = os.path.join(self.file_writer.get_logdir(), subdir)
         try:
             os.makedirs(save_path)
         except OSError:
@@ -450,7 +458,7 @@ class SummaryWriter(object):
         assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat.tolist(), save_path)
         # new funcion to append to the config file a new embedding
-        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), str(global_step).zfill(5), tag)
+        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), subdir, tag)
 
     def add_pr_curve(self, tag, labels, predictions, global_step=None, num_thresholds=127, weights=None):
         """Adds precision recall curve.
