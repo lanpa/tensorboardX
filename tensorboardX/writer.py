@@ -462,7 +462,7 @@ class SummaryWriter(object):
         assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat.tolist(), save_path)
         # new funcion to append to the config file a new embedding
-        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), subdir, tag)
+        append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), subdir, global_step, tag)
 
     def add_pr_curve(self, tag, labels, predictions, global_step=None, num_thresholds=127, weights=None):
         """Adds precision recall curve.
