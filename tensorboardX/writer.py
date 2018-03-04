@@ -402,7 +402,11 @@ class SummaryWriter(object):
     @staticmethod
     def _encode(rawstr):
         # I'd use urllib but, I'm unsure about the differences from python3 to python2, etc.
-        return rawstr.replace("%", "%%%02x" % (ord("%"))).replace("/", "%%%02x" % (ord("/"))).replace("\\", "%%%02x" % (ord("\\")))
+        retval = rawstr
+        retval = retval.replace("%", "%%%02x" % (ord("%")))
+        retval = retval.replace("/", "%%%02x" % (ord("/")))
+        retval = retval.replace("\\", "%%%02x" % (ord("\\")))
+        return retval
 
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
         """Add embedding projector data to summary.
