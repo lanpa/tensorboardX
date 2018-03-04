@@ -1,13 +1,9 @@
-#! /usr/bin/python
-
 """
     This is meant to demonstrate that with my patch TensorboardX can have multiple embeddings.
     Without the patch, when you try to put the _second_ embedding, you get
         warning: Embedding dir exists, did you set global_step for add_embedding()?
 """
 
-import os
-import shutil
 import math
 import torch
 from tensorboardX import SummaryWriter
@@ -53,7 +49,7 @@ if __name__ == "__main__":
     main()
 
 # tensorboard --logdir runs
-# Under "Projection, you should see 
+# Under "Projection, you should see
 #  48 tensor found named
 #     cos:cos-00000 to cos:cos-00016
 #     sin:sin-00000 to sin:sin-00016
