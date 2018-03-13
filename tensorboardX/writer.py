@@ -25,7 +25,7 @@ from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image, audio, text, pr_curve
+from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw
 from .graph import graph
 from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
@@ -467,6 +467,33 @@ class SummaryWriter(object):
         labels = makenp(labels)
         predictions = makenp(predictions)
         self.file_writer.add_summary(pr_curve(tag, labels, predictions, num_thresholds, weights), global_step)
+
+    def add_pr_curve_raw(self, tag, true_positive_counts,
+                         false_positive_counts,
+                         true_negative_counts,
+                         false_negative_counts,
+                         precision,
+                         recall, global_step=None, num_thresholds=127, weights=None):
+        """Adds precision recall curve with raw data.
+
+        Args:
+            tag (string): Data identifier
+            true_positive_counts (torch.Tensor): true positive counts
+            false_positive_counts (torch.Tensor): false positive counts
+            true_negative_counts (torch.Tensor): true negative counts
+            false_negative_counts (torch.Tensor): false negative counts
+            precision (torch.Tensor): precision
+            recall (torch.Tensor): recall
+            global_step (int): Global step value to record
+            num_thresholds (int): Number of thresholds used to draw the curve.
+            see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/README.md
+        """
+        self.file_writer.add_summary(pr_curve_raw(tag, true_positive_counts,
+                                                  false_positive_counts,
+                                                  true_negative_counts,
+                                                  false_negative_counts,
+                                                  precision,
+                                                  recall, num_thresholds, weights), global_step)
 
     def close(self):
         if self.file_writer is None:

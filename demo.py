@@ -12,6 +12,14 @@ writer = SummaryWriter()
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
 
+true_positive_counts=[75, 64, 21, 5, 0]
+false_positive_counts=[150, 105, 18, 0, 0]
+true_negative_counts=[0, 45, 132, 150, 150]
+false_negative_counts=[0, 11, 54, 70, 75]
+precision=[0.3333333, 0.3786982, 0.5384616, 1.0, 0.0]
+recall=[1.0, 0.8533334, 0.28, 0.0666667, 0.0]
+
+
 for n_iter in range(100):
     s1 = torch.rand(1) # value to keep
     s2 = torch.rand(1)
@@ -34,7 +42,12 @@ for n_iter in range(100):
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param, n_iter)
         writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(100), n_iter) #needs tensorboard 0.4RC or later
-
+        writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts, 
+            false_positive_counts, 
+            true_negative_counts,
+            false_negative_counts,
+            precision,
+            recall, n_iter)
 # export scalar data to JSON for external processing
 writer.export_scalars_to_json("./all_scalars.json")
             
