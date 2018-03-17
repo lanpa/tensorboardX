@@ -49,7 +49,7 @@ def parse(graph):
 def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
-        trace, _ = torch.jit.trace(model, args)
+        trace, out = torch.jit.get_trace_graph(model, args)
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
