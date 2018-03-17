@@ -26,16 +26,17 @@ def make_sprite(label_img, save_path):
 
 
 def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
+    from posixpath import join
     with open(os.path.join(save_path, 'projector_config.pbtxt'), 'a') as f:
         # step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
         f.write('tensor_name: "{}:{}"\n'.format(tag, str(global_step).zfill(5)))
-        f.write('tensor_path: "{}"\n'.format(os.path.join(subdir, 'tensors.tsv')))
+        f.write('tensor_path: "{}"\n'.format(join(subdir, 'tensors.tsv')))
         if metadata is not None:
-            f.write('metadata_path: "{}"\n'.format(os.path.join(subdir, 'metadata.tsv')))
+            f.write('metadata_path: "{}"\n'.format(join(subdir, 'metadata.tsv')))
         if label_img is not None:
             f.write('sprite {\n')
-            f.write('image_path: "{}"\n'.format(os.path.join(subdir, 'sprite.png')))
+            f.write('image_path: "{}"\n'.format(join(subdir, 'sprite.png')))
             f.write('single_image_dim: {}\n'.format(label_img.size(3)))
             f.write('single_image_dim: {}\n'.format(label_img.size(2)))
             f.write('}\n')
