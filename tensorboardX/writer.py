@@ -408,7 +408,7 @@ class SummaryWriter(object):
         retval = retval.replace("\\", "%%%02x" % (ord("\\")))
         return retval
 
-    def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default'):
+    def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default', metadata_header=None):
         """Add embedding projector data to summary.
 
         Args:
@@ -455,7 +455,7 @@ class SummaryWriter(object):
             print('warning: Embedding dir exists, did you set global_step for add_embedding()?')
         if metadata is not None:
             assert mat.size(0) == len(metadata), '#labels should equal with #data points'
-            make_tsv(metadata, save_path)
+            make_tsv(metadata, save_path, metadata_header=metadata_header)
         if label_img is not None:
             assert mat.size(0) == label_img.size(0), '#images should equal with #data points'
             make_sprite(label_img, save_path)
