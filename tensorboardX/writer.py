@@ -309,7 +309,7 @@ class SummaryWriter(object):
         with open(path, "w") as f:
             json.dump(self.scalar_dict, f)
 
-    def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
+    def add_histogram(self, tag, values, global_step=None, bins='auto'):
         """Add histogram to summary.
 
         Args:
