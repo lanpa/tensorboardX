@@ -63,7 +63,16 @@ def parse(graph):
 def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
-        trace, _ = torch.jit.get_trace_graph(model, args)
+        try:
+            trace, _ = torch.jit.get_trace_graph(model, args)
+        except RuntimeError:
+            print("Error occurs, checking if it's onnx problem...")
+            try:
+                torch.onnx.export(model, args, "/tmp/dummy.pb", verbose=True)
+            except RuntimeError:
+                print("Your model fails onnx too, please report to onnx team")
+            print('No graph saved')
+            return GraphDef(versions=VersionDef(producer=22))
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
