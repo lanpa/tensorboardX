@@ -25,7 +25,7 @@ from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw
+from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
 from .graph import graph
 from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
@@ -336,6 +336,21 @@ class SummaryWriter(object):
             img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
+
+    def add_video(self, tag, vid_tensor, global_step=None):
+        """Add video data to summary.
+
+        Note that this requires the ``moviepy`` package.
+
+        Args:
+            tag (string): Data identifier
+            vid_tensor (torch.Tensor): Video data
+            global_step (int): Global step value to record
+        Shape:
+            vid_tensor: :math:`(B, C, T, H, W)`. 
+        """
+
+        self.file_writer.add_summary(video(tag, vid_tensor), global_step)
 
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):
         """Add audio data to summary.
