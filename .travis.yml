@@ -22,7 +22,7 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION chainer pytorch-cpu -c pytorch
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION chainer pytorch-nightly -c pytorch
   - source activate test-environment
   - which python
   - conda list
