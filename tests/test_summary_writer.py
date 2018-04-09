@@ -6,3 +6,17 @@ def test_summary_writer_ctx():
     with SummaryWriter() as writer:
         writer.add_scalar('test', 1)
     assert writer.file_writer is None
+
+
+def test_summary_writer_close():
+    # Opening and closing SummaryWriter a lot should not run into
+    # OSError: [Errno 24] Too many open files
+    passed = True
+    try:
+        for i in range(10000):
+            writer = SummaryWriter()
+            writer.close()
+    except OSError:
+        passed = False
+
+    assert passed
