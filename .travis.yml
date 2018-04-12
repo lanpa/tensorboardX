@@ -27,6 +27,7 @@ install:
   - which python
   - conda list
   - pip install torchvision
+  - pip install moviepy==0.2.3.2
   - pip install --upgrade pytest flake8
   - python setup.py install
 
