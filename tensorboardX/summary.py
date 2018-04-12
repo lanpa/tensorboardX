@@ -185,7 +185,11 @@ def video(tag, tensor):
 
 
 def make_video(tensor):
-    import moviepy.editor as mpy
+    try:
+        import moviepy.editor as mpy
+    except ModuleNotFoundError:
+        print('add_video needs package moviepy')
+        return
     import tempfile
 
     t, h, w, c = tensor.shape
@@ -195,16 +199,10 @@ def make_video(tensor):
     with tempfile.NamedTemporaryFile() as f:
         filename = f.name + '.gif'
 
-    import sys
-    save_stdout = sys.stderr
-    sys.stderr = open('trash', 'w')
-    clip.write_gif(filename, verbose=False)
-    sys.stderr = save_stdout
+    clip.write_gif(filename, verbose=True)
     with open(filename, 'rb') as f:
         tensor_string = f.read()
-
-        log_video = Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
-    return log_video
+        return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 
 
 def audio(tag, tensor, sample_rate=44100):

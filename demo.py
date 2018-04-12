@@ -72,10 +72,8 @@ writer.add_embedding(all_features, metadata=all_labels, label_img=all_images.uns
                      metadata_header=['digit', 'dataset'], global_step=2)
 
 # VIDEO
-import sys
-if 'moviepy' in sys.modules:
-    vid_images = dataset.train_data[:16*48]
-    vid = vid_images.view(16, 1, 48, 28, 28)  # BxCxTxHxW
-    writer.add_video('video', vid_tensor=vid)
+vid_images = dataset.train_data[:16*48]
+vid = vid_images.view(16, 1, 48, 28, 28)  # BxCxTxHxW
+writer.add_video('video', vid_tensor=vid)
 
 writer.close()
