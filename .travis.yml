@@ -28,6 +28,7 @@ install:
   - conda list
   - pip install torchvision
   - pip install moviepy==0.2.3.2
+  - python -c "import imageio; imageio.plugins.ffmpeg.download()"
   - pip install --upgrade pytest flake8
   - python setup.py install
 
