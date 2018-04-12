@@ -347,7 +347,7 @@ class SummaryWriter(object):
             vid_tensor (torch.Tensor): Video data
             global_step (int): Global step value to record
         Shape:
-            vid_tensor: :math:`(B, C, T, H, W)`. 
+            vid_tensor: :math:`(B, C, T, H, W)`.
         """
 
         self.file_writer.add_summary(video(tag, vid_tensor), global_step)

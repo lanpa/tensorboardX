@@ -116,4 +116,3 @@ def _prepare_video(V):
     V = np.reshape(V, newshape=(t, n_rows * h, n_cols * w, c))
 
     return V
-
