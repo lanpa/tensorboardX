@@ -175,6 +175,36 @@ def make_image(tensor):
                          encoded_image_string=image_string)
 
 
+def video(tag, tensor):
+    tag = _clean_tag(tag)
+    tensor = makenp(tensor, 'VID')
+    tensor = tensor.astype(np.float32)
+    tensor = (tensor * 255).astype(np.uint8)
+    video = make_video(tensor)
+    return Summary(value=[Summary.Value(tag=tag, image=video)])
+
+
+def make_video(tensor):
+    try:
+        import moviepy.editor as mpy
+    except ImportError:
+        print('add_video needs package moviepy')
+        return
+    import tempfile
+
+    t, h, w, c = tensor.shape
+
+    # encode sequence of images into gif string
+    clip = mpy.ImageSequenceClip(list(tensor), fps=4)
+    with tempfile.NamedTemporaryFile() as f:
+        filename = f.name + '.gif'
+
+    clip.write_gif(filename, verbose=True)
+    with open(filename, 'rb') as f:
+        tensor_string = f.read()
+        return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
+
+
 def audio(tag, tensor, sample_rate=44100):
     tensor = makenp(tensor)
     tensor = tensor.squeeze()

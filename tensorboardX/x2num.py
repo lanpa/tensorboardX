@@ -26,6 +26,9 @@ def pytorch_np(x, modality):
     x = x.cpu().numpy()
     if modality == 'IMG':
         x = _prepare_image(x)
+    if modality == 'VID':
+        x = _prepare_video(x)
+
     return x
 
 
@@ -88,3 +91,28 @@ def _prepare_image(I):
     I = I.transpose(1, 2, 0)
 
     return I
+
+
+def _prepare_video(V):
+
+    b, c, t, h, w = V.shape
+
+    if V.dtype == np.uint8:
+        V = np.float32(V) / 255.
+
+    def is_power2(num):
+        return num != 0 and ((num & (num - 1)) == 0)
+
+    # pad to power of 2
+    while not is_power2(V.shape[0]):
+        V = np.concatenate((V, np.zeros(shape=(1, c, t, h, w))), axis=0)
+
+    b = V.shape[0]
+    n_rows = 2**(int(np.log(b) / np.log(2)) // 2)
+    n_cols = b // n_rows
+
+    V = np.reshape(V, newshape=(n_rows, n_cols, c, t, h, w))
+    V = np.transpose(V, axes=(3, 0, 4, 1, 5, 2))
+    V = np.reshape(V, newshape=(t, n_rows * h, n_cols * w, c))
+
+    return V
