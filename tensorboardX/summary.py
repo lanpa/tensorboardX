@@ -187,7 +187,7 @@ def video(tag, tensor):
 def make_video(tensor):
     try:
         import moviepy.editor as mpy
-    except ModuleNotFoundError:
+    except ImportError:
         print('add_video needs package moviepy')
         return
     import tempfile
