@@ -270,7 +270,6 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
         """
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
-        self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Adds many scalar data to summary.
