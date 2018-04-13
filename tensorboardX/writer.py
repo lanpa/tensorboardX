@@ -274,6 +274,8 @@ class SummaryWriter(object):
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Adds many scalar data to summary.
 
+        Note that this function also keeps logged scalars in memory. In extreme case it explodes your RAM.
+
         Args:
             tag (string): Data identifier
             main_tag (string): The parent name for the tags
@@ -304,9 +306,12 @@ class SummaryWriter(object):
         """Exports to the given path an ASCII file containing all the scalars written
         so far by this instance, with the following format:
         {writer_id : [[timestamp, step, value], ...], ...}
+
+        The scalars saved by ``add_scalars()`` will be flushed after export.
         """
         with open(path, "w") as f:
             json.dump(self.scalar_dict, f)
+        self.scalar_dict = {}
 
     def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
         """Add histogram to summary.
