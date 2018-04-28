@@ -1,5 +1,10 @@
 History
 =======
+1.2 (2018-04-21)
+-----------------
+* Supports tensorshape information in graph visualization. Drop support for 0.3.1
+* Adds add_video function
+
 1.1 (2018-02-21)
 -----------------
 * Supports pytorch 0.3.1 (hacky)
