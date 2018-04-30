@@ -13,7 +13,8 @@ def parse(graph):
     for n in graph.nodes():
         inputs = [i.uniqueName() for i in n.inputs()]
         for i in range(1, len(inputs)):
-            scope[inputs[i]] = n.scopeName()
+            if inputs[i] not in scope.keys():
+                scope[inputs[i]] = n.scopeName()
 
         uname = next(iter(n.outputs())).uniqueName()
         assert n.scopeName() != '', '{} has empty scope name'.format(n)
@@ -24,6 +25,12 @@ def parse(graph):
         scope['1'] = 'input'
 
     nodes = []
+
+    for count, n in enumerate(graph.outputs()):
+        uname = 'output' + str(count)
+        scope[uname] = 'output'
+        nodes.append({'name': uname, 'op': 'output', 'inputs': [n.uniqueName()], 'attr': 'output'})
+
     for n in graph.nodes():
         attrs = {k: n[k] for k in n.attributeNames()}
         attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
