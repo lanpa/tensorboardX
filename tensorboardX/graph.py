@@ -35,10 +35,10 @@ def parse(graph):
     for n in graph.nodes():
         try:
             attrs = str({k: n[k] for k in n.attributeNames()})
-        except:
+        except Exception as e:
             attrs = str(n).strip()
-            warnings.warn("Error getting attributes of node {}, error is {}".format(attrs,e))
-        attrs = attrs.replace("'", ' ')  # singlequote will be escaped by tensorboard            
+            warnings.warn("Error getting attributes of node {}, error is {}".format(attrs, e))
+        attrs = attrs.replace("'", ' ')  # singlequote will be escaped by tensorboard
         inputs = [i.uniqueName() for i in n.inputs()]
         outputnode = next(iter(n.outputs()))  # FIXME: only first output is considered (only Dropout)
         uname = outputnode.uniqueName()
