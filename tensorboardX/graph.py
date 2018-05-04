@@ -5,6 +5,7 @@ from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
 
 from distutils.version import LooseVersion
+import warnings
 
 
 def parse(graph):
@@ -32,8 +33,12 @@ def parse(graph):
         nodes.append({'name': uname, 'op': 'output', 'inputs': [n.uniqueName()], 'attr': 'output'})
 
     for n in graph.nodes():
-        attrs = {k: n[k] for k in n.attributeNames()}
-        attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
+        try:
+            attrs = str({k: n[k] for k in n.attributeNames()})
+        except:
+            attrs = str(n).strip()
+            warnings.warn("Error getting attributes of node {}, error is {}".format(attrs,e))
+        attrs = attrs.replace("'", ' ')  # singlequote will be escaped by tensorboard            
         inputs = [i.uniqueName() for i in n.inputs()]
         outputnode = next(iter(n.outputs()))  # FIXME: only first output is considered (only Dropout)
         uname = outputnode.uniqueName()
