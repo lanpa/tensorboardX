@@ -81,7 +81,7 @@ with SummaryWriter(comment='resnet18') as w:
 
 class SimpleModel(nn.Module):
     def __init__(self):
-        super().__init__()
+        super(SimpleModel, self).__init__()
     def forward(self, x):
         return x*2
         
