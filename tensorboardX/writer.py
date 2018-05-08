@@ -384,13 +384,6 @@ class SummaryWriter(object):
             writer.add_text('rnn', 'This is an rnn', 10)
         """
         self.file_writer.add_summary(text(tag, text_string), global_step)
-        if tag not in self.text_tags:
-            self.text_tags.append(tag)
-            extension_dir = self.file_writer.get_logdir() + '/plugins/tensorboard_text/'
-            if not os.path.exists(extension_dir):
-                os.makedirs(extension_dir)
-            with open(extension_dir + 'tensors.json', 'w') as fp:
-                json.dump(self.text_tags, fp)
 
     def add_graph_onnx(self, prototxt):
         self.file_writer.add_graph_onnx(gg(prototxt))

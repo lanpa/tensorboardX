@@ -46,6 +46,7 @@ from .src.summary_pb2 import SummaryMetadata
 from .src.tensor_pb2 import TensorProto
 from .src.tensor_shape_pb2 import TensorShapeProto
 from .src.plugin_pr_curve_pb2 import PrCurvePluginData
+from .src.plugin_text_pb2 import TextPluginData
 from .x2num import makenp
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -240,12 +241,12 @@ def audio(tag, tensor, sample_rate=44100):
 
 def text(tag, text):
     import json
-    PluginData = [SummaryMetadata.PluginData(plugin_name='text')]
+    PluginData = [SummaryMetadata.PluginData(plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_STRING',
                          string_val=[text.encode(encoding='utf_8')],
                          tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=1)]))
-    return Summary(value=[Summary.Value(node_name=tag, metadata=smd, tensor=tensor)])
+    return Summary(value=[Summary.Value(tag=tag + '/text_summary', metadata=smd, tensor=tensor)])
 
 
 def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, weights=None):
