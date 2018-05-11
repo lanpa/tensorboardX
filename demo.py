@@ -75,5 +75,6 @@ writer.add_embedding(all_features, metadata=all_labels, label_img=all_images.uns
 vid_images = dataset.train_data[:16*48]
 vid = vid_images.view(16, 1, 48, 28, 28)  # BxCxTxHxW
 writer.add_video('video', vid_tensor=vid)
+writer.add_video('video_1_fps', vid_tensor=vid, fps=1)
 
 writer.close()
