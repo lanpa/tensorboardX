@@ -29,7 +29,7 @@ for n_iter in range(100):
                                              "arctanx": np.arctan(n_iter)}, n_iter)
     x = torch.rand(32, 3, 64, 64) # output from network
     if n_iter%10==0:
-        x = vutils.make_grid(x, normalize=True, scale_each=True)   
+        x = vutils.make_grid(x, normalize=True, scale_each=True)
         writer.add_image('Image', x, n_iter) # Tensor
         #writer.add_image('astronaut', skimage.data.astronaut(), n_iter) # numpy
         #writer.add_image('imread', skimage.io.imread('screenshots/audio.png'), n_iter) # numpy
@@ -42,21 +42,21 @@ for n_iter in range(100):
         for name, param in resnet18.named_parameters():
             writer.add_histogram(name, param, n_iter)
         writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(100), n_iter) #needs tensorboard 0.4RC or later
-        writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts, 
-            false_positive_counts, 
+        writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts,
+            false_positive_counts,
             true_negative_counts,
             false_negative_counts,
             precision,
             recall, n_iter)
 # export scalar data to JSON for external processing
 writer.export_scalars_to_json("./all_scalars.json")
-            
+
 dataset = datasets.MNIST('mnist', train=False, download=True)
 images = dataset.test_data[:100].float()
 label = dataset.test_labels[:100]
 features = images.view(100, 784)
-writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))        
-writer.add_embedding(features, global_step=1, tag='noMetadata')        
+writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))
+writer.add_embedding(features, global_step=1, tag='noMetadata')
 dataset = datasets.MNIST('mnist', train=True, download=True)
 images_train = dataset.train_data[:100].float()
 labels_train = dataset.train_labels[:100]
@@ -74,6 +74,7 @@ writer.add_embedding(all_features, metadata=all_labels, label_img=all_images.uns
 # VIDEO
 vid_images = dataset.train_data[:16*48]
 vid = vid_images.view(16, 1, 48, 28, 28)  # BxCxTxHxW
+
 writer.add_video('video', vid_tensor=vid)
 writer.add_video('video_1_fps', vid_tensor=vid, fps=1)
 
