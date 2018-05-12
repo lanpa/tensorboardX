@@ -176,16 +176,16 @@ def make_image(tensor):
                          encoded_image_string=image_string)
 
 
-def video(tag, tensor):
+def video(tag, tensor, fps=4):
     tag = _clean_tag(tag)
     tensor = makenp(tensor, 'VID')
     tensor = tensor.astype(np.float32)
     tensor = (tensor * 255).astype(np.uint8)
-    video = make_video(tensor)
+    video = make_video(tensor, fps)
     return Summary(value=[Summary.Value(tag=tag, image=video)])
 
 
-def make_video(tensor):
+def make_video(tensor, fps):
     try:
         import moviepy.editor as mpy
     except ImportError:
@@ -196,7 +196,7 @@ def make_video(tensor):
     t, h, w, c = tensor.shape
 
     # encode sequence of images into gif string
-    clip = mpy.ImageSequenceClip(list(tensor), fps=4)
+    clip = mpy.ImageSequenceClip(list(tensor), fps=fps)
     with tempfile.NamedTemporaryFile() as f:
         filename = f.name + '.gif'
 

@@ -341,7 +341,7 @@ class SummaryWriter(object):
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
 
-    def add_video(self, tag, vid_tensor, global_step=None):
+    def add_video(self, tag, vid_tensor, global_step=None, fps=4):
         """Add video data to summary.
 
         Note that this requires the ``moviepy`` package.
@@ -350,11 +350,12 @@ class SummaryWriter(object):
             tag (string): Data identifier
             vid_tensor (torch.Tensor): Video data
             global_step (int): Global step value to record
+            fps (float or int): Frames per second
         Shape:
             vid_tensor: :math:`(B, C, T, H, W)`.
         """
 
-        self.file_writer.add_summary(video(tag, vid_tensor), global_step)
+        self.file_writer.add_summary(video(tag, vid_tensor, fps), global_step)
 
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):
         """Add audio data to summary.
