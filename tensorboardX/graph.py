@@ -5,10 +5,7 @@ from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
 
 from distutils.version import LooseVersion
-
-
-def replace(name, scope):
-    return '/'.join([scope[name], name])
+import warnings
 
 
 def parse(graph):
@@ -17,7 +14,8 @@ def parse(graph):
     for n in graph.nodes():
         inputs = [i.uniqueName() for i in n.inputs()]
         for i in range(1, len(inputs)):
-            scope[inputs[i]] = n.scopeName()
+            if inputs[i] not in scope.keys():
+                scope[inputs[i]] = n.scopeName()
 
         uname = next(iter(n.outputs())).uniqueName()
         assert n.scopeName() != '', '{} has empty scope name'.format(n)
@@ -28,28 +26,69 @@ def parse(graph):
         scope['1'] = 'input'
 
     nodes = []
+
+    for count, n in enumerate(graph.outputs()):
+        uname = 'output' + str(count)
+        scope[uname] = 'output'
+        nodes.append({'name': uname, 'op': 'output', 'inputs': [n.uniqueName()], 'attr': 'output'})
+
     for n in graph.nodes():
-        attrs = {k: n[k] for k in n.attributeNames()}
-        attrs = str(attrs).replace("'", ' ')  # singlequote will be escaped by tensorboard
-        if any(i.uniqueName() not in scope.keys() for i in n.inputs()):  # 0.3.1 workaround
-            continue
-        inputs = [replace(i.uniqueName(), scope) for i in n.inputs()]
-        uname = next(iter(n.outputs())).uniqueName()  # FIXME: only first output is considered
-        nodes.append({'name': replace(uname, scope), 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
+        try:
+            attrs = str({k: n[k] for k in n.attributeNames()})
+        except RuntimeError as e:
+            attrs = str(n).strip()
+            warnings.warn("Error getting attributes of node {}, error is {}".format(attrs, e))
+        attrs = attrs.replace("'", ' ')  # singlequote will be escaped by tensorboard
+        inputs = [i.uniqueName() for i in n.inputs()]
+        outputnode = next(iter(n.outputs()))  # FIXME: only first output is considered (only Dropout)
+        uname = outputnode.uniqueName()
+        if outputnode.type().kind() == 'TensorType':
+            outputsize = outputnode.type().sizes()
+            nodes.append({'name': uname,
+                          'op': n.kind(),
+                          'inputs': inputs,
+                          'attr': attrs,
+                          'outputsize': outputsize})
+        else:
+            nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
         uname = n.uniqueName()
         if uname not in scope.keys():
             scope[uname] = 'unused'
-        nodes.append({'name': replace(uname, scope), 'op': 'Parameter', 'inputs': [], 'attr': str(n.type())})
+        outputsize = n.type().sizes()
+        nodes.append({'name': uname,
+                      'op': 'Parameter',
+                      'inputs': [],
+                      'attr': str(n.type()),
+                      'outputsize': outputsize})
 
+    mapping = {}
+    for n in nodes:
+        mapping[n['name']] = scope[n['name']] + '/' + \
+            n['op'].replace('onnx::', '') + '_' + n['name']
+    for n in nodes:
+        n['name'] = mapping[n['name']]
+        for i, s in enumerate(n['inputs']):
+            n['inputs'][i] = mapping[s]
     return nodes
 
 
 def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
-        trace, _ = torch.jit.trace(model, args)
+        try:
+            trace, _ = torch.jit.get_trace_graph(model, args)
+        except RuntimeError:
+            print('Error occurs, No graph saved')
+            _ = model(args)  # don't catch, just print the error message
+            print("Checking if it's onnx problem...")
+            try:
+                import tempfile
+                torch.onnx.export(model, args, tempfile.TemporaryFile(), verbose=True)
+            except RuntimeError:
+                print("Your model fails onnx too, please report to onnx team")
+            return GraphDef(versions=VersionDef(producer=22))
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
@@ -60,7 +99,15 @@ def graph(model, args, verbose=False):
     list_of_nodes = parse(graph)
     nodes = []
     for node in list_of_nodes:
-        nodes.append(
-            NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
-                    attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
+        if 'outputsize' in node.keys():
+            shapeproto = TensorShapeProto(
+                dim=[TensorShapeProto.Dim(size=d) for d in node['outputsize']])
+            nodes.append(
+                NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
+                        attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8')),
+                        '_output_shapes': AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))}))
+        else:
+            nodes.append(
+                NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
+                        attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
     return GraphDef(node=nodes, versions=VersionDef(producer=22))

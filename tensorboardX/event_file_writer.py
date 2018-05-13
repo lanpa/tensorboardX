@@ -82,6 +82,7 @@ class EventsWriter(object):
     def close(self):
         '''Call self.flush().'''
         return_value = self.flush()
+        self._py_recordio_writer.close()
         return return_value
 
 

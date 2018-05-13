@@ -25,7 +25,7 @@ from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
 from .event_file_writer import EventFileWriter
-from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw
+from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
 from .graph import graph
 from .graph_onnx import gg
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
@@ -271,10 +271,11 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
         """
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
-        self.__append_to_scalar_dict(tag, scalar_value, global_step, time.time())
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
         """Adds many scalar data to summary.
+
+        Note that this function also keeps logged scalars in memory. In extreme case it explodes your RAM.
 
         Args:
             tag (string): Data identifier
@@ -306,9 +307,12 @@ class SummaryWriter(object):
         """Exports to the given path an ASCII file containing all the scalars written
         so far by this instance, with the following format:
         {writer_id : [[timestamp, step, value], ...], ...}
+
+        The scalars saved by ``add_scalars()`` will be flushed after export.
         """
         with open(path, "w") as f:
             json.dump(self.scalar_dict, f)
+        self.scalar_dict = {}
 
     def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
         """Add histogram to summary.
@@ -338,6 +342,22 @@ class SummaryWriter(object):
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
 
+    def add_video(self, tag, vid_tensor, global_step=None, fps=4):
+        """Add video data to summary.
+
+        Note that this requires the ``moviepy`` package.
+
+        Args:
+            tag (string): Data identifier
+            vid_tensor (torch.Tensor): Video data
+            global_step (int): Global step value to record
+            fps (float or int): Frames per second
+        Shape:
+            vid_tensor: :math:`(B, C, T, H, W)`.
+        """
+
+        self.file_writer.add_summary(video(tag, vid_tensor, fps), global_step)
+
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):
         """Add audio data to summary.
 
@@ -366,13 +386,6 @@ class SummaryWriter(object):
             writer.add_text('rnn', 'This is an rnn', 10)
         """
         self.file_writer.add_summary(text(tag, text_string), global_step)
-        if tag not in self.text_tags:
-            self.text_tags.append(tag)
-            extension_dir = self.file_writer.get_logdir() + '/plugins/tensorboard_text/'
-            if not os.path.exists(extension_dir):
-                os.makedirs(extension_dir)
-            with open(extension_dir + 'tensors.json', 'w') as fp:
-                json.dump(self.text_tags, fp)
 
     def add_graph_onnx(self, prototxt):
         self.file_writer.add_graph_onnx(gg(prototxt))

@@ -30,6 +30,9 @@ class RecordWriter(object):
         w(struct.pack('I', masked_crc32c(event_str)))
         self._writer.flush()
 
+    def close(self):
+        self._writer.close()
+
 
 def masked_crc32c(data):
     x = u32(crc32c(data))
