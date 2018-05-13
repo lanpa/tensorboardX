@@ -231,7 +231,9 @@ class SummaryWriter(object):
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each
               run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
-            kwargs: extra keyword arguments for FileWriter
+            kwargs: extra keyword arguments for FileWriter (i.e. 'graph',
+              'max_queue', 'flush_secs', 'graph_def', and filename_suffix).
+              Specifically, 'flush_secs' controls how often to flush pending events.
         """
         if not log_dir:
             import socket
