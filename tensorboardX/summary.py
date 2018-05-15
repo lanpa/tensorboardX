@@ -119,7 +119,19 @@ def make_histogram(values, bins):
     values = values.reshape(-1)
     counts, limits = np.histogram(values, bins=bins)
     limits = limits[1:]
+    # void Histogram::EncodeToProto in histogram.cc
+    for i, c in enumerate(counts):
+        if c > 0:
+            break
+    start = i - 1
 
+    for i, c in enumerate(reversed(counts)):
+        if c > 0:
+            break
+    end = -(i)
+
+    counts = counts[start:end]
+    limits = limits[start:end]
     sum_sq = values.dot(values)
     return HistogramProto(min=values.min(),
                           max=values.max(),
