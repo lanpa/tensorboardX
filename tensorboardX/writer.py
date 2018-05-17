@@ -313,7 +313,7 @@ class SummaryWriter(object):
             json.dump(self.scalar_dict, f)
         self.scalar_dict = {}
 
-    def add_histogram(self, tag, values, global_step=None, bins='tensorflow'):
+    def add_histogram(self, tag, values, global_step=None, bins='auto'):
         """Add histogram to summary.
 
         Args:
