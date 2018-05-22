@@ -212,7 +212,10 @@ def make_video(tensor, fps):
     with tempfile.NamedTemporaryFile() as f:
         filename = f.name + '.gif'
 
-    clip.write_gif(filename, verbose=True)
+    try:
+        clip.write_gif(filename, verbose=False, progress_bar=False)
+    except TypeError:
+        clip.write_gif(filename, verbose=False)
     with open(filename, 'rb') as f:
         tensor_string = f.read()
         return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
