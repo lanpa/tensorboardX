@@ -3,9 +3,10 @@ from .src.node_def_pb2 import NodeDef
 from .src.versions_pb2 import VersionDef
 from .src.attr_value_pb2 import AttrValue
 from .src.tensor_shape_pb2 import TensorShapeProto
-
+from .src.step_stats_pb2 import RunMetadata, StepStats, DeviceStepStats, NodeExecStats, AllocatorMemoryUsed
 from distutils.version import LooseVersion
 import warnings
+import time
 
 
 def parse(graph):
@@ -98,6 +99,7 @@ def graph(model, args, verbose=False):
         print(graph)
     list_of_nodes = parse(graph)
     nodes = []
+    node_stats = []
     for node in list_of_nodes:
         if 'outputsize' in node.keys():
             shapeproto = TensorShapeProto(
@@ -106,8 +108,19 @@ def graph(model, args, verbose=False):
                 NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
                         attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8')),
                         '_output_shapes': AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))}))
+            # FIXME: fill with profile data
+            node_stats.append(NodeExecStats(node_name=node['name'],
+                                            all_start_micros=int(time.time() * 1e7),
+                                            all_end_rel_micros=42,
+                                            memory=[AllocatorMemoryUsed(allocator_name="cpu",
+                                                                        total_bytes=19950829,
+                                                                        peak_bytes=19950829,
+                                                                        live_bytes=19950829)]))
         else:
             nodes.append(
                 NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
                         attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
-    return GraphDef(node=nodes, versions=VersionDef(producer=22))
+
+    stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
+                                                                            node_stats=node_stats)]))
+    return GraphDef(node=nodes, versions=VersionDef(producer=22)), stepstats

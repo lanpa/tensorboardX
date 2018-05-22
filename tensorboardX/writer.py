@@ -101,10 +101,16 @@ class SummaryToEventTransformer(object):
         event = event_pb2.Event(graph_def=graph.SerializeToString())
         self._add_event(event, None)
 
-    def add_graph(self, graph):
+    def add_graph(self, graph_profile):
+        graph = graph_profile[0]
+        stepstats = graph_profile[1]
         """Adds a `Graph` protocol buffer to the event file.
         """
         event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self._add_event(event, None)
+
+        trm = event_pb2.TaggedRunMetadata(tag='step1', run_metadata=stepstats.SerializeToString())
+        event = event_pb2.Event(tagged_run_metadata=trm)
         self._add_event(event, None)
 
     def add_session_log(self, session_log, global_step=None):
