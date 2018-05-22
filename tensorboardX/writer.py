@@ -225,19 +225,22 @@ class SummaryWriter(object):
     to add data to the file directly from the training loop, without slowing down
     training.
     """
-    def __init__(self, log_dir=None, comment=''):
+    def __init__(self, log_dir=None, comment='', **kwargs):
         """
         Args:
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each
               run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
             comment (string): comment that appends to the default log_dir
+            kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
+              controls how often to flush pending events). For more arguments
+              please refer to docs for 'tf.summary.FileWriter'.
         """
         if not log_dir:
             import socket
             from datetime import datetime
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             log_dir = os.path.join('runs', current_time + '_' + socket.gethostname() + comment)
-        self.file_writer = FileWriter(logdir=log_dir)
+        self.file_writer = FileWriter(logdir=log_dir, **kwargs)
         v = 1E-12
         buckets = []
         neg_buckets = []
