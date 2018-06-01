@@ -28,6 +28,7 @@ from .event_file_writer import EventFileWriter
 from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
 from .graph import graph
 from .graph_onnx import gg
+from .utils import figure_to_image
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 
 
@@ -350,6 +351,19 @@ class SummaryWriter(object):
         """
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
 
+    def add_figure(self, tag, figure, global_step=None, close=True):
+        """Render matplotlib figure into an image and add it to summary.
+
+        Note that this requires the ``matplotlib`` package.
+
+        Args:
+            tag (string): Data identifier
+            figure (matplotlib.Figure or list[matplotlib.Figure]): Matplotlib figure or a list of figures
+            global_step (int): Global step value to record
+            close (bool): Flag to automatically close the figure
+        """
+        self.add_image(tag, figure_to_image(figure, close), global_step)
+
     def add_video(self, tag, vid_tensor, global_step=None, fps=4):
         """Add video data to summary.
 
@@ -363,7 +377,6 @@ class SummaryWriter(object):
         Shape:
             vid_tensor: :math:`(B, C, T, H, W)`.
         """
-
         self.file_writer.add_summary(video(tag, vid_tensor, fps), global_step)
 
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100):

@@ -4,11 +4,8 @@ import numpy as np
 
 
 def makenp(x, modality=None):
-    # if already numpy, return
     if isinstance(x, np.ndarray):
-        if modality == 'IMG' and x.dtype == np.uint8:
-            return x.astype(np.float32) / 255.0
-        return x
+        return numpy_np(x, modality)
     if np.isscalar(x):
         return np.array([x])
     if 'torch' in str(type(x)):
@@ -17,6 +14,16 @@ def makenp(x, modality=None):
         return chainer_np(x, modality)
     if 'mxnet' in str(type(x)):
         return mxnet_np(x, modality)
+
+
+def numpy_np(x, modality):
+    if modality == 'IMG':
+        if x.dtype == np.uint8:
+            x = x.astype(np.float32) / 255.0
+        x = _prepare_image(x)
+    if modality == 'VID':
+        x = _prepare_video(x)
+    return x
 
 
 def pytorch_np(x, modality):
