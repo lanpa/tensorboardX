@@ -4,6 +4,9 @@ python:
   - "2.7"
   - "3.6"
 
+env:
+  - MPLBACKEND=Agg
+
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -28,6 +31,7 @@ install:
   - conda list
   - pip install torchvision
   - pip install moviepy==0.2.3.2
+  - pip install matplotlib
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
   - pip install --upgrade pytest flake8
   - python setup.py install
@@ -35,7 +39,6 @@ install:
 script:
   - flake8 tensorboardX
   - pytest
-  # Your test script goes here
   - pip uninstall -y tensorboardX
   - pip install tensorboardX
   - pytest

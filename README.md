@@ -7,7 +7,8 @@
 
 Write TensorBoard events with simple function call.
 
-* Support `scalar`, `image`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve` and `video` summaries.
+* Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`
+  and `video` summaries.
 
 
 * [Demo](http://35.197.26.245:6006)
