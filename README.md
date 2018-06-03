@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/lanpa/tensorboard-pytorch.svg?branch=master)](https://travis-ci.org/lanpa/tensorboard-pytorch)
 [![PyPI version](https://badge.fury.io/py/tensorboardX.svg)](https://badge.fury.io/py/tensorboardX)
 [![Downloads](https://img.shields.io/badge/pip--downloads-5K+-brightgreen.svg)](https://bigquery.cloud.google.com/savedquery/966219917372:edb59a0d70c54eb687ab2a9417a778ee)
-[![Documentation Status](https://readthedocs.org/projects/tensorboard-pytorch/badge/?version=latest)](http://tensorboard-pytorch.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/tensorboard-pytorch/badge/?version=latest)](https://tensorboard-pytorch.readthedocs.io/en/latest/?badge=latest)
 
 Write TensorBoard events with simple function call.
 
