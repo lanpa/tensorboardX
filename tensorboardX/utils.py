@@ -1,13 +1,23 @@
-import torch
-import numpy as np
-try:
-    import matplotlib.pyplot as plt
-    import matplotlib.backends.backend_agg as plt_backend_agg
-except ModuleNotFoundError:
-    pass
-
-
+# functions for convertion goes here
 def figure_to_image(figures, close=True):
+    """Render matplotlib figure to numpy format.
+
+    Note that this requires the ``matplotlib`` package.
+
+    Args:
+        figure (matplotlib.pyplot.figure) or list of figures: figure or a list of figures
+        close (bool): Flag to automatically close the figure
+
+    Returns:
+        numpy.array: image in [CHW] order
+    """
+    import numpy as np
+    try:
+        import matplotlib.pyplot as plt
+        import matplotlib.backends.backend_agg as plt_backend_agg
+    except ModuleNotFoundError:
+        print('please install matplotlib')
+
     def render_to_rgb(figure):
         canvas = plt_backend_agg.FigureCanvasAgg(figure)
         canvas.draw()
@@ -25,3 +35,7 @@ def figure_to_image(figures, close=True):
     else:
         images = [render_to_rgb(figure) for figure in figures]
         return np.stack(images)
+
+
+def graphviz_to_image():
+    pass
