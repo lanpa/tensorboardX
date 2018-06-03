@@ -51,9 +51,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'tensorboard-pytorch'
-copyright = '2017, tensorboard-pytorch Contributors'
-author = 'tensorboard-pytorch Contributors'
+project = 'tensorboardX'
+copyright = '2017, tensorboardX Contributors'
+author = 'tensorboardX Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -105,7 +105,7 @@ html_theme = 'sphinx_rtd_theme'
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'tensorboard-pytorchdoc'
+htmlhelp_basename = 'tensorboardXdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -132,8 +132,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'tensorboard-pytorch.tex', 'tensorboard-pytorch Documentation',
-     'tensorboard-pytorch Contributors', 'manual'),
+    (master_doc, 'tensorboardX.tex', 'tensorboardX Documentation',
+     'tensorboardX Contributors', 'manual'),
 ]
 
 
@@ -142,7 +142,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'tensorboard-pytorch', 'tensorboard-pytorch Documentation',
+    (master_doc, 'tensorboardX', 'tensorboardX Documentation',
      [author], 1)
 ]
 
@@ -153,8 +153,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'tensorboard-pytorch', 'tensorboard-pytorch Documentation',
-     author, 'tensorboard-pytorch', 'One line description of project.',
+    (master_doc, 'tensorboardX', 'tensorboardX Documentation',
+     author, 'tensorboardX', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -166,5 +166,5 @@ intersphinx_mapping = {
     'python':('https://docs.python.org/3', None),
     'numpy': ('http://docs.scipy.org/doc/numpy/', None),
     'torch': ('http://pytorch.org/docs/master', None),
-
+    'matplotlib': ('http://matplotlib.sourceforge.net/', None),
     }

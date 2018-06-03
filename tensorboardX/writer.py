@@ -358,7 +358,7 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            figure (matplotlib.Figure or list[matplotlib.Figure]): Matplotlib figure or a list of figures
+            figure (matplotlib.pyplot.figure) or list of figures: figure or a list of figures
             global_step (int): Global step value to record
             close (bool): Flag to automatically close the figure
         """

@@ -1,4 +1,4 @@
-tensorboard-pytorch
+tensorboardX
 ===================================
 .. automodule:: tensorboardX
 
