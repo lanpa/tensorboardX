@@ -13,6 +13,7 @@ Welcome to tensorboardX's documentation!
    tensorboard
    utils
    tutorial
+   tutorial_zh
 
 Indices and tables
 ==================

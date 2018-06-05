@@ -29,18 +29,18 @@ general api format
 add_something(tag name, object, iteration number)
 
 
-add_scalar
+add scalar
 -----------
 Scalar value is the most simple data type to deal with. Mostly we save the loss value of each training step, or the accuracy after each epoch. Sometimes I save the corresponding learning rate as well. It’s cheap to save scalar value. Just log anything you think is important. To log a scalar value, use writer.add_scalar('myscalar', value, iteration). Note that the program complains if you feed a PyTorch variable. Remember to extract the scalar value by x.data[0] if x is a torch variable.
 
 
-add_scalars
+add scalars
 -----------
 
 
 
 
-add_image
+add image
 ---------
 An image is represented as 3-dimensional tensor. The simplest case is save one image at a time. In this case, the image should be passed as a 3-dimension tensor of size [3, H, W]. The three dimensions correspond to R, G, B channel of an image. After your image is computed, use writer.add_image('imresult', x, iteration) to save the image. If you have a batch of images to show, use torchvision's make_grid function to prepare the image array and send the result to add_image(...). ps. make_grid takes a 4D tensor and returns tiled images in 3D tensor.
 
@@ -48,35 +48,35 @@ An image is represented as 3-dimensional tensor. The simplest case is save one i
 	Remember to normalize your image.
 
 
-add_histogram
+add histogram
 -------------
 Saving histogram is expensive. Both in computation time and storage. If training slows down after using this package, check this first. To save a histogram, convert the array into numpy array and save with writer.add_histogram('hist', array, iteration) .
 
-add_video
+add video
 ---------
 
 
-add_figure
+add figure
 ----------
 
 
-add_text
+add text
 --------
 
 
-add_prcurve
+add prcurve
 -----------
 
-add_graph
+add graph
 ---------
 Graph drawing is based on autograd’s backward tracing. It goes along the next_functions attribute in a variable recursively, drawing each encountered nodes. To draw the graph, you need a model m and an input variable t that have correct size for m. Let r = m(t), then please invoke writer.add_graph(m, r)to save the graph. By default, the input tensor does not require gradient, therefore it will be omitted when back tracing. To draw the input node, pass an additional parameter requires_grad=True when creating the input tensor. See https://github.com/lanpa/tensorboard-pytorch/blob/master/demo_graph.py for complete example.
 
 
-add_audio
+add audio
 ---------
 Currently the sampling rate of the this function is fixed at 44100 KHz, single channel. The input of the add_audio function is a one dimensional array, with each element representing the consecutive amplitude samples. For a 2 seconds audio, the input x should have 88200 elements. Each element should lie in [-1, 1].
 
-add_embedding
+add embedding
 -------------
 what is embedding?
 ==================
