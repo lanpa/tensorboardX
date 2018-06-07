@@ -111,9 +111,10 @@ def _prepare_video(V):
     def is_power2(num):
         return num != 0 and ((num & (num - 1)) == 0)
 
-    # pad to power of 2
-    while not is_power2(V.shape[0]):
-        V = np.concatenate((V, np.zeros(shape=(1, c, t, h, w))), axis=0)
+    # pad to nearest power of 2, all at once
+    if not is_power2(V.shape[0]):
+        len_addition = int(2**V.shape[0].bit_length() - V.shape[0])
+        V = np.concatenate((V, np.zeros(shape=(len_addition, c, t, h, w))), axis=0)
 
     b = V.shape[0]
     n_rows = 2**(int(np.log(b) / np.log(2)) // 2)
