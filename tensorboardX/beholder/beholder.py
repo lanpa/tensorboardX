@@ -15,6 +15,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from ..src.summary_pb2 import Summary
+from ..src.summary_pb2 import SummaryMetadata
+from ..src.tensor_pb2 import TensorProto
+from ..src.tensor_shape_pb2 import TensorShapeProto
 
 import os
 import time
@@ -80,16 +84,27 @@ class Beholder(object):
     return config
 
 
-  def _write_summary(self, session, frame):
+  def _write_summary(self, frame):
     '''Writes the frame to disk as a tensor summary.'''
-    summary = session.run(self.summary_op, feed_dict={
-        self.frame_placeholder: frame
-    })
+    
+    # summary = session.run(self.summary_op, feed_dict={
+    #     self.frame_placeholder: frame
+    # })
     path = '{}/{}'.format(self.PLUGIN_LOGDIR, SUMMARY_FILENAME)
+    # write_file(summary, path)
+
+    # PluginData = [SummaryMetadata.PluginData(plugin_name=TAG_NAME)]
+    data = np.random.randn(8, 8)
+    smd = SummaryMetadata()
+    tensor = TensorProto(dtype='DT_FLOAT',
+                         float_val=data.reshape(-1).tolist(),
+                         tensor_shape=TensorShapeProto(
+                             dim=[TensorShapeProto.Dim(size=data.shape[0]), TensorShapeProto.Dim(size=data.shape[1])]))
+    summary = Summary(value=[Summary.Value(tag=TAG_NAME, metadata=smd, tensor=tensor)]).SerializeToString()
     write_file(summary, path)
+    
 
-
-  def _get_final_image(self, session, config, trainable=None, arrays=None, frame=None):
+  def _get_final_image(self, config, trainable=None, arrays=None, frame=None):
     if config['values'] == 'frames':
       print('===frames===')
       # if frame is None:
@@ -129,9 +144,9 @@ class Beholder(object):
       return time.time() >= earliest_time
 
 
-  def _update_frame(self, session, trainable, arrays, frame, config):
-    final_image = self._get_final_image(session, config, trainable, arrays, frame)
-    self._write_summary(session, final_image)
+  def _update_frame(self, trainable, arrays, frame, config):
+    final_image = self._get_final_image(config, trainable, arrays, frame)
+    self._write_summary(final_image)
     self.last_image_shape = final_image.shape
 
     return final_image
@@ -173,7 +188,7 @@ class Beholder(object):
     if self._enough_time_has_passed(self.previous_config['FPS']):
       # self.visualizer.update(new_config)
       self.last_update_time = time.time()
-      final_image = self._update_frame(session, trainable, arrays, frame, new_config)
+      final_image = self._update_frame(trainable, arrays, frame, new_config)
       self._update_recording(final_image, new_config)
 
 
