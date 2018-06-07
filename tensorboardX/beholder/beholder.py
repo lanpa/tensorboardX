@@ -24,7 +24,7 @@ import os
 import time
 
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 
 # from tensorboard.plugins.beholder import im_util
 # from . import im_util
@@ -35,7 +35,6 @@ from .shared_config import PLUGIN_NAME, TAG_NAME,\
 from . import video_writing
 # from .visualizer import Visualizer
 
-# exit()
 
 class Beholder(object):
 
@@ -49,12 +48,12 @@ class Beholder(object):
             video_writing.FFmpegVideoOutput,
             video_writing.PNGVideoOutput])
 
-    self.frame_placeholder = tf.placeholder(tf.uint8, [None, None, None])
-    self.summary_op = tf.summary.tensor_summary(TAG_NAME,
-                                                self.frame_placeholder,
-                                                collections=[
-                                                    SUMMARY_COLLECTION_KEY_NAME
-                                                ])
+    # self.frame_placeholder = tf.placeholder(tf.uint8, [None, None, None])
+    # self.summary_op = tf.summary.tensor_summary(TAG_NAME,
+    #                                             self.frame_placeholder,
+    #                                             collections=[
+    #                                                 SUMMARY_COLLECTION_KEY_NAME
+    #                                             ])
 
     self.last_image_shape = []
     self.last_update_time = time.time()
@@ -172,7 +171,7 @@ class Beholder(object):
 
   # TODO: blanket try and except for production? I don't someone's script to die
   #       after weeks of running because of a visualization.
-  def update(self, session, trainable=None, arrays=None, frame=None):
+  def update(self, trainable=None, arrays=None, frame=None):
     '''Creates a frame and writes it to disk.
 
     Args:
@@ -184,8 +183,7 @@ class Beholder(object):
              "frame" option is selected by the client.
     '''
     new_config = self._get_config()
-
-    if self._enough_time_has_passed(self.previous_config['FPS']):
+    if True or self._enough_time_has_passed(self.previous_config['FPS']):
       # self.visualizer.update(new_config)
       self.last_update_time = time.time()
       final_image = self._update_frame(trainable, arrays, frame, new_config)
@@ -194,23 +192,23 @@ class Beholder(object):
 
   ##############################################################################
 
-  @staticmethod
-  def gradient_helper(optimizer, loss, var_list=None):
-    '''A helper to get the gradients out at each step.
+  # @staticmethod
+  # def gradient_helper(optimizer, loss, var_list=None):
+  #   '''A helper to get the gradients out at each step.
 
-    Args:
-      optimizer: the optimizer op.
-      loss: the op that computes your loss value.
+  #   Args:
+  #     optimizer: the optimizer op.
+  #     loss: the op that computes your loss value.
 
-    Returns: the gradient tensors and the train_step op.
-    '''
-    if var_list is None:
-      var_list = tf.trainable_variables()
+  #   Returns: the gradient tensors and the train_step op.
+  #   '''
+  #   if var_list is None:
+  #     var_list = tf.trainable_variables()
 
-    grads_and_vars = optimizer.compute_gradients(loss, var_list=var_list)
-    grads = [pair[0] for pair in grads_and_vars]
+  #   grads_and_vars = optimizer.compute_gradients(loss, var_list=var_list)
+  #   grads = [pair[0] for pair in grads_and_vars]
 
-    return grads, optimizer.apply_gradients(grads_and_vars)
+  #   return grads, optimizer.apply_gradients(grads_and_vars)
 
 
 
