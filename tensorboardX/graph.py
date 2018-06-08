@@ -17,10 +17,12 @@ def parse(graph):
         for i in range(1, len(inputs)):
             if inputs[i] not in scope.keys():
                 scope[inputs[i]] = n.scopeName()
+        
+        for outputnode in iter(n.outputs()):
+            uname = outputnode.uniqueName()
+            assert n.scopeName() != '', '{} has empty scope name'.format(n)
+            scope[uname] = n.scopeName()
 
-        uname = next(iter(n.outputs())).uniqueName()
-        assert n.scopeName() != '', '{} has empty scope name'.format(n)
-        scope[uname] = n.scopeName()
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         scope['0'] = 'input'
     else:
@@ -41,17 +43,18 @@ def parse(graph):
             warnings.warn("Error getting attributes of node {}, error is {}".format(attrs, e))
         attrs = attrs.replace("'", ' ')  # singlequote will be escaped by tensorboard
         inputs = [i.uniqueName() for i in n.inputs()]
-        outputnode = next(iter(n.outputs()))  # FIXME: only first output is considered (only Dropout)
-        uname = outputnode.uniqueName()
-        if outputnode.type().kind() == 'TensorType':
-            outputsize = outputnode.type().sizes()
-            nodes.append({'name': uname,
-                          'op': n.kind(),
-                          'inputs': inputs,
-                          'attr': attrs,
-                          'outputsize': outputsize})
-        else:
-            nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
+
+        for outputnode in iter(n.outputs()):
+            uname = outputnode.uniqueName()
+            if outputnode.type().kind() == 'TensorType':
+                outputsize = outputnode.type().sizes()
+                nodes.append({'name': uname,
+                              'op': n.kind(),
+                              'inputs': inputs,
+                              'attr': attrs,
+                              'outputsize': outputsize})
+            else:
+                nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
         uname = n.uniqueName()
