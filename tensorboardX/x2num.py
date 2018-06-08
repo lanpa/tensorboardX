@@ -117,7 +117,7 @@ def _prepare_video(V):
         V = np.concatenate((V, np.zeros(shape=(len_addition, c, t, h, w))), axis=0)
 
     b = V.shape[0]
-    n_rows = 2**(int(np.log(b) / np.log(2)) // 2)
+    n_rows = 2**((b.bit_length() - 1) // 2)
     n_cols = b // n_rows
 
     V = np.reshape(V, newshape=(n_rows, n_cols, c, t, h, w))
