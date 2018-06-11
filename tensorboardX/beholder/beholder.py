@@ -31,7 +31,7 @@ import numpy as np
 from .file_system_tools import read_pickle,\
     write_pickle, write_file
 from .shared_config import PLUGIN_NAME, TAG_NAME,\
-    SUMMARY_FILENAME, DEFAULT_CONFIG, CONFIG_FILENAME, SUMMARY_COLLECTION_KEY_NAME
+    SUMMARY_FILENAME, DEFAULT_CONFIG, CONFIG_FILENAME, SUMMARY_COLLECTION_KEY_NAME, SECTION_INFO_FILENAME
 from . import video_writing
 # from .visualizer import Visualizer
 
@@ -45,13 +45,6 @@ class Beholder(object):
         self.video_writer = video_writing.VideoWriter(
             self.PLUGIN_LOGDIR,
             outputs=[video_writing.FFmpegVideoOutput, video_writing.PNGVideoOutput])
-
-        # self.frame_placeholder = tf.placeholder(tf.uint8, [None, None, None])
-        # self.summary_op = tf.summary.tensor_summary(TAG_NAME,
-        #                                             self.frame_placeholder,
-        #                                             collections=[
-        #                                                 SUMMARY_COLLECTION_KEY_NAME
-        #                                             ])
 
         self.last_image_shape = []
         self.last_update_time = time.time()
@@ -79,37 +72,53 @@ class Beholder(object):
 
     def _write_summary(self, frame):
         '''Writes the frame to disk as a tensor summary.'''
-        # summary = session.run(self.summary_op, feed_dict={
-        #     self.frame_placeholder: frame
-        # })
         path = '{}/{}'.format(self.PLUGIN_LOGDIR, SUMMARY_FILENAME)
-        # write_file(summary, path)
-
-        # PluginData = [SummaryMetadata.PluginData(plugin_name=TAG_NAME)]
-        data = np.random.randn(256, 256)
         smd = SummaryMetadata()
         tensor = TensorProto(
             dtype='DT_FLOAT',
-            float_val=data.reshape(-1).tolist(),
+            float_val=frame.reshape(-1).tolist(),
             tensor_shape=TensorShapeProto(
-                dim=[TensorShapeProto.Dim(size=data.shape[0]), TensorShapeProto.Dim(size=data.shape[1])]
+                dim=[TensorShapeProto.Dim(size=frame.shape[0]),
+                     TensorShapeProto.Dim(size=frame.shape[1]),
+                     TensorShapeProto.Dim(size=frame.shape[2])]
             )
         )
         summary = Summary(value=[Summary.Value(tag=TAG_NAME, metadata=smd, tensor=tensor)]).SerializeToString()
         write_file(summary, path)
 
+    @staticmethod
+    def stats(tensor_and_name):
+        imgstats = []
+        for (img, name) in tensor_and_name:
+            immax = img.max()
+            immin = img.min()
+            imgstats.append(
+                {
+                    'height': img.shape[0],
+                    'max': str(immax),
+                    'mean': str(img.mean()),
+                    'min': str(immin),
+                    'name': name,
+                    'range': str(immax - immin),
+                    'shape': str((img.shape[1], img.shape[2]))
+                })
+        return imgstats
+
     def _get_final_image(self, config, trainable=None, arrays=None, frame=None):
         if config['values'] == 'frames':
-            print('===frames===')
+            # print('===frames===')
             final_image = frame
         elif config['values'] == 'arrays':
-            print('===arrays===')
-            final_image = np.random.randn(256, 600)
+            # print('===arrays===')
+            final_image = np.concatenate([arr for arr, _ in arrays])
+            stat = self.stats(arrays)
+            write_pickle(stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
         elif config['values'] == 'trainable_variables':
-            print('===trainable===')
-            final_image = np.random.randn(128, 600)
-        if len(final_image.shape) == 2:
-            # Map grayscale images to 3D tensors.
+            # print('===trainable===')
+            final_image = np.concatenate([arr for arr, _ in trainable])
+            stat = self.stats(trainable)
+            write_pickle(stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
+        if len(final_image.shape) == 2:  # Map grayscale images to 3D tensors.
             final_image = np.expand_dims(final_image, -1)
 
         return final_image
@@ -151,14 +160,11 @@ class Beholder(object):
         '''Creates a frame and writes it to disk.
 
         Args:
-            trainable: a list of tensors or np array.
-            arrays: a list of np arrays. Use the "custom" option in the client.
-            frame: a 2D np array. This way the plugin can be used for video of any
-                    kind, not just the visualization that comes with the plugin.
-
-                    frame can also be a function, which only is evaluated when the
-                    "frame" option is selected by the client.
+            trainable: a list of namedtuple (tensors, name).
+            arrays: a list of namedtuple (tensors, name).
+            frame: lalala
         '''
+
         new_config = self._get_config()
         if True or self._enough_time_has_passed(self.previous_config['FPS']):
             # self.visualizer.update(new_config)
