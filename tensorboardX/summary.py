@@ -33,6 +33,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import logging
 import re as _re
 import bisect
@@ -216,9 +217,16 @@ def make_video(tensor, fps):
         clip.write_gif(filename, verbose=False, progress_bar=False)
     except TypeError:
         clip.write_gif(filename, verbose=False)
+
     with open(filename, 'rb') as f:
         tensor_string = f.read()
-        return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
+
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
+    return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 
 
 def audio(tag, tensor, sample_rate=44100):
