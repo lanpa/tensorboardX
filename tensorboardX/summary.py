@@ -228,6 +228,7 @@ def make_video(tensor, fps):
 
     return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 
+
 def audio(tag, tensor, sample_rate=44100):
     tensor = makenp(tensor)
     tensor = tensor.squeeze()
