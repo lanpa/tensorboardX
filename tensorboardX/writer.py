@@ -408,6 +408,25 @@ class SummaryWriter(object):
         """
         self.file_writer.add_summary(text(tag, text_string), global_step)
 
+    def add_text_dict(self, tag, d, global_step=None):
+        """Add dictionary as text to summary.
+
+        Args:
+            tag (string): Data identifier
+            d (dictionary): Key value pairs to print
+            global_step (int): Global step value to record
+
+        Examples::
+
+            writer.add_text('parameters', params, 0)
+        """
+
+        text_string = ""
+        for key, value in d.items():
+            text_string += "\t" + str(key) + ": " + str(value) + "\n"
+
+        self.file_writer.add_summary(text(tag, text_string), global_step)
+
     def add_graph_onnx(self, prototxt):
         self.file_writer.add_graph_onnx(gg(prototxt))
 
