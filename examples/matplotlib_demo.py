@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+plt.switch_backend('agg')
 
 fig = plt.figure()
 
