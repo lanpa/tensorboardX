@@ -18,18 +18,28 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import json
 import os
+import six
+import time
+
+try:
+    from caffe2.proto import caffe2_pb2
+    from caffe2.python import cnn, core, workspace
+    from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
+except ImportError:
+    # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
+    print('Caffe2 is not installed. Disabling Caffe2 functionality')
+
+from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
+from .event_file_writer import EventFileWriter
+from .graph_onnx import gg
+from .pytorch_graph import graph
 from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
-from .event_file_writer import EventFileWriter
 from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
-from .graph import graph
-from .graph_onnx import gg
 from .utils import figure_to_image
-from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 
 
 class SummaryToEventTransformer(object):
@@ -96,12 +106,6 @@ class SummaryToEventTransformer(object):
         event = event_pb2.Event(summary=summary)
         self._add_event(event, global_step)
 
-    def add_graph_onnx(self, graph):
-        """Adds a `Graph` protocol buffer to the event file.
-        """
-        event = event_pb2.Event(graph_def=graph.SerializeToString())
-        self._add_event(event, None)
-
     def add_graph(self, graph_profile):
         graph = graph_profile[0]
         stepstats = graph_profile[1]
@@ -112,6 +116,12 @@ class SummaryToEventTransformer(object):
 
         trm = event_pb2.TaggedRunMetadata(tag='step1', run_metadata=stepstats.SerializeToString())
         event = event_pb2.Event(tagged_run_metadata=trm)
+        self._add_event(event, None)
+
+    def add_graph_onnx(self, graph):
+        """Adds a `Graph` protocol buffer to the event file.
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
         self._add_event(event, None)
 
     def add_session_log(self, session_log, global_step=None):
@@ -247,38 +257,49 @@ class SummaryWriter(object):
             from datetime import datetime
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             log_dir = os.path.join('runs', current_time + '_' + socket.gethostname() + comment)
+
         self.file_writer = FileWriter(logdir=log_dir, **kwargs)
-        v = 1E-12
-        buckets = []
-        neg_buckets = []
-        while v < 1E20:
-            buckets.append(v)
-            neg_buckets.append(-v)
-            v *= 1.1
+
+        # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
+        buckets = [1E-12 * (1.1**i) for i in range(774)]
+        neg_buckets = [-1E-12 * (1.1**i) for i in range(774)]
         self.default_bins = neg_buckets[::-1] + [0] + buckets
-        self.text_tags = []
-        #
+
         self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         self.scalar_dict = {}  # {writer_id : [[timestamp, step, value],...],...}
+
+        # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
+        try:
+            import caffe2
+            self.caffe2_enabled = True
+        except ImportError:
+            self.caffe2_enabled = False
 
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
                                 timestamp):
         """This adds an entry to the self.scalar_dict datastructure with format
         {writer_id : [[timestamp, step, value], ...], ...}.
         """
-        from .x2num import makenp
+        from .x2num import make_np
         if tag not in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
-        self.scalar_dict[tag].append([timestamp, global_step, float(makenp(scalar_value))])
+        self.scalar_dict[tag].append([timestamp, global_step, float(make_np(scalar_value))])
+
+    def _check_caffe2(self, item):
+        # Caffe2 usage generally passes a string, which is the name of the Blob to fetch
+        # TODO (ml7): Remove caffe2_enabled check when PyTorch 1.0 merges PyTorch and Caffe2
+        return self.caffe2_enabled and isinstance(item, six.string_types)
 
     def add_scalar(self, tag, scalar_value, global_step=None):
         """Add scalar data to summary.
 
         Args:
             tag (string): Data identifier
-            scalar_value (float): Value to save
+            scalar_value (float or string/blobname): Value to save
             global_step (int): Global step value to record
         """
+        if self._check_caffe2(scalar_value):
+            scalar_value = workspace.FetchBlob(scalar_value)
         self.file_writer.add_summary(scalar(tag, scalar_value), global_step)
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None):
@@ -309,6 +330,8 @@ class SummaryWriter(object):
             else:
                 fw = FileWriter(logdir=fw_tag)
                 self.all_writers[fw_tag] = fw
+            if self._check_caffe2(scalar_value):
+                scalar_value = workspace.FetchBlob(scalar_value)
             fw.add_summary(scalar(main_tag, scalar_value), global_step)
             self.__append_to_scalar_dict(fw_tag, scalar_value, global_step, timestamp)
 
@@ -328,11 +351,13 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            values (numpy.array): Values to build histogram
+            values (torch.Tensor, numpy.array, or string/blobname): Values to build histogram
             global_step (int): Global step value to record
             bins (string): one of {'tensorflow','auto', 'fd', ...}, this determines how the bins are made. You can find
               other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
         """
+        if self._check_caffe2(values):
+            values = workspace.FetchBlob(values)
         if bins == 'tensorflow':
             bins = self.default_bins
         self.file_writer.add_summary(histogram(tag, values, bins), global_step)
@@ -344,12 +369,29 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            img_tensor (torch.Tensor): Image data
+            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
             global_step (int): Global step value to record
         Shape:
             img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
         """
+        if self._check_caffe2(img_tensor):
+            img_tensor = workspace.FetchBlob(img_tensor)
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
+
+    def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None, **kwargs):
+        """Add image boxes data to summary (for Detectron models).
+
+        Args:
+            tag (string): Data identifier
+            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
+            box_tensor (torch.Tensor, numpy.array, or string/blobname): Box data (for detected objects)
+            global_step (int): Global step value to record
+        """
+        if self._check_caffe2(img_tensor):
+            img_tensor = workspace.FetchBlob(img_tensor)
+        if self._check_caffe2(box_tensor):
+            box_tensor = workspace.FetchBlob(box_tensor)
+        self._file_writer.add_summary(image_boxes(tag, img_tensor, box_tensor, **kwargs), global_step)
 
     def add_figure(self, tag, figure, global_step=None, close=True):
         """Render matplotlib figure into an image and add it to summary.
@@ -391,6 +433,8 @@ class SummaryWriter(object):
         Shape:
             snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
         """
+        if self._check_caffe2(snd_tensor):
+            snd_tensor = workspace.FetchBlobl(snd_tensor)
         self.file_writer.add_summary(audio(tag, snd_tensor, sample_rate=sample_rate), global_step)
 
     def add_text(self, tag, text_string, global_step=None):
@@ -411,7 +455,8 @@ class SummaryWriter(object):
     def add_graph_onnx(self, prototxt):
         self.file_writer.add_graph_onnx(gg(prototxt))
 
-    def add_graph(self, model, input_to_model, verbose=False):
+    # Supports both Caffe2 and PyTorch models
+    def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
         # no, let tensorboard handles it and show its warning message.
         """Add graph data to summary.
@@ -421,18 +466,40 @@ class SummaryWriter(object):
             input_to_model (torch.autograd.Variable): a variable or a tuple of variables to be fed.
 
         """
-        import torch
-        from distutils.version import LooseVersion
-        if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
-            pass
-        else:
-            if LooseVersion(torch.__version__) >= LooseVersion("0.3.0"):
-                print('You are using PyTorch==0.3.0, use add_graph_onnx()')
+        try:
+            # A valid PyTorch model should have a 'forward' method
+            _ = getattr(model, 'forward')
+            import torch
+            from distutils.version import LooseVersion
+            if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
+                pass
+            else:
+                if LooseVersion(torch.__version__) >= LooseVersion("0.3.0"):
+                    print('You are using PyTorch==0.3.0, use add_graph_onnx()')
+                    return
+                if not hasattr(torch.autograd.Variable, 'grad_fn'):
+                    print('add_graph() only supports PyTorch v0.2.')
+                    return
+            self.file_writer.add_graph(graph(model, input_to_model, verbose))
+        except AttributeError:
+            # Caffe2 models do not have the 'forward' method
+            if not self.caffe2_enabled:
+                # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
                 return
-            if not hasattr(torch.autograd.Variable, 'grad_fn'):
-                print('add_graph() only supports PyTorch v0.2.')
+            '''Write graph to the summary.'''
+            if isinstance(model, cnn.CNNModelHelper):
+                current_graph, track_blob_names = model_to_graph(model, **kwargs)
+            elif isinstance(model, list):
+                if isinstance(model, core.Net):
+                    current_graph, track_blob_names = nets_to_graph(model, **kwargs)
+                elif isinstance(model, caffe2_pb2.NetDef):
+                    current_graph, track_blob_names = protos_to_graph(model, **kwargs)
+                else:
+                    return
+            else:
                 return
-        self.file_writer.add_graph(graph(model, input_to_model, verbose))
+            event = event_pb2.Event(graph_def=current_graph.SerializeToString())
+            self.file_writer.add_event(event)
 
     @staticmethod
     def _encode(rawstr):
@@ -504,15 +571,15 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            labels (torch.Tensor): Ground truth data. Binary label for each element.
-            predictions (torch.Tensor): The probability that an element be classified as true. Value should in [0, 1]
+            labels (torch.Tensor, numpy.array, or string/blobname): Ground truth data. Binary label for each element.
+            predictions (torch.Tensor, numpy.array, or string/blobname):
+            The probability that an element be classified as true. Value should in [0, 1]
             global_step (int): Global step value to record
             num_thresholds (int): Number of thresholds used to draw the curve.
 
         """
-        from .x2num import makenp
-        labels = makenp(labels)
-        predictions = makenp(predictions)
+        from .x2num import make_np
+        labels, predictions = make_np(labels), make_np(predictions)
         self.file_writer.add_summary(pr_curve(tag, labels, predictions, num_thresholds, weights), global_step)
 
     def add_pr_curve_raw(self, tag, true_positive_counts,
@@ -525,12 +592,12 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            true_positive_counts (torch.Tensor): true positive counts
-            false_positive_counts (torch.Tensor): false positive counts
-            true_negative_counts (torch.Tensor): true negative counts
-            false_negative_counts (torch.Tensor): false negative counts
-            precision (torch.Tensor): precision
-            recall (torch.Tensor): recall
+            true_positive_counts (torch.Tensor, numpy.array, or string/blobname): true positive counts
+            false_positive_counts (torch.Tensor, numpy.array, or string/blobname): false positive counts
+            true_negative_counts (torch.Tensor, numpy.array, or string/blobname): true negative counts
+            false_negative_counts (torch.Tensor, numpy.array, or string/blobname): false negative counts
+            precision (torch.Tensor, numpy.array, or string/blobname): precision
+            recall (torch.Tensor, numpy.array, or string/blobname): recall
             global_step (int): Global step value to record
             num_thresholds (int): Number of thresholds used to draw the curve.
             see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/README.md
