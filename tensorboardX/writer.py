@@ -261,8 +261,13 @@ class SummaryWriter(object):
         self.file_writer = FileWriter(logdir=log_dir, **kwargs)
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
-        buckets = [1E-12 * (1.1**i) for i in range(774)]
-        neg_buckets = [-1E-12 * (1.1**i) for i in range(774)]
+        v = 1E-12
+        buckets = []
+        neg_buckets = []
+        while v < 1E20:
+            buckets.append(v)
+            neg_buckets.append(-v)
+            v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
 
         self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
@@ -286,7 +291,18 @@ class SummaryWriter(object):
         self.scalar_dict[tag].append([timestamp, global_step, float(make_np(scalar_value))])
 
     def _check_caffe2(self, item):
-        # Caffe2 usage generally passes a string, which is the name of the Blob to fetch
+        """
+        Caffe2 users have the option of passing a string representing the name of
+        a blob in the workspace instead of passing the actual Tensor/array containing
+        the numeric values. Thus, we need to check if we received a string as input
+        instead of an actual Tensor/array, and if so, we need to fetch the Blob
+        from the workspace corresponding to that name. Fetching can be done with the
+        following:
+
+        from caffe2.python import workspace (if not already imported)
+        workspace.FetchBlob(blob_name)
+        workspace.FetchBlobs([blob_name1, blob_name2, ...])
+        """
         # TODO (ml7): Remove caffe2_enabled check when PyTorch 1.0 merges PyTorch and Caffe2
         return self.caffe2_enabled and isinstance(item, six.string_types)
 
@@ -379,7 +395,7 @@ class SummaryWriter(object):
         self.file_writer.add_summary(image(tag, img_tensor), global_step)
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None, **kwargs):
-        """Add image boxes data to summary (for Detectron models).
+        """Add image boxes data to summary (useful for models such as Detectron).
 
         Args:
             tag (string): Data identifier

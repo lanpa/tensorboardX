@@ -77,6 +77,7 @@ def _clean_tag(name):
 
 
 def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, font, color='black', color_text='black', thickness=2):
+    import PIL.ImageDraw as ImageDraw
     draw = ImageDraw.Draw(image)
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
     draw.line([(left, top), (left, bottom), (right, bottom),
@@ -150,7 +151,7 @@ def make_histogram(values, bins):
     # void Histogram::EncodeToProto in histogram.cc
     for i, c in enumerate(counts):
         if c > 0:
-            start = i - 1
+            start = max(0, i - 1)
             break
 
     for i, c in enumerate(reversed(counts)):
