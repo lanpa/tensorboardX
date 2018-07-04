@@ -29,7 +29,7 @@ try:
     from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
 except ImportError:
     # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
-    print('Caffe2 is not installed. Disabling Caffe2 functionality')
+    pass
 
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
