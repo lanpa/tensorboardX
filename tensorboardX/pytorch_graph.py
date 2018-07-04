@@ -1,12 +1,14 @@
+import time
+import warnings
+
+from distutils.version import LooseVersion
+
+from .src.attr_value_pb2 import AttrValue
 from .src.graph_pb2 import GraphDef
 from .src.node_def_pb2 import NodeDef
-from .src.versions_pb2 import VersionDef
-from .src.attr_value_pb2 import AttrValue
-from .src.tensor_shape_pb2 import TensorShapeProto
 from .src.step_stats_pb2 import RunMetadata, StepStats, DeviceStepStats, NodeExecStats, AllocatorMemoryUsed
-from distutils.version import LooseVersion
-import warnings
-import time
+from .src.tensor_shape_pb2 import TensorShapeProto
+from .src.versions_pb2 import VersionDef
 
 
 def parse(graph):

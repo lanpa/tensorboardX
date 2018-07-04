@@ -19,12 +19,12 @@ def make_sprite(label_img, save_path):
     import math
     import torch
     import torchvision
-    from .x2num import makenp
+    from .x2num import make_np
     # this ensures the sprite image has correct dimension as described in
     # https://www.tensorflow.org/get_started/embedding_viz
     nrow = int(math.ceil((label_img.size(0)) ** 0.5))
 
-    label_img = torch.from_numpy(makenp(label_img))  # for other framework
+    label_img = torch.from_numpy(make_np(label_img))  # for other framework
     # augment images so that #images equals nrow*nrow
     label_img = torch.cat((label_img, torch.randn(nrow ** 2 - label_img.size(0), *label_img.size()[1:]) * 255), 0)
 

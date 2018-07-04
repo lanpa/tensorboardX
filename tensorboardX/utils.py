@@ -1,4 +1,4 @@
-# functions for convertion goes here
+# Functions for converting
 def figure_to_image(figures, close=True):
     """Render matplotlib figure to numpy format.
 

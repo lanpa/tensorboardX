@@ -1,11 +1,24 @@
 # DO NOT alter/distruct/free input object !
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import numpy as np
+import six
+
+try:
+    from caffe2.python import workspace
+except ImportError:
+    # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
+    # Caffe2 is not installed, disabling Caffe2 functionality
+    pass
 
 
-def makenp(x, modality=None):
+def make_np(x, modality=None):
     if isinstance(x, np.ndarray):
         return prepare_numpy(x, modality)
+    if isinstance(x, six.string_types):  # Caffe2 will pass name of blob(s) to fetch
+        return prepare_caffe2(x, modality)
     if np.isscalar(x):
         return np.array([x])
     if 'torch' in str(type(x)):
@@ -35,7 +48,6 @@ def prepare_pytorch(x, modality):
         x = _prepare_image(x)
     if modality == 'VID':
         x = _prepare_video(x)
-
     return x
 
 
@@ -44,8 +56,11 @@ def prepare_theano(x):
     pass
 
 
-def prepare_caffe2(x):
-    pass
+def prepare_caffe2(x, modality):
+    x = workspace.FetchBlob(x)
+    if modality == 'IMG':
+        x = _prepare_image(x)
+    return x
 
 
 def prepare_mxnet(x, modality):
@@ -102,7 +117,6 @@ def _prepare_image(I):
 
 
 def _prepare_video(V):
-
     b, c, t, h, w = V.shape
 
     if V.dtype == np.uint8:
