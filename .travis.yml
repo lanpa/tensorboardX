@@ -29,6 +29,7 @@ install:
   - source activate test-environment
   - which python
   - conda list
+  - conda install -c caffe2 caffe2 
   - pip install torchvision
   - pip install moviepy==0.2.3.2
   - pip install matplotlib
