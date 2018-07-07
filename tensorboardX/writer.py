@@ -25,7 +25,7 @@ import time
 
 try:
     from caffe2.proto import caffe2_pb2
-    from caffe2.python import cnn, core, model_helper, workspace
+    from caffe2.python import cnn, core, workspace
     from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
 except ImportError:
     # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
