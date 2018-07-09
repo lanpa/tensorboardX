@@ -28,7 +28,7 @@ print("Necessities imported!")
 def DownloadResource(url, path):
     '''Downloads resources from s3 by url and unzips them to the provided path'''
     import requests
-    import StringIO
+    from six import StringIO
     import zipfile
     print("Downloading... {} to {}".format(url, path))
     r = requests.get(url, stream=True)
