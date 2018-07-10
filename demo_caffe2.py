@@ -32,7 +32,7 @@ def DownloadResource(url, path):
     import zipfile
     print("Downloading... {} to {}".format(url, path))
     r = requests.get(url, stream=True)
-    z = zipfile.ZipFile(StringIO.StringIO(r.content))
+    z = zipfile.ZipFile(StringIO(r.content))
     z.extractall(path)
     print("Completed download and extraction.")
 
