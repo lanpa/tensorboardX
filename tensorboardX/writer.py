@@ -374,7 +374,7 @@ class SummaryWriter(object):
         """
         if self._check_caffe2(values):
             values = workspace.FetchBlob(values)
-        if bins == 'tensorflow':
+        if isinstance(bins, str) and bins == 'tensorflow':
             bins = self.default_bins
         self.file_writer.add_summary(histogram(tag, values, bins), global_step)
 
