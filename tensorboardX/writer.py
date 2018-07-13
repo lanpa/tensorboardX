@@ -450,7 +450,7 @@ class SummaryWriter(object):
             snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
         """
         if self._check_caffe2(snd_tensor):
-            snd_tensor = workspace.FetchBlobl(snd_tensor)
+            snd_tensor = workspace.FetchBlob(snd_tensor)
         self.file_writer.add_summary(audio(tag, snd_tensor, sample_rate=sample_rate), global_step)
 
     def add_text(self, tag, text_string, global_step=None):
@@ -502,18 +502,15 @@ class SummaryWriter(object):
             if not self.caffe2_enabled:
                 # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
                 return
-            '''Write graph to the summary.'''
-            if isinstance(model, cnn.CNNModelHelper):
-                current_graph, track_blob_names = model_to_graph(model, **kwargs)
-            elif isinstance(model, list):
-                if isinstance(model, core.Net):
+            '''Write graph to the summary. Check model type and handle accordingly.'''
+            if isinstance(model, list):
+                if isinstance(model[0], core.Net):
                     current_graph, track_blob_names = nets_to_graph(model, **kwargs)
-                elif isinstance(model, caffe2_pb2.NetDef):
+                elif isinstance(model[0], caffe2_pb2.NetDef):
                     current_graph, track_blob_names = protos_to_graph(model, **kwargs)
-                else:
-                    return
+            # Handles cnn.CNNModelHelper, model_helper.ModelHelper
             else:
-                return
+                current_graph, track_blob_names = model_to_graph(model, **kwargs)
             event = event_pb2.Event(graph_def=current_graph.SerializeToString())
             self.file_writer.add_event(event)
 
