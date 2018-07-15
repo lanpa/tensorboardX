@@ -40,6 +40,8 @@ from .src import summary_pb2
 from .src import graph_pb2
 from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
 from .utils import figure_to_image
+from tensorboardX.src.event_pb2 import SessionLog
+from tensorboardX.src.event_pb2 import Event
 
 
 class SummaryToEventTransformer(object):
@@ -247,7 +249,12 @@ class SummaryWriter(object):
         Args:
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each
               run. Use hierarchical folder structure to compare between runs easily. e.g. 'runs/exp1', 'runs/exp2'
-            comment (string): comment that appends to the default log_dir
+            comment (string): comment that appends to the default ``log_dir``. If ``log_dir`` is assigned,
+              this argument will no effect.
+            purge_step (int):
+              When logging crashes at step :math:`T+X` and restarts at step :math:`T`, any events
+              whose global_step larger or euqal to :math:`T` will be purged and hiding from TensorBoard.
+              Note that the resumed experiment and the crashed experiment should have the same ``log_dir``.
             kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
               controls how often to flush pending events). For more arguments
               please refer to docs for 'tf.summary.FileWriter'.
@@ -258,7 +265,15 @@ class SummaryWriter(object):
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             log_dir = os.path.join('runs', current_time + '_' + socket.gethostname() + comment)
 
-        self.file_writer = FileWriter(logdir=log_dir, **kwargs)
+        if 'purge_step' in kwargs.keys():
+            most_recent_step = kwargs.pop('purge_step')
+            if not os.path.exists(log_dir):
+                print('warning: you are purging unexisting data.')
+            self.file_writer = FileWriter(logdir=log_dir, **kwargs)
+            self.file_writer.add_event(Event(step=most_recent_step, file_version='brain.Event:2'))
+            self.file_writer.add_event(Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
+        else:
+            self.file_writer = FileWriter(logdir=log_dir, **kwargs)
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
         v = 1E-12
