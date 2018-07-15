@@ -3,7 +3,6 @@ import numpy as np
 import math
 import json
 import time
-import torch
 
 from .summary import compute_curve
 from .utils import figure_to_image
@@ -188,7 +187,9 @@ class VisdomWriter:
         if len(shape) > 4:
             for i in range(shape[0]):
                 # Reshape each video to Visdom's (T x H x W x C) and write each video
+                # TODO: reverse the logic here, shoudl do the permutation in numpy
                 if isinstance(vid_tensor, np.ndarray):
+                    import torch
                     ind_vid = torch.from_numpy(vid_tensor[i, :, :, :, :]).permute(1, 2, 3, 0)
                 else:
                     ind_vid = vid_tensor[i, :, :, :, :].permute(1, 2, 3, 0)
