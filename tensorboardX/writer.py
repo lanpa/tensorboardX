@@ -590,7 +590,7 @@ class SummaryWriter(object):
             assert mat.size(0) == label_img.size(0), '#images should equal with #data points'
             make_sprite(label_img, save_path)
         assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
-        make_mat(mat.tolist(), save_path)
+        make_mat(mat, save_path)
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), subdir, global_step, tag)
 

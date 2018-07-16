@@ -52,5 +52,5 @@ def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
 def make_mat(matlist, save_path):
     with open(os.path.join(save_path, 'tensors.tsv'), 'w') as f:
         for x in matlist:
-            x = [str(i) for i in x]
+            x = [str(i.item()) for i in x]
             f.write('\t'.join(x) + '\n')
