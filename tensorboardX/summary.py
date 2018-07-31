@@ -266,7 +266,6 @@ def video(tag, tensor, fps=4):
     return Summary(value=[Summary.Value(tag=tag, image=video)])
 
 
-
 def make_video(tensor, fps):
     try:
         import moviepy
