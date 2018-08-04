@@ -113,7 +113,7 @@ that have correct size for ``m``. Let ``r = m(t)``, then please invoke
 require gradient, therefore it will be omitted when back tracing. To draw the
 input node, pass an additional parameter ``requires_grad=True`` when creating the
 input tensor. See
-`The graph demo <https://github.com/lanpa/tensorboard-pytorch/blob/master/demo_graph.py>`_ for
+`The graph demo <https://github.com/lanpa/tensorboardX/blob/master/demo_graph.py>`_ for
 complete example.
 
 
@@ -147,7 +147,7 @@ distant points have very different label (semantically or visually). Here the
 metadata is a list of labels, and the length of the list should equal to n, the
 number of the points. The label_imgs is a 4D tensor of size ``NCHW``. ``N`` should equal
 to ``n`` as well. See
-`The embedding demo <https://github.com/lanpa/tensorboard-pytorch/blob/master/demo_embedding.py>`_ for
+`The embedding demo <https://github.com/lanpa/tensorboardX/blob/master/demo_embedding.py>`_ for
 complete example.
 
 
@@ -156,9 +156,9 @@ useful commands
 install
 =======
 
-Simply type ``pip install tensorboard-pytorch`` in Bash to install this package.
+Simply type ``pip install tensorboardX`` in Bash to install this package.
 To use the newest version, you might need to build from source or ``pip install
-tensorboard-pytorch —-no-cache-dir`` .  To run tensorboard web server, you need
+tensorboardX —-no-cache-dir`` .  To run tensorboard web server, you need
 to install tensorflow by ``pip install tensorflow`` or ``pip install tensorflow-gpu``.
 After that, type ``tensorboard --logdir=<yourlogdir>`` to start the server, where
 ``yourlogdir`` is the parameter of the object constructor. I think this command is

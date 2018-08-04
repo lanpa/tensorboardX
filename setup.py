@@ -25,7 +25,7 @@ setup(
     long_description= history,
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
-    url='https://github.com/lanpa/tensorboard-pytorch',
+    url='https://github.com/lanpa/tensorboardX',
     packages=find_packages(exclude=['docs', 'tests']),
     include_package_data=True,
     install_requires=requirements,

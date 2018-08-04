@@ -26,9 +26,6 @@ History
 * Multiple Embeddings in One Experiment 
 * Supports Chainer and mxnet
 
-* fixed incorrect image<->label pairing in embedding function (#12)
-* unifies API call and adds docstring. Documentation is available at: http://tensorboard-pytorch.readthedocs.io/
-
 0.7 (2017-08-22)
 -----------------
 * remove tensorflow dependency for embedding function

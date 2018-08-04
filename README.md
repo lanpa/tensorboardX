@@ -1,9 +1,9 @@
 # tensorboardX
 
-[![Build Status](https://travis-ci.org/lanpa/tensorboard-pytorch.svg?branch=master)](https://travis-ci.org/lanpa/tensorboard-pytorch)
+[![Build Status](https://travis-ci.org/lanpa/tensorboardX.svg?branch=master)](https://travis-ci.org/lanpa/tensorboardX)
 [![PyPI version](https://badge.fury.io/py/tensorboardX.svg)](https://badge.fury.io/py/tensorboardX)
 [![Downloads](https://img.shields.io/badge/pip--downloads-5K+-brightgreen.svg)](https://bigquery.cloud.google.com/savedquery/966219917372:edb59a0d70c54eb687ab2a9417a778ee)
-[![Documentation Status](https://readthedocs.org/projects/tensorboard-pytorch/badge/?version=latest)](https://tensorboard-pytorch.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/tensorboardX/badge/?version=latest)](https://tensorboardX.readthedocs.io/en/latest/?badge=latest)
 
 Write TensorBoard events with simple function call.
 
@@ -15,7 +15,7 @@ Write TensorBoard events with simple function call.
 
 * requirement for `demo_graph.py` is tensorboardX>=1.2 and pytorch>=0.4
 
-* [FAQ](https://github.com/lanpa/tensorboard-pytorch/wiki)
+* [FAQ](https://github.com/lanpa/tensorboardX/wiki)
 
 ## Install
 
@@ -25,7 +25,7 @@ Tested on anaconda2 / anaconda3, with PyTorch 0.4 / torchvision 0.2 / tensorboar
 
 or build from source:
 
-`pip install git+https://github.com/lanpa/tensorboard-pytorch`
+`pip install git+https://github.com/lanpa/tensorboardX`
 
 
 ## Example
@@ -97,9 +97,7 @@ writer.close()
 
 ## Tweaks
 
-To add more ticks for the slider (show more image history), you can modify the hardcoded `event_accumulator` in `~/anaconda3/lib/python3.6/site-packages/tensorflow/tensorboard/backend/application.py` as you wish.
-
-For `tensorflow-tensorboard` > 0.17 see https://github.com/lanpa/tensorboard-pytorch/issues/44
+To add more ticks for the slider (show more image history), check https://github.com/lanpa/tensorboardX/issues/44
 
 ## Reference
 

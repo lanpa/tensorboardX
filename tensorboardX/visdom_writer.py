@@ -178,12 +178,12 @@ class VisdomWriter:
             global_step (int): Global step value to record
             fps (float or int): Frames per second
         Shape:
-            vid_tensor: :math:`(B, C, T, H, W)`. (if following tensorboard-pytorch format)
+            vid_tensor: :math:`(B, C, T, H, W)`. (if following tensorboardX format)
             vid_tensor: :math:`(T, H, W, C)`. (if following visdom format)
             B = batches, C = colors (1, 3, or 4), T = time frames, H = height, W = width
         """
         shape = vid_tensor.shape
-        # A batch of videos (tensorboard-pytorch format) is a 5D tensor
+        # A batch of videos (tensorboardX format) is a 5D tensor
         if len(shape) > 4:
             for i in range(shape[0]):
                 # Reshape each video to Visdom's (T x H x W x C) and write each video

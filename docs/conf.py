@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# tensorboard-pytorch documentation build configuration file, created by
+# tensorboardX documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug  9 01:38:01 2017.
 #
 # This file is execfile()d with the current directory set to its
