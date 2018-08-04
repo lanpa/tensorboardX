@@ -268,9 +268,15 @@ def video(tag, tensor, fps=4):
 
 def make_video(tensor, fps):
     try:
-        import moviepy.editor as mpy
+        import moviepy
     except ImportError:
         print('add_video needs package moviepy')
+        return
+    try:
+        from moviepy import editor as mpy
+    except ImportError:
+        print("moviepy is installed, but can't import moviepy.editor.",
+              "Some packages could be missing [imageio, requests]")
         return
     import tempfile
 
