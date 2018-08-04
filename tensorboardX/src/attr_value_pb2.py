@@ -20,9 +20,9 @@ from tensorboardX.src import types_pb2 as tensorboardX_dot_src_dot_types__pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/attr_value.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n!tensorboardX/src/attr_value.proto\x12\x0btensorboard\x1a\x1dtensorboardX/src/tensor.proto\x1a#tensorboardX/src/tensor_shape.proto\x1a\x1ctensorboardX/src/types.proto\"\xaf\x04\n\tAttrValue\x12\x0b\n\x01s\x18\x02 \x01(\x0cH\x00\x12\x0b\n\x01i\x18\x03 \x01(\x03H\x00\x12\x0b\n\x01\x66\x18\x04 \x01(\x02H\x00\x12\x0b\n\x01\x62\x18\x05 \x01(\x08H\x00\x12%\n\x04type\x18\x06 \x01(\x0e\x32\x15.tensorboard.DataTypeH\x00\x12.\n\x05shape\x18\x07 \x01(\x0b\x32\x1d.tensorboard.TensorShapeProtoH\x00\x12*\n\x06tensor\x18\x08 \x01(\x0b\x32\x18.tensorboard.TensorProtoH\x00\x12\x30\n\x04list\x18\x01 \x01(\x0b\x32 .tensorboard.AttrValue.ListValueH\x00\x12)\n\x04\x66unc\x18\n \x01(\x0b\x32\x19.tensorboard.NameAttrListH\x00\x12\x15\n\x0bplaceholder\x18\t \x01(\tH\x00\x1a\xed\x01\n\tListValue\x12\t\n\x01s\x18\x02 \x03(\x0c\x12\r\n\x01i\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\r\n\x01\x66\x18\x04 \x03(\x02\x42\x02\x10\x01\x12\r\n\x01\x62\x18\x05 \x03(\x08\x42\x02\x10\x01\x12\'\n\x04type\x18\x06 \x03(\x0e\x32\x15.tensorboard.DataTypeB\x02\x10\x01\x12,\n\x05shape\x18\x07 \x03(\x0b\x32\x1d.tensorboard.TensorShapeProto\x12(\n\x06tensor\x18\x08 \x03(\x0b\x32\x18.tensorboard.TensorProto\x12\'\n\x04\x66unc\x18\t \x03(\x0b\x32\x19.tensorboard.NameAttrListB\x07\n\x05value\"\x94\x01\n\x0cNameAttrList\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x31\n\x04\x61ttr\x18\x02 \x03(\x0b\x32#.tensorboard.NameAttrList.AttrEntry\x1a\x43\n\tAttrEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12%\n\x05value\x18\x02 \x01(\x0b\x32\x16.tensorboard.AttrValue:\x02\x38\x01\x42\x30\n\x18org.tensorflow.frameworkB\x0f\x41ttrValueProtosP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n!tensorboardX/src/attr_value.proto\x12\x0ctensorboardX\x1a\x1dtensorboardX/src/tensor.proto\x1a#tensorboardX/src/tensor_shape.proto\x1a\x1ctensorboardX/src/types.proto\"\xb8\x04\n\tAttrValue\x12\x0b\n\x01s\x18\x02 \x01(\x0cH\x00\x12\x0b\n\x01i\x18\x03 \x01(\x03H\x00\x12\x0b\n\x01\x66\x18\x04 \x01(\x02H\x00\x12\x0b\n\x01\x62\x18\x05 \x01(\x08H\x00\x12&\n\x04type\x18\x06 \x01(\x0e\x32\x16.tensorboardX.DataTypeH\x00\x12/\n\x05shape\x18\x07 \x01(\x0b\x32\x1e.tensorboardX.TensorShapeProtoH\x00\x12+\n\x06tensor\x18\x08 \x01(\x0b\x32\x19.tensorboardX.TensorProtoH\x00\x12\x31\n\x04list\x18\x01 \x01(\x0b\x32!.tensorboardX.AttrValue.ListValueH\x00\x12*\n\x04\x66unc\x18\n \x01(\x0b\x32\x1a.tensorboardX.NameAttrListH\x00\x12\x15\n\x0bplaceholder\x18\t \x01(\tH\x00\x1a\xf1\x01\n\tListValue\x12\t\n\x01s\x18\x02 \x03(\x0c\x12\r\n\x01i\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\r\n\x01\x66\x18\x04 \x03(\x02\x42\x02\x10\x01\x12\r\n\x01\x62\x18\x05 \x03(\x08\x42\x02\x10\x01\x12(\n\x04type\x18\x06 \x03(\x0e\x32\x16.tensorboardX.DataTypeB\x02\x10\x01\x12-\n\x05shape\x18\x07 \x03(\x0b\x32\x1e.tensorboardX.TensorShapeProto\x12)\n\x06tensor\x18\x08 \x03(\x0b\x32\x19.tensorboardX.TensorProto\x12(\n\x04\x66unc\x18\t \x03(\x0b\x32\x1a.tensorboardX.NameAttrListB\x07\n\x05value\"\x96\x01\n\x0cNameAttrList\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x32\n\x04\x61ttr\x18\x02 \x03(\x0b\x32$.tensorboardX.NameAttrList.AttrEntry\x1a\x44\n\tAttrEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.tensorboardX.AttrValue:\x02\x38\x01\x42\x30\n\x18org.tensorflow.frameworkB\x0f\x41ttrValueProtosP\x01\xf8\x01\x01\x62\x06proto3')
   ,
   dependencies=[tensorboardX_dot_src_dot_tensor__pb2.DESCRIPTOR,tensorboardX_dot_src_dot_tensor__shape__pb2.DESCRIPTOR,tensorboardX_dot_src_dot_types__pb2.DESCRIPTOR,])
 
@@ -31,62 +31,62 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _ATTRVALUE_LISTVALUE = _descriptor.Descriptor(
   name='ListValue',
-  full_name='tensorboard.AttrValue.ListValue',
+  full_name='tensorboardX.AttrValue.ListValue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='s', full_name='tensorboard.AttrValue.ListValue.s', index=0,
+      name='s', full_name='tensorboardX.AttrValue.ListValue.s', index=0,
       number=2, type=12, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='i', full_name='tensorboard.AttrValue.ListValue.i', index=1,
+      name='i', full_name='tensorboardX.AttrValue.ListValue.i', index=1,
       number=3, type=3, cpp_type=2, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\020\001'))),
     _descriptor.FieldDescriptor(
-      name='f', full_name='tensorboard.AttrValue.ListValue.f', index=2,
+      name='f', full_name='tensorboardX.AttrValue.ListValue.f', index=2,
       number=4, type=2, cpp_type=6, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\020\001'))),
     _descriptor.FieldDescriptor(
-      name='b', full_name='tensorboard.AttrValue.ListValue.b', index=3,
+      name='b', full_name='tensorboardX.AttrValue.ListValue.b', index=3,
       number=5, type=8, cpp_type=7, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\020\001'))),
     _descriptor.FieldDescriptor(
-      name='type', full_name='tensorboard.AttrValue.ListValue.type', index=4,
+      name='type', full_name='tensorboardX.AttrValue.ListValue.type', index=4,
       number=6, type=14, cpp_type=8, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\020\001'))),
     _descriptor.FieldDescriptor(
-      name='shape', full_name='tensorboard.AttrValue.ListValue.shape', index=5,
+      name='shape', full_name='tensorboardX.AttrValue.ListValue.shape', index=5,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='tensor', full_name='tensorboard.AttrValue.ListValue.tensor', index=6,
+      name='tensor', full_name='tensorboardX.AttrValue.ListValue.tensor', index=6,
       number=8, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='func', full_name='tensorboard.AttrValue.ListValue.func', index=7,
+      name='func', full_name='tensorboardX.AttrValue.ListValue.func', index=7,
       number=9, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -104,82 +104,82 @@ _ATTRVALUE_LISTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=462,
-  serialized_end=699,
+  serialized_start=468,
+  serialized_end=709,
 )
 
 _ATTRVALUE = _descriptor.Descriptor(
   name='AttrValue',
-  full_name='tensorboard.AttrValue',
+  full_name='tensorboardX.AttrValue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='s', full_name='tensorboard.AttrValue.s', index=0,
+      name='s', full_name='tensorboardX.AttrValue.s', index=0,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='i', full_name='tensorboard.AttrValue.i', index=1,
+      name='i', full_name='tensorboardX.AttrValue.i', index=1,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='f', full_name='tensorboard.AttrValue.f', index=2,
+      name='f', full_name='tensorboardX.AttrValue.f', index=2,
       number=4, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='b', full_name='tensorboard.AttrValue.b', index=3,
+      name='b', full_name='tensorboardX.AttrValue.b', index=3,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='type', full_name='tensorboard.AttrValue.type', index=4,
+      name='type', full_name='tensorboardX.AttrValue.type', index=4,
       number=6, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='shape', full_name='tensorboard.AttrValue.shape', index=5,
+      name='shape', full_name='tensorboardX.AttrValue.shape', index=5,
       number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='tensor', full_name='tensorboard.AttrValue.tensor', index=6,
+      name='tensor', full_name='tensorboardX.AttrValue.tensor', index=6,
       number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='list', full_name='tensorboard.AttrValue.list', index=7,
+      name='list', full_name='tensorboardX.AttrValue.list', index=7,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='func', full_name='tensorboard.AttrValue.func', index=8,
+      name='func', full_name='tensorboardX.AttrValue.func', index=8,
       number=10, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='placeholder', full_name='tensorboard.AttrValue.placeholder', index=9,
+      name='placeholder', full_name='tensorboardX.AttrValue.placeholder', index=9,
       number=9, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -197,30 +197,30 @@ _ATTRVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='value', full_name='tensorboard.AttrValue.value',
+      name='value', full_name='tensorboardX.AttrValue.value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=149,
-  serialized_end=708,
+  serialized_start=150,
+  serialized_end=718,
 )
 
 
 _NAMEATTRLIST_ATTRENTRY = _descriptor.Descriptor(
   name='AttrEntry',
-  full_name='tensorboard.NameAttrList.AttrEntry',
+  full_name='tensorboardX.NameAttrList.AttrEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='tensorboard.NameAttrList.AttrEntry.key', index=0,
+      name='key', full_name='tensorboardX.NameAttrList.AttrEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='value', full_name='tensorboard.NameAttrList.AttrEntry.value', index=1,
+      name='value', full_name='tensorboardX.NameAttrList.AttrEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -238,26 +238,26 @@ _NAMEATTRLIST_ATTRENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=792,
-  serialized_end=859,
+  serialized_start=803,
+  serialized_end=871,
 )
 
 _NAMEATTRLIST = _descriptor.Descriptor(
   name='NameAttrList',
-  full_name='tensorboard.NameAttrList',
+  full_name='tensorboardX.NameAttrList',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='tensorboard.NameAttrList.name', index=0,
+      name='name', full_name='tensorboardX.NameAttrList.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attr', full_name='tensorboard.NameAttrList.attr', index=1,
+      name='attr', full_name='tensorboardX.NameAttrList.attr', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -275,8 +275,8 @@ _NAMEATTRLIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=711,
-  serialized_end=859,
+  serialized_start=721,
+  serialized_end=871,
 )
 
 _ATTRVALUE_LISTVALUE.fields_by_name['type'].enum_type = tensorboardX_dot_src_dot_types__pb2._DATATYPE
@@ -331,12 +331,12 @@ AttrValue = _reflection.GeneratedProtocolMessageType('AttrValue', (_message.Mess
   ListValue = _reflection.GeneratedProtocolMessageType('ListValue', (_message.Message,), dict(
     DESCRIPTOR = _ATTRVALUE_LISTVALUE,
     __module__ = 'tensorboardX.src.attr_value_pb2'
-    # @@protoc_insertion_point(class_scope:tensorboard.AttrValue.ListValue)
+    # @@protoc_insertion_point(class_scope:tensorboardX.AttrValue.ListValue)
     ))
   ,
   DESCRIPTOR = _ATTRVALUE,
   __module__ = 'tensorboardX.src.attr_value_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.AttrValue)
+  # @@protoc_insertion_point(class_scope:tensorboardX.AttrValue)
   ))
 _sym_db.RegisterMessage(AttrValue)
 _sym_db.RegisterMessage(AttrValue.ListValue)
@@ -346,12 +346,12 @@ NameAttrList = _reflection.GeneratedProtocolMessageType('NameAttrList', (_messag
   AttrEntry = _reflection.GeneratedProtocolMessageType('AttrEntry', (_message.Message,), dict(
     DESCRIPTOR = _NAMEATTRLIST_ATTRENTRY,
     __module__ = 'tensorboardX.src.attr_value_pb2'
-    # @@protoc_insertion_point(class_scope:tensorboard.NameAttrList.AttrEntry)
+    # @@protoc_insertion_point(class_scope:tensorboardX.NameAttrList.AttrEntry)
     ))
   ,
   DESCRIPTOR = _NAMEATTRLIST,
   __module__ = 'tensorboardX.src.attr_value_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.NameAttrList)
+  # @@protoc_insertion_point(class_scope:tensorboardX.NameAttrList)
   ))
 _sym_db.RegisterMessage(NameAttrList)
 _sym_db.RegisterMessage(NameAttrList.AttrEntry)

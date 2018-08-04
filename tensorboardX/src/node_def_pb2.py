@@ -18,9 +18,9 @@ from tensorboardX.src import attr_value_pb2 as tensorboardX_dot_src_dot_attr__va
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/node_def.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n\x1ftensorboardX/src/node_def.proto\x12\x0btensorboard\x1a!tensorboardX/src/attr_value.proto\"\xb5\x01\n\x07NodeDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02op\x18\x02 \x01(\t\x12\r\n\x05input\x18\x03 \x03(\t\x12\x0e\n\x06\x64\x65vice\x18\x04 \x01(\t\x12,\n\x04\x61ttr\x18\x05 \x03(\x0b\x32\x1e.tensorboard.NodeDef.AttrEntry\x1a\x43\n\tAttrEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12%\n\x05value\x18\x02 \x01(\x0b\x32\x16.tensorboard.AttrValue:\x02\x38\x01\x42*\n\x18org.tensorflow.frameworkB\tNodeProtoP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x1ftensorboardX/src/node_def.proto\x12\x0ctensorboardX\x1a!tensorboardX/src/attr_value.proto\"\xb7\x01\n\x07NodeDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02op\x18\x02 \x01(\t\x12\r\n\x05input\x18\x03 \x03(\t\x12\x0e\n\x06\x64\x65vice\x18\x04 \x01(\t\x12-\n\x04\x61ttr\x18\x05 \x03(\x0b\x32\x1f.tensorboardX.NodeDef.AttrEntry\x1a\x44\n\tAttrEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.tensorboardX.AttrValue:\x02\x38\x01\x42*\n\x18org.tensorflow.frameworkB\tNodeProtoP\x01\xf8\x01\x01\x62\x06proto3')
   ,
   dependencies=[tensorboardX_dot_src_dot_attr__value__pb2.DESCRIPTOR,])
 
@@ -29,20 +29,20 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _NODEDEF_ATTRENTRY = _descriptor.Descriptor(
   name='AttrEntry',
-  full_name='tensorboard.NodeDef.AttrEntry',
+  full_name='tensorboardX.NodeDef.AttrEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='tensorboard.NodeDef.AttrEntry.key', index=0,
+      name='key', full_name='tensorboardX.NodeDef.AttrEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='value', full_name='tensorboard.NodeDef.AttrEntry.value', index=1,
+      name='value', full_name='tensorboardX.NodeDef.AttrEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -60,47 +60,47 @@ _NODEDEF_ATTRENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=198,
-  serialized_end=265,
+  serialized_start=200,
+  serialized_end=268,
 )
 
 _NODEDEF = _descriptor.Descriptor(
   name='NodeDef',
-  full_name='tensorboard.NodeDef',
+  full_name='tensorboardX.NodeDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='tensorboard.NodeDef.name', index=0,
+      name='name', full_name='tensorboardX.NodeDef.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='op', full_name='tensorboard.NodeDef.op', index=1,
+      name='op', full_name='tensorboardX.NodeDef.op', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='input', full_name='tensorboard.NodeDef.input', index=2,
+      name='input', full_name='tensorboardX.NodeDef.input', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='device', full_name='tensorboard.NodeDef.device', index=3,
+      name='device', full_name='tensorboardX.NodeDef.device', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attr', full_name='tensorboard.NodeDef.attr', index=4,
+      name='attr', full_name='tensorboardX.NodeDef.attr', index=4,
       number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -118,8 +118,8 @@ _NODEDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=84,
-  serialized_end=265,
+  serialized_start=85,
+  serialized_end=268,
 )
 
 _NODEDEF_ATTRENTRY.fields_by_name['value'].message_type = tensorboardX_dot_src_dot_attr__value__pb2._ATTRVALUE
@@ -133,12 +133,12 @@ NodeDef = _reflection.GeneratedProtocolMessageType('NodeDef', (_message.Message,
   AttrEntry = _reflection.GeneratedProtocolMessageType('AttrEntry', (_message.Message,), dict(
     DESCRIPTOR = _NODEDEF_ATTRENTRY,
     __module__ = 'tensorboardX.src.node_def_pb2'
-    # @@protoc_insertion_point(class_scope:tensorboard.NodeDef.AttrEntry)
+    # @@protoc_insertion_point(class_scope:tensorboardX.NodeDef.AttrEntry)
     ))
   ,
   DESCRIPTOR = _NODEDEF,
   __module__ = 'tensorboardX.src.node_def_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.NodeDef)
+  # @@protoc_insertion_point(class_scope:tensorboardX.NodeDef)
   ))
 _sym_db.RegisterMessage(NodeDef)
 _sym_db.RegisterMessage(NodeDef.AttrEntry)

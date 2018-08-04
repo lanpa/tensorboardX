@@ -17,9 +17,9 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/plugin_text.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n\"tensorboardX/src/plugin_text.proto\x12\x0btensorboard\"!\n\x0eTextPluginData\x12\x0f\n\x07version\x18\x01 \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\"tensorboardX/src/plugin_text.proto\x12\x0ctensorboardX\"!\n\x0eTextPluginData\x12\x0f\n\x07version\x18\x01 \x01(\x05\x62\x06proto3')
 )
 
 
@@ -27,13 +27,13 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _TEXTPLUGINDATA = _descriptor.Descriptor(
   name='TextPluginData',
-  full_name='tensorboard.TextPluginData',
+  full_name='tensorboardX.TextPluginData',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='version', full_name='tensorboard.TextPluginData.version', index=0,
+      name='version', full_name='tensorboardX.TextPluginData.version', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -51,8 +51,8 @@ _TEXTPLUGINDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=51,
-  serialized_end=84,
+  serialized_start=52,
+  serialized_end=85,
 )
 
 DESCRIPTOR.message_types_by_name['TextPluginData'] = _TEXTPLUGINDATA
@@ -61,7 +61,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 TextPluginData = _reflection.GeneratedProtocolMessageType('TextPluginData', (_message.Message,), dict(
   DESCRIPTOR = _TEXTPLUGINDATA,
   __module__ = 'tensorboardX.src.plugin_text_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.TextPluginData)
+  # @@protoc_insertion_point(class_scope:tensorboardX.TextPluginData)
   ))
 _sym_db.RegisterMessage(TextPluginData)
 

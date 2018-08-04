@@ -19,9 +19,9 @@ from tensorboardX.src import versions_pb2 as tensorboardX_dot_src_dot_versions__
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/graph.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n\x1ctensorboardX/src/graph.proto\x12\x0btensorboard\x1a\x1ftensorboardX/src/node_def.proto\x1a\x1ftensorboardX/src/versions.proto\"n\n\x08GraphDef\x12\"\n\x04node\x18\x01 \x03(\x0b\x32\x14.tensorboard.NodeDef\x12)\n\x08versions\x18\x04 \x01(\x0b\x32\x17.tensorboard.VersionDef\x12\x13\n\x07version\x18\x03 \x01(\x05\x42\x02\x18\x01\x42,\n\x18org.tensorflow.frameworkB\x0bGraphProtosP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x1ctensorboardX/src/graph.proto\x12\x0ctensorboardX\x1a\x1ftensorboardX/src/node_def.proto\x1a\x1ftensorboardX/src/versions.proto\"p\n\x08GraphDef\x12#\n\x04node\x18\x01 \x03(\x0b\x32\x15.tensorboardX.NodeDef\x12*\n\x08versions\x18\x04 \x01(\x0b\x32\x18.tensorboardX.VersionDef\x12\x13\n\x07version\x18\x03 \x01(\x05\x42\x02\x18\x01\x42,\n\x18org.tensorflow.frameworkB\x0bGraphProtosP\x01\xf8\x01\x01\x62\x06proto3')
   ,
   dependencies=[tensorboardX_dot_src_dot_node__def__pb2.DESCRIPTOR,tensorboardX_dot_src_dot_versions__pb2.DESCRIPTOR,])
 
@@ -30,27 +30,27 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _GRAPHDEF = _descriptor.Descriptor(
   name='GraphDef',
-  full_name='tensorboard.GraphDef',
+  full_name='tensorboardX.GraphDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='node', full_name='tensorboard.GraphDef.node', index=0,
+      name='node', full_name='tensorboardX.GraphDef.node', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='versions', full_name='tensorboard.GraphDef.versions', index=1,
+      name='versions', full_name='tensorboardX.GraphDef.versions', index=1,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='version', full_name='tensorboard.GraphDef.version', index=2,
+      name='version', full_name='tensorboardX.GraphDef.version', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -68,8 +68,8 @@ _GRAPHDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=111,
-  serialized_end=221,
+  serialized_start=112,
+  serialized_end=224,
 )
 
 _GRAPHDEF.fields_by_name['node'].message_type = tensorboardX_dot_src_dot_node__def__pb2._NODEDEF
@@ -80,7 +80,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 GraphDef = _reflection.GeneratedProtocolMessageType('GraphDef', (_message.Message,), dict(
   DESCRIPTOR = _GRAPHDEF,
   __module__ = 'tensorboardX.src.graph_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.GraphDef)
+  # @@protoc_insertion_point(class_scope:tensorboardX.GraphDef)
   ))
 _sym_db.RegisterMessage(GraphDef)
 

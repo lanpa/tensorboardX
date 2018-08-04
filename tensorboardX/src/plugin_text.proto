@@ -15,7 +15,7 @@ limitations under the License.
 
 syntax = "proto3";
 
-package tensorboard;
+package tensorboardX;
 
 // Text summaries created by the `tensorboard.plugins.text.summary`
 // module will include `SummaryMetadata` whose `plugin_data` field has

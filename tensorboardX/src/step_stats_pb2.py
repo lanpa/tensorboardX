@@ -17,9 +17,9 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/step_stats.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n!tensorboardX/src/step_stats.proto\x12\x0btensorboard\"=\n\x10\x41llocationRecord\x12\x14\n\x0c\x61lloc_micros\x18\x01 \x01(\x03\x12\x13\n\x0b\x61lloc_bytes\x18\x02 \x01(\x03\"\xc5\x01\n\x13\x41llocatorMemoryUsed\x12\x16\n\x0e\x61llocator_name\x18\x01 \x01(\t\x12\x13\n\x0btotal_bytes\x18\x02 \x01(\x03\x12\x12\n\npeak_bytes\x18\x03 \x01(\x03\x12\x12\n\nlive_bytes\x18\x04 \x01(\x03\x12\x39\n\x12\x61llocation_records\x18\x06 \x03(\x0b\x32\x1d.tensorboard.AllocationRecord\x12\x1e\n\x16\x61llocator_bytes_in_use\x18\x05 \x01(\x03\"\x1a\n\nNodeOutput\x12\x0c\n\x04slot\x18\x01 \x01(\x05\"\xec\x01\n\x0bMemoryStats\x12\x18\n\x10temp_memory_size\x18\x01 \x01(\x03\x12\x1e\n\x16persistent_memory_size\x18\x03 \x01(\x03\x12#\n\x1bpersistent_tensor_alloc_ids\x18\x05 \x03(\x03\x12#\n\x17\x64\x65vice_temp_memory_size\x18\x02 \x01(\x03\x42\x02\x18\x01\x12)\n\x1d\x64\x65vice_persistent_memory_size\x18\x04 \x01(\x03\x42\x02\x18\x01\x12.\n\"device_persistent_tensor_alloc_ids\x18\x06 \x03(\x03\x42\x02\x18\x01\"\xe0\x02\n\rNodeExecStats\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x18\n\x10\x61ll_start_micros\x18\x02 \x01(\x03\x12\x1b\n\x13op_start_rel_micros\x18\x03 \x01(\x03\x12\x19\n\x11op_end_rel_micros\x18\x04 \x01(\x03\x12\x1a\n\x12\x61ll_end_rel_micros\x18\x05 \x01(\x03\x12\x30\n\x06memory\x18\x06 \x03(\x0b\x32 .tensorboard.AllocatorMemoryUsed\x12\'\n\x06output\x18\x07 \x03(\x0b\x32\x17.tensorboard.NodeOutput\x12\x16\n\x0etimeline_label\x18\x08 \x01(\t\x12\x18\n\x10scheduled_micros\x18\t \x01(\x03\x12\x11\n\tthread_id\x18\n \x01(\r\x12.\n\x0cmemory_stats\x18\x0c \x01(\x0b\x32\x18.tensorboard.MemoryStats\"Q\n\x0f\x44\x65viceStepStats\x12\x0e\n\x06\x64\x65vice\x18\x01 \x01(\t\x12.\n\nnode_stats\x18\x02 \x03(\x0b\x32\x1a.tensorboard.NodeExecStats\"<\n\tStepStats\x12/\n\tdev_stats\x18\x01 \x03(\x0b\x32\x1c.tensorboard.DeviceStepStats\"9\n\x0bRunMetadata\x12*\n\nstep_stats\x18\x01 \x01(\x0b\x32\x16.tensorboard.StepStatsBo\n\x18org.tensorflow.frameworkB\x0fStepStatsProtosP\x01Z=github.com/tensorflow/tensorflow/tensorflow/go/core/framework\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n!tensorboardX/src/step_stats.proto\x12\x0ctensorboardX\"=\n\x10\x41llocationRecord\x12\x14\n\x0c\x61lloc_micros\x18\x01 \x01(\x03\x12\x13\n\x0b\x61lloc_bytes\x18\x02 \x01(\x03\"\xc6\x01\n\x13\x41llocatorMemoryUsed\x12\x16\n\x0e\x61llocator_name\x18\x01 \x01(\t\x12\x13\n\x0btotal_bytes\x18\x02 \x01(\x03\x12\x12\n\npeak_bytes\x18\x03 \x01(\x03\x12\x12\n\nlive_bytes\x18\x04 \x01(\x03\x12:\n\x12\x61llocation_records\x18\x06 \x03(\x0b\x32\x1e.tensorboardX.AllocationRecord\x12\x1e\n\x16\x61llocator_bytes_in_use\x18\x05 \x01(\x03\"\x1a\n\nNodeOutput\x12\x0c\n\x04slot\x18\x01 \x01(\x05\"\xec\x01\n\x0bMemoryStats\x12\x18\n\x10temp_memory_size\x18\x01 \x01(\x03\x12\x1e\n\x16persistent_memory_size\x18\x03 \x01(\x03\x12#\n\x1bpersistent_tensor_alloc_ids\x18\x05 \x03(\x03\x12#\n\x17\x64\x65vice_temp_memory_size\x18\x02 \x01(\x03\x42\x02\x18\x01\x12)\n\x1d\x64\x65vice_persistent_memory_size\x18\x04 \x01(\x03\x42\x02\x18\x01\x12.\n\"device_persistent_tensor_alloc_ids\x18\x06 \x03(\x03\x42\x02\x18\x01\"\xe3\x02\n\rNodeExecStats\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x18\n\x10\x61ll_start_micros\x18\x02 \x01(\x03\x12\x1b\n\x13op_start_rel_micros\x18\x03 \x01(\x03\x12\x19\n\x11op_end_rel_micros\x18\x04 \x01(\x03\x12\x1a\n\x12\x61ll_end_rel_micros\x18\x05 \x01(\x03\x12\x31\n\x06memory\x18\x06 \x03(\x0b\x32!.tensorboardX.AllocatorMemoryUsed\x12(\n\x06output\x18\x07 \x03(\x0b\x32\x18.tensorboardX.NodeOutput\x12\x16\n\x0etimeline_label\x18\x08 \x01(\t\x12\x18\n\x10scheduled_micros\x18\t \x01(\x03\x12\x11\n\tthread_id\x18\n \x01(\r\x12/\n\x0cmemory_stats\x18\x0c \x01(\x0b\x32\x19.tensorboardX.MemoryStats\"R\n\x0f\x44\x65viceStepStats\x12\x0e\n\x06\x64\x65vice\x18\x01 \x01(\t\x12/\n\nnode_stats\x18\x02 \x03(\x0b\x32\x1b.tensorboardX.NodeExecStats\"=\n\tStepStats\x12\x30\n\tdev_stats\x18\x01 \x03(\x0b\x32\x1d.tensorboardX.DeviceStepStats\":\n\x0bRunMetadata\x12+\n\nstep_stats\x18\x01 \x01(\x0b\x32\x17.tensorboardX.StepStatsBo\n\x18org.tensorflow.frameworkB\x0fStepStatsProtosP\x01Z=github.com/tensorflow/tensorflow/tensorflow/go/core/framework\xf8\x01\x01\x62\x06proto3')
 )
 
 
@@ -27,20 +27,20 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _ALLOCATIONRECORD = _descriptor.Descriptor(
   name='AllocationRecord',
-  full_name='tensorboard.AllocationRecord',
+  full_name='tensorboardX.AllocationRecord',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='alloc_micros', full_name='tensorboard.AllocationRecord.alloc_micros', index=0,
+      name='alloc_micros', full_name='tensorboardX.AllocationRecord.alloc_micros', index=0,
       number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='alloc_bytes', full_name='tensorboard.AllocationRecord.alloc_bytes', index=1,
+      name='alloc_bytes', full_name='tensorboardX.AllocationRecord.alloc_bytes', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -58,55 +58,55 @@ _ALLOCATIONRECORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=50,
-  serialized_end=111,
+  serialized_start=51,
+  serialized_end=112,
 )
 
 
 _ALLOCATORMEMORYUSED = _descriptor.Descriptor(
   name='AllocatorMemoryUsed',
-  full_name='tensorboard.AllocatorMemoryUsed',
+  full_name='tensorboardX.AllocatorMemoryUsed',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='allocator_name', full_name='tensorboard.AllocatorMemoryUsed.allocator_name', index=0,
+      name='allocator_name', full_name='tensorboardX.AllocatorMemoryUsed.allocator_name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='total_bytes', full_name='tensorboard.AllocatorMemoryUsed.total_bytes', index=1,
+      name='total_bytes', full_name='tensorboardX.AllocatorMemoryUsed.total_bytes', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='peak_bytes', full_name='tensorboard.AllocatorMemoryUsed.peak_bytes', index=2,
+      name='peak_bytes', full_name='tensorboardX.AllocatorMemoryUsed.peak_bytes', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='live_bytes', full_name='tensorboard.AllocatorMemoryUsed.live_bytes', index=3,
+      name='live_bytes', full_name='tensorboardX.AllocatorMemoryUsed.live_bytes', index=3,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='allocation_records', full_name='tensorboard.AllocatorMemoryUsed.allocation_records', index=4,
+      name='allocation_records', full_name='tensorboardX.AllocatorMemoryUsed.allocation_records', index=4,
       number=6, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='allocator_bytes_in_use', full_name='tensorboard.AllocatorMemoryUsed.allocator_bytes_in_use', index=5,
+      name='allocator_bytes_in_use', full_name='tensorboardX.AllocatorMemoryUsed.allocator_bytes_in_use', index=5,
       number=5, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -124,20 +124,20 @@ _ALLOCATORMEMORYUSED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=114,
-  serialized_end=311,
+  serialized_start=115,
+  serialized_end=313,
 )
 
 
 _NODEOUTPUT = _descriptor.Descriptor(
   name='NodeOutput',
-  full_name='tensorboard.NodeOutput',
+  full_name='tensorboardX.NodeOutput',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='slot', full_name='tensorboard.NodeOutput.slot', index=0,
+      name='slot', full_name='tensorboardX.NodeOutput.slot', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -155,55 +155,55 @@ _NODEOUTPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=313,
-  serialized_end=339,
+  serialized_start=315,
+  serialized_end=341,
 )
 
 
 _MEMORYSTATS = _descriptor.Descriptor(
   name='MemoryStats',
-  full_name='tensorboard.MemoryStats',
+  full_name='tensorboardX.MemoryStats',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='temp_memory_size', full_name='tensorboard.MemoryStats.temp_memory_size', index=0,
+      name='temp_memory_size', full_name='tensorboardX.MemoryStats.temp_memory_size', index=0,
       number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='persistent_memory_size', full_name='tensorboard.MemoryStats.persistent_memory_size', index=1,
+      name='persistent_memory_size', full_name='tensorboardX.MemoryStats.persistent_memory_size', index=1,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='persistent_tensor_alloc_ids', full_name='tensorboard.MemoryStats.persistent_tensor_alloc_ids', index=2,
+      name='persistent_tensor_alloc_ids', full_name='tensorboardX.MemoryStats.persistent_tensor_alloc_ids', index=2,
       number=5, type=3, cpp_type=2, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='device_temp_memory_size', full_name='tensorboard.MemoryStats.device_temp_memory_size', index=3,
+      name='device_temp_memory_size', full_name='tensorboardX.MemoryStats.device_temp_memory_size', index=3,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))),
     _descriptor.FieldDescriptor(
-      name='device_persistent_memory_size', full_name='tensorboard.MemoryStats.device_persistent_memory_size', index=4,
+      name='device_persistent_memory_size', full_name='tensorboardX.MemoryStats.device_persistent_memory_size', index=4,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))),
     _descriptor.FieldDescriptor(
-      name='device_persistent_tensor_alloc_ids', full_name='tensorboard.MemoryStats.device_persistent_tensor_alloc_ids', index=5,
+      name='device_persistent_tensor_alloc_ids', full_name='tensorboardX.MemoryStats.device_persistent_tensor_alloc_ids', index=5,
       number=6, type=3, cpp_type=2, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -221,90 +221,90 @@ _MEMORYSTATS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=342,
-  serialized_end=578,
+  serialized_start=344,
+  serialized_end=580,
 )
 
 
 _NODEEXECSTATS = _descriptor.Descriptor(
   name='NodeExecStats',
-  full_name='tensorboard.NodeExecStats',
+  full_name='tensorboardX.NodeExecStats',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='node_name', full_name='tensorboard.NodeExecStats.node_name', index=0,
+      name='node_name', full_name='tensorboardX.NodeExecStats.node_name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='all_start_micros', full_name='tensorboard.NodeExecStats.all_start_micros', index=1,
+      name='all_start_micros', full_name='tensorboardX.NodeExecStats.all_start_micros', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='op_start_rel_micros', full_name='tensorboard.NodeExecStats.op_start_rel_micros', index=2,
+      name='op_start_rel_micros', full_name='tensorboardX.NodeExecStats.op_start_rel_micros', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='op_end_rel_micros', full_name='tensorboard.NodeExecStats.op_end_rel_micros', index=3,
+      name='op_end_rel_micros', full_name='tensorboardX.NodeExecStats.op_end_rel_micros', index=3,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='all_end_rel_micros', full_name='tensorboard.NodeExecStats.all_end_rel_micros', index=4,
+      name='all_end_rel_micros', full_name='tensorboardX.NodeExecStats.all_end_rel_micros', index=4,
       number=5, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='memory', full_name='tensorboard.NodeExecStats.memory', index=5,
+      name='memory', full_name='tensorboardX.NodeExecStats.memory', index=5,
       number=6, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='output', full_name='tensorboard.NodeExecStats.output', index=6,
+      name='output', full_name='tensorboardX.NodeExecStats.output', index=6,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timeline_label', full_name='tensorboard.NodeExecStats.timeline_label', index=7,
+      name='timeline_label', full_name='tensorboardX.NodeExecStats.timeline_label', index=7,
       number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='scheduled_micros', full_name='tensorboard.NodeExecStats.scheduled_micros', index=8,
+      name='scheduled_micros', full_name='tensorboardX.NodeExecStats.scheduled_micros', index=8,
       number=9, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='thread_id', full_name='tensorboard.NodeExecStats.thread_id', index=9,
+      name='thread_id', full_name='tensorboardX.NodeExecStats.thread_id', index=9,
       number=10, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='memory_stats', full_name='tensorboard.NodeExecStats.memory_stats', index=10,
+      name='memory_stats', full_name='tensorboardX.NodeExecStats.memory_stats', index=10,
       number=12, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -322,27 +322,27 @@ _NODEEXECSTATS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=581,
-  serialized_end=933,
+  serialized_start=583,
+  serialized_end=938,
 )
 
 
 _DEVICESTEPSTATS = _descriptor.Descriptor(
   name='DeviceStepStats',
-  full_name='tensorboard.DeviceStepStats',
+  full_name='tensorboardX.DeviceStepStats',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='device', full_name='tensorboard.DeviceStepStats.device', index=0,
+      name='device', full_name='tensorboardX.DeviceStepStats.device', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='node_stats', full_name='tensorboard.DeviceStepStats.node_stats', index=1,
+      name='node_stats', full_name='tensorboardX.DeviceStepStats.node_stats', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -360,20 +360,20 @@ _DEVICESTEPSTATS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=935,
-  serialized_end=1016,
+  serialized_start=940,
+  serialized_end=1022,
 )
 
 
 _STEPSTATS = _descriptor.Descriptor(
   name='StepStats',
-  full_name='tensorboard.StepStats',
+  full_name='tensorboardX.StepStats',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='dev_stats', full_name='tensorboard.StepStats.dev_stats', index=0,
+      name='dev_stats', full_name='tensorboardX.StepStats.dev_stats', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -391,20 +391,20 @@ _STEPSTATS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1018,
-  serialized_end=1078,
+  serialized_start=1024,
+  serialized_end=1085,
 )
 
 
 _RUNMETADATA = _descriptor.Descriptor(
   name='RunMetadata',
-  full_name='tensorboard.RunMetadata',
+  full_name='tensorboardX.RunMetadata',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='step_stats', full_name='tensorboard.RunMetadata.step_stats', index=0,
+      name='step_stats', full_name='tensorboardX.RunMetadata.step_stats', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -422,8 +422,8 @@ _RUNMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1080,
-  serialized_end=1137,
+  serialized_start=1087,
+  serialized_end=1145,
 )
 
 _ALLOCATORMEMORYUSED.fields_by_name['allocation_records'].message_type = _ALLOCATIONRECORD
@@ -446,56 +446,56 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 AllocationRecord = _reflection.GeneratedProtocolMessageType('AllocationRecord', (_message.Message,), dict(
   DESCRIPTOR = _ALLOCATIONRECORD,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.AllocationRecord)
+  # @@protoc_insertion_point(class_scope:tensorboardX.AllocationRecord)
   ))
 _sym_db.RegisterMessage(AllocationRecord)
 
 AllocatorMemoryUsed = _reflection.GeneratedProtocolMessageType('AllocatorMemoryUsed', (_message.Message,), dict(
   DESCRIPTOR = _ALLOCATORMEMORYUSED,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.AllocatorMemoryUsed)
+  # @@protoc_insertion_point(class_scope:tensorboardX.AllocatorMemoryUsed)
   ))
 _sym_db.RegisterMessage(AllocatorMemoryUsed)
 
 NodeOutput = _reflection.GeneratedProtocolMessageType('NodeOutput', (_message.Message,), dict(
   DESCRIPTOR = _NODEOUTPUT,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.NodeOutput)
+  # @@protoc_insertion_point(class_scope:tensorboardX.NodeOutput)
   ))
 _sym_db.RegisterMessage(NodeOutput)
 
 MemoryStats = _reflection.GeneratedProtocolMessageType('MemoryStats', (_message.Message,), dict(
   DESCRIPTOR = _MEMORYSTATS,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.MemoryStats)
+  # @@protoc_insertion_point(class_scope:tensorboardX.MemoryStats)
   ))
 _sym_db.RegisterMessage(MemoryStats)
 
 NodeExecStats = _reflection.GeneratedProtocolMessageType('NodeExecStats', (_message.Message,), dict(
   DESCRIPTOR = _NODEEXECSTATS,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.NodeExecStats)
+  # @@protoc_insertion_point(class_scope:tensorboardX.NodeExecStats)
   ))
 _sym_db.RegisterMessage(NodeExecStats)
 
 DeviceStepStats = _reflection.GeneratedProtocolMessageType('DeviceStepStats', (_message.Message,), dict(
   DESCRIPTOR = _DEVICESTEPSTATS,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.DeviceStepStats)
+  # @@protoc_insertion_point(class_scope:tensorboardX.DeviceStepStats)
   ))
 _sym_db.RegisterMessage(DeviceStepStats)
 
 StepStats = _reflection.GeneratedProtocolMessageType('StepStats', (_message.Message,), dict(
   DESCRIPTOR = _STEPSTATS,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.StepStats)
+  # @@protoc_insertion_point(class_scope:tensorboardX.StepStats)
   ))
 _sym_db.RegisterMessage(StepStats)
 
 RunMetadata = _reflection.GeneratedProtocolMessageType('RunMetadata', (_message.Message,), dict(
   DESCRIPTOR = _RUNMETADATA,
   __module__ = 'tensorboardX.src.step_stats_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.RunMetadata)
+  # @@protoc_insertion_point(class_scope:tensorboardX.RunMetadata)
   ))
 _sym_db.RegisterMessage(RunMetadata)
 

@@ -15,7 +15,7 @@ limitations under the License.
 
 syntax = "proto3";
 
-package tensorboard;
+package tensorboardX;
 
 message PrCurvePluginData {
   // Version `0` is the only supported version.

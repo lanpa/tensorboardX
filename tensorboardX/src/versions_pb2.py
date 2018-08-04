@@ -17,9 +17,9 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/versions.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n\x1ftensorboardX/src/versions.proto\x12\x0btensorboard\"K\n\nVersionDef\x12\x10\n\x08producer\x18\x01 \x01(\x05\x12\x14\n\x0cmin_consumer\x18\x02 \x01(\x05\x12\x15\n\rbad_consumers\x18\x03 \x03(\x05\x42/\n\x18org.tensorflow.frameworkB\x0eVersionsProtosP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x1ftensorboardX/src/versions.proto\x12\x0ctensorboardX\"K\n\nVersionDef\x12\x10\n\x08producer\x18\x01 \x01(\x05\x12\x14\n\x0cmin_consumer\x18\x02 \x01(\x05\x12\x15\n\rbad_consumers\x18\x03 \x03(\x05\x42/\n\x18org.tensorflow.frameworkB\x0eVersionsProtosP\x01\xf8\x01\x01\x62\x06proto3')
 )
 
 
@@ -27,27 +27,27 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _VERSIONDEF = _descriptor.Descriptor(
   name='VersionDef',
-  full_name='tensorboard.VersionDef',
+  full_name='tensorboardX.VersionDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='producer', full_name='tensorboard.VersionDef.producer', index=0,
+      name='producer', full_name='tensorboardX.VersionDef.producer', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='min_consumer', full_name='tensorboard.VersionDef.min_consumer', index=1,
+      name='min_consumer', full_name='tensorboardX.VersionDef.min_consumer', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='bad_consumers', full_name='tensorboard.VersionDef.bad_consumers', index=2,
+      name='bad_consumers', full_name='tensorboardX.VersionDef.bad_consumers', index=2,
       number=3, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -65,8 +65,8 @@ _VERSIONDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=48,
-  serialized_end=123,
+  serialized_start=49,
+  serialized_end=124,
 )
 
 DESCRIPTOR.message_types_by_name['VersionDef'] = _VERSIONDEF
@@ -75,7 +75,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 VersionDef = _reflection.GeneratedProtocolMessageType('VersionDef', (_message.Message,), dict(
   DESCRIPTOR = _VERSIONDEF,
   __module__ = 'tensorboardX.src.versions_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.VersionDef)
+  # @@protoc_insertion_point(class_scope:tensorboardX.VersionDef)
   ))
 _sym_db.RegisterMessage(VersionDef)
 

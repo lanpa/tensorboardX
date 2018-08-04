@@ -17,9 +17,9 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='tensorboardX/src/resource_handle.proto',
-  package='tensorboard',
+  package='tensorboardX',
   syntax='proto3',
-  serialized_pb=_b('\n&tensorboardX/src/resource_handle.proto\x12\x0btensorboard\"r\n\x13ResourceHandleProto\x12\x0e\n\x06\x64\x65vice\x18\x01 \x01(\t\x12\x11\n\tcontainer\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\thash_code\x18\x04 \x01(\x04\x12\x17\n\x0fmaybe_type_name\x18\x05 \x01(\tB/\n\x18org.tensorflow.frameworkB\x0eResourceHandleP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n&tensorboardX/src/resource_handle.proto\x12\x0ctensorboardX\"r\n\x13ResourceHandleProto\x12\x0e\n\x06\x64\x65vice\x18\x01 \x01(\t\x12\x11\n\tcontainer\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\thash_code\x18\x04 \x01(\x04\x12\x17\n\x0fmaybe_type_name\x18\x05 \x01(\tB/\n\x18org.tensorflow.frameworkB\x0eResourceHandleP\x01\xf8\x01\x01\x62\x06proto3')
 )
 
 
@@ -27,41 +27,41 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _RESOURCEHANDLEPROTO = _descriptor.Descriptor(
   name='ResourceHandleProto',
-  full_name='tensorboard.ResourceHandleProto',
+  full_name='tensorboardX.ResourceHandleProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='device', full_name='tensorboard.ResourceHandleProto.device', index=0,
+      name='device', full_name='tensorboardX.ResourceHandleProto.device', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='container', full_name='tensorboard.ResourceHandleProto.container', index=1,
+      name='container', full_name='tensorboardX.ResourceHandleProto.container', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='name', full_name='tensorboard.ResourceHandleProto.name', index=2,
+      name='name', full_name='tensorboardX.ResourceHandleProto.name', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='hash_code', full_name='tensorboard.ResourceHandleProto.hash_code', index=3,
+      name='hash_code', full_name='tensorboardX.ResourceHandleProto.hash_code', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='maybe_type_name', full_name='tensorboard.ResourceHandleProto.maybe_type_name', index=4,
+      name='maybe_type_name', full_name='tensorboardX.ResourceHandleProto.maybe_type_name', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -79,8 +79,8 @@ _RESOURCEHANDLEPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=55,
-  serialized_end=169,
+  serialized_start=56,
+  serialized_end=170,
 )
 
 DESCRIPTOR.message_types_by_name['ResourceHandleProto'] = _RESOURCEHANDLEPROTO
@@ -89,7 +89,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 ResourceHandleProto = _reflection.GeneratedProtocolMessageType('ResourceHandleProto', (_message.Message,), dict(
   DESCRIPTOR = _RESOURCEHANDLEPROTO,
   __module__ = 'tensorboardX.src.resource_handle_pb2'
-  # @@protoc_insertion_point(class_scope:tensorboard.ResourceHandleProto)
+  # @@protoc_insertion_point(class_scope:tensorboardX.ResourceHandleProto)
   ))
 _sym_db.RegisterMessage(ResourceHandleProto)
 
