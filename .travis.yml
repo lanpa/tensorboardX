@@ -25,15 +25,17 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION chainer pytorch -c pytorch
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - which python
-  - conda list
   - conda install -c caffe2 caffe2 
+  - pip install chainer
+  - pip install torch==0.4.0
   - pip install torchvision
   - pip install moviepy==0.2.3.2
   - pip install matplotlib
   - pip install requests
+  - conda list
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
   - pip install --upgrade pytest flake8
   - python setup.py install
