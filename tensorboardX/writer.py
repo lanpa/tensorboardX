@@ -42,6 +42,7 @@ from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_r
 from .utils import figure_to_image
 from tensorboardX.src.event_pb2 import SessionLog
 from tensorboardX.src.event_pb2 import Event
+from tensorboardX.summary import image_boxes
 
 
 class SummaryToEventTransformer(object):
@@ -339,17 +340,16 @@ class SummaryWriter(object):
         Note that this function also keeps logged scalars in memory. In extreme case it explodes your RAM.
 
         Args:
-            tag (string): Data identifier
             main_tag (string): The parent name for the tags
             tag_scalar_dict (dict): Key-value pair storing the tag and corresponding values
             global_step (int): Global step value to record
 
         Examples::
 
-            writer.add_scalars('run_14h',{'xsinx':i*np.sin(i/r),
-                                          'xcosx':i*np.cos(i/r),
-                                          'arctanx': numsteps*np.arctan(i/r)}, i)
-            # This function adds three values to the same scalar plot with the tag
+            writer.add_scalars('run_14h', {'xsinx':i*np.sin(i/r),
+                                           'xcosx':i*np.cos(i/r),
+                                           'arctanx': numsteps*np.arctan(i/r)}, i)
+            # This call adds three values to the same scalar plot with the tag
             # 'run_14h' in TensorBoard's scalar section.
         """
         timestamp = time.time()
