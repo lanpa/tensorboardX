@@ -690,6 +690,7 @@ class SummaryWriter(object):
                          weights),
             global_step,
             walltime)
+
     def close(self):
         if self.file_writer is None:
             return  # ignore double close
