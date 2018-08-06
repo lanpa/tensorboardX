@@ -1,5 +1,13 @@
 History
 =======
+1.3 (2018-08-06)
+-----------------
+* Made add_text compatible with tensorboard>1.6
+* Fix the issue of strange histogram if default binning method is used
+* Implement support for matplotlib figures
+* Resolve namespace confliction with TF tensorboard
+* add_image_boxes function
+
 1.2 (2018-04-21)
 -----------------
 * Supports tensorshape information in graph visualization. Drop support for 0.3.1
