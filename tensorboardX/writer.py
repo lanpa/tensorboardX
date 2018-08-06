@@ -371,7 +371,8 @@ class SummaryWriter(object):
                 self.all_writers[fw_tag] = fw
             if self._check_caffe2(scalar_value):
                 scalar_value = workspace.FetchBlob(scalar_value)
-            fw.add_summary(scalar(main_tag, scalar_value), global_step)
+            fw.add_summary(scalar(main_tag, scalar_value), global_step,
+                           walltime)
             self.__append_to_scalar_dict(fw_tag, scalar_value, global_step,
                                          walltime)
 
