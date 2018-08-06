@@ -575,8 +575,7 @@ class SummaryWriter(object):
         return retval
 
     def add_embedding(self, mat, metadata=None, label_img=None,
-                      global_step=None, tag='default', metadata_header=None,
-                      walltime=None):
+                      global_step=None, tag='default', metadata_header=None):
         """Add embedding projector data to summary.
 
         Args:
