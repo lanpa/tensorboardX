@@ -7,6 +7,7 @@ History
 * Implement support for matplotlib figures
 * Resolve namespace confliction with TF tensorboard
 * add_image_boxes function
+* Supports custom timestamp for event
 
 1.2 (2018-04-21)
 -----------------
