@@ -68,10 +68,10 @@ for epoch in range(num_epochs):
         loss_value.backward()
         optimizer.step()
         #LOGGING
-        writer.add_scalar('loss', loss_value.data[0], n_iter)
+        writer.add_scalar('loss', loss_value.data.item(), n_iter)
 
         if j % embedding_log == 0:
-            print("loss_value:{}".format(loss_value.data[0]))
+            print("loss_value:{}".format(loss_value.data.item()))
             #we need 3 dimension for tensor to visualize it!
             out = torch.cat((out.data, torch.ones(len(out), 1)), 1)
             writer.add_embedding(out, metadata=label_batch.data, label_img=data_batch.data, global_step=n_iter)
