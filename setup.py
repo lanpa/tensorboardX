@@ -9,7 +9,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'numpy',
-    'protobuf >= 0.3.2',
+    'protobuf >= 3.2.0',
     'six',
 ]
 
@@ -26,7 +26,7 @@ setup(
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
     url='https://github.com/lanpa/tensorboardX',
-    packages=find_packages(exclude=['docs', 'tests']),
+    packages=find_packages(exclude=['docs', 'tests', 'examples']),
     include_package_data=True,
     install_requires=requirements,
     license='MIT license',
