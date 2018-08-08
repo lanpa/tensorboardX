@@ -4,8 +4,7 @@ import numpy as np
 import torchvision.models as models
 from torchvision import datasets
 from tensorboardX import SummaryWriter
-#import skimage
-#from skimage import data, io
+import datetime
 
 resnet18 = models.resnet18(False)
 writer = SummaryWriter()
@@ -23,7 +22,8 @@ recall=[1.0, 0.8533334, 0.28, 0.0666667, 0.0]
 for n_iter in range(100):
     s1 = torch.rand(1) # value to keep
     s2 = torch.rand(1)
-    writer.add_scalar('data/scalar1', s1[0], n_iter) # data grouping by `slash`
+    writer.add_scalar('data/scalar_systemtime', s1[0], n_iter) # data grouping by `slash`
+    writer.add_scalar('data/scalar_customtime', s1[0], n_iter, walltime=n_iter) # data grouping by `slash`
     writer.add_scalars('data/scalar_group', {"xsinx":n_iter*np.sin(n_iter),
                                              "xcosx":n_iter*np.cos(n_iter),
                                              "arctanx": np.arctan(n_iter)}, n_iter)
