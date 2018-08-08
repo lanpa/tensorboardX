@@ -92,7 +92,9 @@ def graph(model, args, verbose=False):
             except RuntimeError:
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
-    if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
+    if LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
+        torch.onnx._optimize_trace(trace, torch._C._onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK)
+    elif LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
         torch.onnx._optimize_trace(trace)

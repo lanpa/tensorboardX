@@ -6,13 +6,6 @@ from __future__ import print_function
 import numpy as np
 import six
 
-try:
-    from caffe2.python import workspace
-except ImportError:
-    # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
-    # Caffe2 is not installed, disabling Caffe2 functionality
-    pass
-
 
 def make_np(x, modality=None):
     if isinstance(x, np.ndarray):
@@ -57,6 +50,12 @@ def prepare_theano(x):
 
 
 def prepare_caffe2(x, modality):
+    try:
+        from caffe2.python import workspace
+    except ImportError:
+        # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
+        # Caffe2 is not installed, disabling Caffe2 functionality
+        pass
     x = workspace.FetchBlob(x)
     if modality == 'IMG':
         x = _prepare_image(x)

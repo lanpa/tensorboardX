@@ -23,14 +23,6 @@ import os
 import six
 import time
 
-try:
-    from caffe2.proto import caffe2_pb2
-    from caffe2.python import cnn, core, workspace
-    from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
-except ImportError:
-    # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
-    pass
-
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
 from .graph_onnx import gg
@@ -292,8 +284,9 @@ class SummaryWriter(object):
         # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
         try:
             import caffe2
+            from caffe2.python import workspace  # workaround for pytorch/issue#10249
             self.caffe2_enabled = True
-        except ImportError:
+        except (SystemExit, ImportError):
             self.caffe2_enabled = False
 
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
@@ -517,6 +510,11 @@ class SummaryWriter(object):
             if not self.caffe2_enabled:
                 # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
                 return
+            from caffe2.proto import caffe2_pb2
+            from caffe2.python import core
+            from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
+            # notimporterror should be already handled when checking self.caffe2_enabled
+
             '''Write graph to the summary. Check model type and handle accordingly.'''
             if isinstance(model, list):
                 if isinstance(model[0], core.Net):
