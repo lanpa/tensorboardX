@@ -540,7 +540,7 @@ class SummaryWriter(object):
         """Add embedding projector data to summary.
 
         Args:
-            mat (torch.Tensor): A matrix which each row is the feature vector of the data point
+            mat (torch.Tensor or numpy.array): A matrix which each row is the feature vector of the data point
             metadata (list): A list of labels, each element will be convert to string
             label_img (torch.Tensor): Images correspond to each data point
             global_step (int): Global step value to record
@@ -570,6 +570,8 @@ class SummaryWriter(object):
             writer.add_embedding(torch.randn(100, 5), label_img=label_img)
             writer.add_embedding(torch.randn(100, 5), metadata=meta)
         """
+        from .x2num import make_np
+        mat = make_np(mat)
         if global_step is None:
             global_step = 0
             # clear pbtxt?
@@ -582,12 +584,12 @@ class SummaryWriter(object):
         except OSError:
             print('warning: Embedding dir exists, did you set global_step for add_embedding()?')
         if metadata is not None:
-            assert mat.size(0) == len(metadata), '#labels should equal with #data points'
+            assert mat.shape[0] == len(metadata), '#labels should equal with #data points'
             make_tsv(metadata, save_path, metadata_header=metadata_header)
         if label_img is not None:
-            assert mat.size(0) == label_img.size(0), '#images should equal with #data points'
+            assert mat.shape[0] == label_img.shape[0], '#images should equal with #data points'
             make_sprite(label_img, save_path)
-        assert mat.dim() == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
+        assert mat.ndim == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat, save_path)
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img, self.file_writer.get_logdir(), subdir, global_step, tag)
