@@ -40,19 +40,20 @@ def directory_check(path):
 class EventsWriter(object):
     '''Writes `Event` protocol buffers to an event file.'''
 
-    def __init__(self, file_prefix):
+    def __init__(self, file_prefix, filename_suffix=''):
         '''
         Events files have a name of the form
         '/some/file/path/events.out.tfevents.[timestamp].[hostname]'
         '''
-        self._file_prefix = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." + socket.gethostname()
+        self._file_name = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." +\
+            socket.gethostname() + filename_suffix
 
         # Open(Create) the log file with the particular form of name.
-        logging.basicConfig(filename=self._file_prefix)
+        logging.basicConfig(filename=self._file_name)
 
         self._num_outstanding_events = 0
 
-        self._py_recordio_writer = RecordWriter(self._file_prefix)
+        self._py_recordio_writer = RecordWriter(self._file_name)
 
         # Initialize an event instance.
         self._event = event_pb2.Event()
@@ -97,7 +98,7 @@ class EventFileWriter(object):
     @@close
     """
 
-    def __init__(self, logdir, max_queue=10, flush_secs=120):
+    def __init__(self, logdir, max_queue=10, flush_secs=120, filename_suffix=''):
         """Creates a `EventFileWriter` and an event file to write to.
         On construction the summary writer creates a new event file in `logdir`.
         This event file will contain `Event` protocol buffers, which are written to
@@ -117,7 +118,7 @@ class EventFileWriter(object):
         self._logdir = logdir
         directory_check(self._logdir)
         self._event_queue = six.moves.queue.Queue(max_queue)
-        self._ev_writer = EventsWriter(os.path.join(self._logdir, "events"))
+        self._ev_writer = EventsWriter(os.path.join(self._logdir, "events"), filename_suffix)
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)

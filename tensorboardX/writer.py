@@ -163,6 +163,7 @@ class FileWriter(SummaryToEventTransformer):
                  graph=None,
                  max_queue=10,
                  flush_secs=120,
+                 filename_suffix='',
                  graph_def=None):
         """Creates a `FileWriter` and an event file.
         On construction the summary writer creates a new event file in `logdir`.
@@ -195,7 +196,7 @@ class FileWriter(SummaryToEventTransformer):
             pending events and summaries to disk.
           graph_def: DEPRECATED: Use the `graph` argument instead.
         """
-        event_writer = EventFileWriter(logdir, max_queue, flush_secs)
+        event_writer = EventFileWriter(logdir, max_queue, flush_secs, filename_suffix)
         super(FileWriter, self).__init__(event_writer, graph, graph_def)
 
     def get_logdir(self):
@@ -250,6 +251,8 @@ class SummaryWriter(object):
               When logging crashes at step :math:`T+X` and restarts at step :math:`T`, any events
               whose global_step larger or euqal to :math:`T` will be purged and hiding from TensorBoard.
               Note that the resumed experiment and the crashed experiment should have the same ``log_dir``.
+            filename_suffix (string):
+              Every event file's name is suffixed with suffix. example: ``SummaryWriter(filename_suffix='.123')``
             kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
               controls how often to flush pending events). For more arguments
               please refer to docs for 'tf.summary.FileWriter'.
