@@ -30,7 +30,7 @@ from .pytorch_graph import graph
 from .src import event_pb2
 from .src import summary_pb2
 from .src import graph_pb2
-from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video
+from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video, custom_scalars
 from .utils import figure_to_image
 from tensorboardX.src.event_pb2 import SessionLog
 from tensorboardX.src.event_pb2 import Event
@@ -664,6 +664,56 @@ class SummaryWriter(object):
                          weights),
             global_step,
             walltime)
+
+    def add_custom_scalars_multilinechart(self, tags, category='default', title='untitled'):
+        """Shorthand for creating multilinechart. Similar to ``add_custom_scalars()``, but the only necessary argument
+        is *tags*.
+
+        Args:
+            tags (list): list of tags that have been used in ``add_scalar()``
+
+        Examples::
+
+            writer.add_custom_scalars_multilinechart(['twse/0050', 'twse/2330'])
+        """
+        layout = {category: {title: ['Multiline', tags]}}
+        self.file_writer.add_summary(custom_scalars(layout))
+
+    def add_custom_scalars_marginchart(self, tags, category='default', title='untitled'):
+        """Shorthand for creating marginchart. Similar to ``add_custom_scalars()``, but the only necessary argument
+        is *tags*, which should have exactly 3 elements.
+
+        Args:
+            tags (list): list of tags that have been used in ``add_scalar()``
+
+        Examples::
+
+            writer.add_custom_scalars_marginchart(['twse/0050', 'twse/2330', 'twse/2006'])
+        """
+        assert len(tags) == 3
+        layout = {category: {title: ['Margin', tags]}}
+        self.file_writer.add_summary(custom_scalars(layout))
+
+    def add_custom_scalars(self, layout):
+        """Create special chart by collecting charts tags in 'scalars'. Note that this function can only be called once
+        for each SummaryWriter() object. Because it only provides metadata to tensorboard, the function can be called
+        before or after the training loop. See ``examples/demo_custom_scalars.py`` for more.
+
+        Args:
+            layout (dict): {categoryName: *charts*}, where *charts* is also a dictionary
+              {chartName: *ListOfProperties*}. The first element in *ListOfProperties* is the chart's type
+              (one of **Multiline** or **Margin**) and the second element should be a list containing the tags
+              you have used in add_scalar function, which will be collected into the new chart.
+
+        Examples::
+
+            layout = {'Taiwan':{'twse':['Multiline',['twse/0050', 'twse/2330']]},
+                         'USA':{ 'dow':['Margin',   ['dow/aaa', 'dow/bbb', 'dow/ccc']],
+                              'nasdaq':['Margin',   ['nasdaq/aaa', 'nasdaq/bbb', 'nasdaq/ccc']]}}
+
+            writer.add_custom_scalars(layout)
+        """
+        self.file_writer.add_summary(custom_scalars(layout))
 
     def close(self):
         if self.file_writer is None:

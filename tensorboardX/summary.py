@@ -49,6 +49,7 @@ from .src.tensor_pb2 import TensorProto
 from .src.tensor_shape_pb2 import TensorShapeProto
 from .src.plugin_pr_curve_pb2 import PrCurvePluginData
 from .src.plugin_text_pb2 import TextPluginData
+from .src import layout_pb2
 from .x2num import make_np
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -334,6 +335,35 @@ def audio(tag, tensor, sample_rate=44100):
                           encoded_audio_string=audio_string,
                           content_type='audio/wav')
     return Summary(value=[Summary.Value(tag=tag, audio=audio)])
+
+
+def custom_scalars(layout):
+    categoriesnames = layout.keys()
+    categories = []
+    layouts = []
+    for k, v in layout.items():
+        charts = []
+        for chart_name, chart_meatadata in v.items():
+            tags = chart_meatadata[1]
+            if chart_meatadata[0] == 'Margin':
+                assert len(tags) == 3
+                mgcc = layout_pb2.MarginChartContent(series=[layout_pb2.MarginChartContent.Series(value=tags[0],
+                                                                                                  lower=tags[1],
+                                                                                                  upper=tags[2])])
+                chart = layout_pb2.Chart(title=chart_name, margin=mgcc)
+            else:
+                mlcc = layout_pb2.MultilineChartContent(tag=tags)
+                chart = layout_pb2.Chart(title=chart_name, multiline=mlcc)
+            charts.append(chart)
+        categories.append(layout_pb2.Category(title=k, chart=charts))
+
+    layout = layout_pb2.Layout(category=categories)
+    PluginData = [SummaryMetadata.PluginData(plugin_name='custom_scalars')]
+    smd = SummaryMetadata(plugin_data=PluginData)
+    tensor = TensorProto(dtype='DT_STRING',
+                         string_val=[layout.SerializeToString()],
+                         tensor_shape=TensorShapeProto())
+    return Summary(value=[Summary.Value(tag='custom_scalars__config__', tensor=tensor, metadata=smd)])
 
 
 def text(tag, text):
