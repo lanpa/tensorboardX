@@ -26,7 +26,7 @@ import time
 
 import six
 
-from .src import event_pb2
+from .proto import event_pb2
 from .record_writer import RecordWriter
 
 

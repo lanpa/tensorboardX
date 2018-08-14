@@ -12,10 +12,10 @@ from builtins import bytes
 from caffe2.proto import caffe2_pb2
 from caffe2.python import core, workspace
 
-from .src.graph_pb2 import GraphDef
-from .src.node_def_pb2 import NodeDef
-from .src.tensor_shape_pb2 import TensorShapeProto
-from .src.versions_pb2 import VersionDef
+from .proto.graph_pb2 import GraphDef
+from .proto.node_def_pb2 import NodeDef
+from .proto.tensor_shape_pb2 import TensorShapeProto
+from .proto.versions_pb2 import VersionDef
 
 
 def _propagate_device_option(net):

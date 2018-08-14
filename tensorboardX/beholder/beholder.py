@@ -15,10 +15,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from ..src.summary_pb2 import Summary
-from ..src.summary_pb2 import SummaryMetadata
-from ..src.tensor_pb2 import TensorProto
-from ..src.tensor_shape_pb2 import TensorShapeProto
+from ..proto.summary_pb2 import Summary
+from ..proto.summary_pb2 import SummaryMetadata
+from ..proto.tensor_pb2 import TensorProto
+from ..proto.tensor_shape_pb2 import TensorShapeProto
 
 import os
 import time
