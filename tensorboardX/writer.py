@@ -492,51 +492,45 @@ class SummaryWriter(object):
     def add_onnx_graph(self, prototxt):
         self.file_writer.add_onnx_graph(gg(prototxt))
 
-    # Supports both Caffe2 and PyTorch models
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
-        # no, let tensorboard handles it and show its warning message.
+        # no, let tensorboard handle it and show its warning message.
         """Add graph data to summary.
 
         Args:
             model (torch.nn.Module): model to draw.
-            input_to_model (torch.autograd.Variable): a variable or a tuple of variables to be fed.
+            input_to_model (torch.autograd.Variable): a variable or a tuple of
+                variables to be fed.
 
         """
-        try:
+        if hasattr(model, 'forward'):
             # A valid PyTorch model should have a 'forward' method
-            _ = getattr(model, 'forward')
             import torch
             from distutils.version import LooseVersion
             if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
                 pass
             else:
                 if LooseVersion(torch.__version__) >= LooseVersion("0.3.0"):
-                    print('You are using PyTorch==0.3.0, use add_onnx_graph()')
+                    print('You are using PyTorch==0.3.0, use add_graph_onnx()')
                     return
                 if not hasattr(torch.autograd.Variable, 'grad_fn'):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
             self.file_writer.add_graph(graph(model, input_to_model, verbose))
-        except AttributeError:
+        else:
             # Caffe2 models do not have the 'forward' method
             if not self.caffe2_enabled:
                 # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
                 return
-            from caffe2.proto import caffe2_pb2
-            from caffe2.python import core
-            from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
-            # notimporterror should be already handled when checking self.caffe2_enabled
-
             '''Write graph to the summary. Check model type and handle accordingly.'''
             if isinstance(model, list):
                 if isinstance(model[0], core.Net):
-                    current_graph, track_blob_names = nets_to_graph(model, **kwargs)
+                    current_graph = nets_to_graph_def(model, **kwargs)
                 elif isinstance(model[0], caffe2_pb2.NetDef):
-                    current_graph, track_blob_names = protos_to_graph(model, **kwargs)
+                    current_graph = protos_to_graph_def(model, **kwargs)
             # Handles cnn.CNNModelHelper, model_helper.ModelHelper
             else:
-                current_graph, track_blob_names = model_to_graph(model, **kwargs)
+                current_graph = model_to_graph_def(model, **kwargs)
             event = event_pb2.Event(graph_def=current_graph.SerializeToString())
             self.file_writer.add_event(event)
 
