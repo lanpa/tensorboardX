@@ -25,7 +25,7 @@ import time
 
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
-from .graph_onnx import gg
+from .onnx_graph import gg
 from .pytorch_graph import graph
 from .proto import event_pb2
 from .proto import summary_pb2
@@ -115,7 +115,7 @@ class SummaryToEventTransformer(object):
         event = event_pb2.Event(tagged_run_metadata=trm)
         self._add_event(event, None, walltime)
 
-    def add_graph_onnx(self, graph, walltime=None):
+    def add_onnx_graph(self, graph, walltime=None):
         """Adds a `Graph` protocol buffer to the event file.
         """
         event = event_pb2.Event(graph_def=graph.SerializeToString())
@@ -489,8 +489,8 @@ class SummaryWriter(object):
         """
         self.file_writer.add_summary(text(tag, text_string), global_step, walltime)
 
-    def add_graph_onnx(self, prototxt):
-        self.file_writer.add_graph_onnx(gg(prototxt))
+    def add_onnx_graph(self, prototxt):
+        self.file_writer.add_onnx_graph(gg(prototxt))
 
     # Supports both Caffe2 and PyTorch models
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
@@ -512,7 +512,7 @@ class SummaryWriter(object):
                 pass
             else:
                 if LooseVersion(torch.__version__) >= LooseVersion("0.3.0"):
-                    print('You are using PyTorch==0.3.0, use add_graph_onnx()')
+                    print('You are using PyTorch==0.3.0, use add_onnx_graph()')
                     return
                 if not hasattr(torch.autograd.Variable, 'grad_fn'):
                     print('add_graph() only supports PyTorch v0.2.')
