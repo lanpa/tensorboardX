@@ -42,14 +42,14 @@ import re as _re
 # pylint: disable=unused-import
 from six import StringIO
 from six.moves import range
-from .src.summary_pb2 import Summary
-from .src.summary_pb2 import HistogramProto
-from .src.summary_pb2 import SummaryMetadata
-from .src.tensor_pb2 import TensorProto
-from .src.tensor_shape_pb2 import TensorShapeProto
-from .src.plugin_pr_curve_pb2 import PrCurvePluginData
-from .src.plugin_text_pb2 import TextPluginData
-from .src import layout_pb2
+from .proto.summary_pb2 import Summary
+from .proto.summary_pb2 import HistogramProto
+from .proto.summary_pb2 import SummaryMetadata
+from .proto.tensor_pb2 import TensorProto
+from .proto.tensor_shape_pb2 import TensorShapeProto
+from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
+from .proto.plugin_text_pb2 import TextPluginData
+from .proto import layout_pb2
 from .x2num import make_np
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')

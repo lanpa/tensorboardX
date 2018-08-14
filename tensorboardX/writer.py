@@ -27,13 +27,13 @@ from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
 from .graph_onnx import gg
 from .pytorch_graph import graph
-from .src import event_pb2
-from .src import summary_pb2
-from .src import graph_pb2
+from .proto import event_pb2
+from .proto import summary_pb2
+from .proto import graph_pb2
 from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video, custom_scalars
 from .utils import figure_to_image
-from tensorboardX.src.event_pb2 import SessionLog
-from tensorboardX.src.event_pb2 import Event
+from tensorboardX.proto.event_pb2 import SessionLog
+from tensorboardX.proto.event_pb2 import Event
 from tensorboardX.summary import image_boxes
 
 
