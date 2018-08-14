@@ -164,7 +164,9 @@ def _remap_keys(old_dict, rename_fn):
     Returns:
         None. Modifies old_dict in-place.
     '''
-    new_dict = {rename_fn(key): value for key, value in six.iteritems(old_dict)}
+    new_dict = {
+        rename_fn(key): value for key,
+        value in six.iteritems(old_dict)}
     old_dict.clear()
     old_dict.update(new_dict)
 
@@ -285,7 +287,8 @@ def _fill_missing_operator_names(ops):
         if op.name:
             name = op.name
         elif op.output or op.input:
-            name_list = [os.path.dirname(name) for name in op.output or op.input]
+            name_list = [os.path.dirname(name)
+                         for name in op.output or op.input]
             scope = os.path.commonprefix(name_list)
             name = os.path.join(scope, op.type)
         else:
@@ -501,7 +504,8 @@ def _blob_to_node(producing_ops, shapes, name):
     n.input.extend('%s:%d' % (p_op.name, i) for p_op, i in produced_by)
     if produced_by:
         device = produced_by[0][0].device_option
-        if (all(producer[0].device_option == device for producer in produced_by)):
+        if (all(producer[0].device_option ==
+                device for producer in produced_by)):
             n.device = _tf_device(device)
     if shapes and name in shapes:
         _add_tf_shape(n.attr, shapes[name])
@@ -674,7 +678,10 @@ def _operators_to_graph_def(
     blob_name_tracker.update(_get_blob_names(ops))
 
     _clear_debug_info(ops, show_simplified)  # clear_debug_info
-    ops = _filter_ops(ops, _check_if_forward, show_simplified)  # show_forward_only
+    ops = _filter_ops(
+        ops,
+        _check_if_forward,
+        show_simplified)  # show_forward_only
     ops = _filter_ops(ops, _check_if_cpu, show_simplified)  # show_cpu_only
     if custom_rename:
         _rename_all(shapes, blob_name_tracker, ops, custom_rename)
