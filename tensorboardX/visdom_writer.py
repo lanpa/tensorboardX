@@ -244,7 +244,7 @@ class VisdomWriter:
         self.vis.text(text_string)
 
     @_check_connection
-    def add_graph_onnx(self, prototxt):
+    def add_onnx_graph(self, prototxt):
         # TODO: Visdom doesn't support graph visualization yet, so this is a no-op
         return
 
