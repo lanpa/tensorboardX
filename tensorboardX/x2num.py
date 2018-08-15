@@ -110,7 +110,11 @@ def _prepare_image(I):
     if I.ndim == 2:  # HxW
         I = np.expand_dims(I, 0)  # 1xHxW
         I = np.concatenate((I, I, I), 0)  # 3xHxW
-    I = I.transpose(1, 2, 0)
+
+    # Check if the image is ordered as CHW
+    # If so, convert it to HWC.
+    if I.shape[0] == 3 or I.shape[0] == 4: 
+        I = I.transpose(1, 2, 0)
 
     return I
 
