@@ -113,7 +113,7 @@ def _prepare_image(I):
 
     # Check if the image is ordered as CHW
     # If so, convert it to HWC.
-    if I.shape[0] == 3 or I.shape[0] == 4: 
+    if I.shape[0] == 3 or I.shape[0] == 4:
         I = I.transpose(1, 2, 0)
 
     return I
