@@ -159,11 +159,15 @@ def make_histogram(values, bins):
 
     for i, c in enumerate(reversed(counts)):
         if c > 0:
-            end = -(i)
+            end = counts.size - i
             break
 
     counts = counts[start:end]
     limits = limits[start:end]
+
+    if counts.size == 0 or limits.size == 0:
+        raise ValueError('The histogram is emtpy, please file a bug report.')
+
     sum_sq = values.dot(values)
     return HistogramProto(min=values.min(),
                           max=values.max(),
