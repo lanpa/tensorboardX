@@ -113,7 +113,7 @@ that have correct size for ``m``. Let ``r = m(t)``, then please invoke
 require gradient, therefore it will be omitted when back tracing. To draw the
 input node, pass an additional parameter ``requires_grad=True`` when creating the
 input tensor. See
-`The graph demo <https://github.com/lanpa/tensorboardX/blob/master/demo_graph.py>`_ for
+`The graph demo <https://github.com/lanpa/tensorboardX/blob/master/examples/demo_graph.py>`_ for
 complete example.
 
 
