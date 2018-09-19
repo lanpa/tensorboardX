@@ -20,6 +20,7 @@ def make_np(x, modality=None):
         return prepare_chainer(x, modality)
     if 'mxnet' in str(type(x)):
         return prepare_mxnet(x, modality)
+    raise NotImplementedError('Got {}, but expected numpy array or torch tensor.'.format(type(x)))
 
 
 def prepare_numpy(x, modality):
