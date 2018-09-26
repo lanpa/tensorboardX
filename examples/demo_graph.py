@@ -170,7 +170,7 @@ with SummaryWriter(comment='RNN') as w:
 
 
 import pytest
-print('↓↓↓↓↓ expect error here:↓↓↓↓↓')
+print('expect error here:')
 with pytest.raises(Exception) as e_info:
     dummy_input = torch.rand(1, 1, 224, 224)
     with SummaryWriter(comment='basicblock_error') as w:
