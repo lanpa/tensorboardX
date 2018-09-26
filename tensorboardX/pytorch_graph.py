@@ -15,8 +15,11 @@ def parse(graph):
     import torch
     scope = {}
     for n in graph.nodes():
+        if n.kind() == 'prim::Undefined':
+            scope[next(iter(n.outputs())).uniqueName()] = 'Undefined'
+            continue
         inputs = [i.uniqueName() for i in n.inputs()]
-        for i in range(1, len(inputs)):
+        for i in range(0, len(inputs)):
             if inputs[i] not in scope.keys():
                 scope[inputs[i]] = n.scopeName()
 
@@ -77,6 +80,27 @@ def parse(graph):
     return nodes
 
 
+# https://github.com/pytorch/pytorch/blob/cca247635c6edb323176eeac7a18d3e9ab71c558/test/test_jit.py#L127
+def run_pass(name, trace):
+    import torch
+    if isinstance(trace, torch._C.Graph):
+        graph = trace
+        set_graph = False
+    else:
+        set_graph = True
+        graph = trace.graph()
+
+    torch._C._jit_pass_lint(graph)
+    result = getattr(torch._C, '_jit_pass_' + name)(graph)
+    if result is not None:
+        graph = result
+    torch._C._jit_pass_lint(graph)
+
+    if set_graph:
+        trace.set_graph(graph)
+    return graph
+
+
 def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
@@ -93,7 +117,10 @@ def graph(model, args, verbose=False):
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
     if LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
-        torch.onnx._optimize_trace(trace, torch._C._onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK)
+        run_pass('cse', trace)
+        run_pass('canonicalize', trace)
+        run_pass('remove_expands', trace)
+
     elif LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
