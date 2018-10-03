@@ -53,7 +53,8 @@ class Beholder(object):
 
         if not os.path.exists(self.PLUGIN_LOGDIR + '/config.pkl'):
             os.makedirs(self.PLUGIN_LOGDIR)
-            write_pickle(DEFAULT_CONFIG, '{}/{}'.format(self.PLUGIN_LOGDIR, CONFIG_FILENAME))
+            write_pickle(DEFAULT_CONFIG,
+                         '{}/{}'.format(self.PLUGIN_LOGDIR, CONFIG_FILENAME))
 
         # self.visualizer = Visualizer(self.PLUGIN_LOGDIR)
     def _get_config(self):
@@ -83,7 +84,8 @@ class Beholder(object):
                      TensorShapeProto.Dim(size=frame.shape[2])]
             )
         )
-        summary = Summary(value=[Summary.Value(tag=TAG_NAME, metadata=smd, tensor=tensor)]).SerializeToString()
+        summary = Summary(value=[Summary.Value(
+            tag=TAG_NAME, metadata=smd, tensor=tensor)]).SerializeToString()
         write_file(summary, path)
 
     @staticmethod
@@ -112,12 +114,14 @@ class Beholder(object):
             # print('===arrays===')
             final_image = np.concatenate([arr for arr, _ in arrays])
             stat = self.stats(arrays)
-            write_pickle(stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
+            write_pickle(
+                stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
         elif config['values'] == 'trainable_variables':
             # print('===trainable===')
             final_image = np.concatenate([arr for arr, _ in trainable])
             stat = self.stats(trainable)
-            write_pickle(stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
+            write_pickle(
+                stat, '{}/{}'.format(self.PLUGIN_LOGDIR, SECTION_INFO_FILENAME))
         if len(final_image.shape) == 2:  # Map grayscale images to 3D tensors.
             final_image = np.expand_dims(final_image, -1)
 
@@ -169,7 +173,8 @@ class Beholder(object):
         if True or self._enough_time_has_passed(self.previous_config['FPS']):
             # self.visualizer.update(new_config)
             self.last_update_time = time.time()
-            final_image = self._update_frame(trainable, arrays, frame, new_config)
+            final_image = self._update_frame(
+                trainable, arrays, frame, new_config)
             self._update_recording(final_image, new_config)
 
     ##############################################################################

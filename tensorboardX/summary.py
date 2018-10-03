@@ -72,7 +72,8 @@ def _clean_tag(name):
         new_name = _INVALID_TAG_CHARACTERS.sub('_', name)
         new_name = new_name.lstrip('/')  # Remove leading slashes
         if new_name != name:
-            logging.info('Summary name %s is illegal; using %s instead.' % (name, new_name))
+            logging.info(
+                'Summary name %s is illegal; using %s instead.' % (name, new_name))
             name = new_name
     return name
 
@@ -217,7 +218,8 @@ def image_boxes(tag, tensor_image, tensor_boxes, rescale=1):
     '''Outputs a `Summary` protocol buffer with images.'''
     tensor_image = make_np(tensor_image, 'IMG')
     tensor_boxes = make_np(tensor_boxes)
-    tensor_image = tensor_image.astype(np.float32) * _calc_scale_factor(tensor_image)
+    tensor_image = tensor_image.astype(
+        np.float32) * _calc_scale_factor(tensor_image)
     rois = tensor_boxes[:, 1:5]
     image = make_image(tensor_image.astype(np.uint8),
                        rescale=rescale,
@@ -374,7 +376,8 @@ def custom_scalars(layout):
 
 def text(tag, text):
     import json
-    PluginData = [SummaryMetadata.PluginData(plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_STRING',
                          string_val=[text.encode(encoding='utf_8')],
@@ -386,8 +389,10 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, wei
     if num_thresholds > 127:  # wierd, value > 127 breaks protobuf
         num_thresholds = 127
     data = np.stack((tp, fp, tn, fn, precision, recall))
-    pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    pr_curve_plugin_data = PrCurvePluginData(
+        version=0, num_thresholds=num_thresholds).SerializeToString()
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
@@ -397,10 +402,14 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, wei
 
 
 def pr_curve(tag, labels, predictions, num_thresholds=127, weights=None):
-    num_thresholds = min(num_thresholds, 127)  # weird, value > 127 breaks protobuf
-    data = compute_curve(labels, predictions, num_thresholds=num_thresholds, weights=weights)
-    pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    # weird, value > 127 breaks protobuf
+    num_thresholds = min(num_thresholds, 127)
+    data = compute_curve(labels, predictions,
+                         num_thresholds=num_thresholds, weights=weights)
+    pr_curve_plugin_data = PrCurvePluginData(
+        version=0, num_thresholds=num_thresholds).SerializeToString()
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
