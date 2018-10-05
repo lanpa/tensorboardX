@@ -25,7 +25,8 @@ class VisdomWriter:
         try:
             from visdom import Visdom
         except ImportError:
-            raise ImportError("Visdom visualization requires installation of Visdom")
+            raise ImportError(
+                "Visdom visualization requires installation of Visdom")
 
         self.scalar_dict = {}
         self.server_connected = False
@@ -57,10 +58,12 @@ class VisdomWriter:
         if self.scalar_dict.get(main_tag) is None:
             self.scalar_dict[main_tag] = {}
         exists = self.scalar_dict[main_tag].get(tag) is not None
-        self.scalar_dict[main_tag][tag] = self.scalar_dict[main_tag][tag] + [scalar_value] if exists else [scalar_value]
+        self.scalar_dict[main_tag][tag] = self.scalar_dict[main_tag][tag] + \
+            [scalar_value] if exists else [scalar_value]
         plot_name = '{}-{}'.format(main_tag, tag)
         # If there is no global_step provided, follow sequential order
-        x_val = len(self.scalar_dict[main_tag][tag]) if not global_step else global_step
+        x_val = len(self.scalar_dict[main_tag][tag]
+                    ) if not global_step else global_step
         if exists:
             # Update our existing Visdom window
             self.vis.line(
@@ -190,10 +193,12 @@ class VisdomWriter:
                 # TODO: reverse the logic here, shoudl do the permutation in numpy
                 if isinstance(vid_tensor, np.ndarray):
                     import torch
-                    ind_vid = torch.from_numpy(vid_tensor[i, :, :, :, :]).permute(1, 2, 3, 0)
+                    ind_vid = torch.from_numpy(
+                        vid_tensor[i, :, :, :, :]).permute(1, 2, 3, 0)
                 else:
                     ind_vid = vid_tensor[i, :, :, :, :].permute(1, 2, 3, 0)
-                scale_factor = 255 if np.any((ind_vid > 0) & (ind_vid < 1)) else 1
+                scale_factor = 255 if np.any(
+                    (ind_vid > 0) & (ind_vid < 1)) else 1
                 # Visdom looks for .ndim attr, this is something raw Tensors don't have
                 # Cast to Numpy array to get .ndim attr
                 ind_vid = ind_vid.numpy()
@@ -218,7 +223,8 @@ class VisdomWriter:
             snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
         """
         snd_tensor = make_np(snd_tensor)
-        self.vis.audio(tensor=snd_tensor, opts={'sample_frequency': sample_rate})
+        self.vis.audio(tensor=snd_tensor, opts={
+                       'sample_frequency': sample_rate})
 
     @_check_connection
     def add_text(self, tag, text_string, global_step=None):
