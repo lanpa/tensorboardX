@@ -13,7 +13,7 @@ try:
     from caffe2.proto import caffe2_pb2
     import tensorboardX.caffe2_graph as tb
     caffe2_installed = True
-except ImportError:
+except (SystemExit, ImportError):
     print('Caffe2 is not installed, skipping test')
     caffe2_installed = False
 
