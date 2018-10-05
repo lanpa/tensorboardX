@@ -11,17 +11,17 @@ from setuptools.command.install import install
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
     def run(self):
+        # Dynamically compile protos
+        subprocess.call(['./compile.sh'])
         develop.run(self)
-        # Dynamically compile protos after installation
-        subprocess.call(['./compile_protos.sh'])
 
 
 class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
+        # Dynamically compile protos
+        subprocess.call(['./compile.sh'])
         install.run(self)
-        # Dynamically compile protos after installation
-        subprocess.call(['./compile_protos.sh'])
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
@@ -66,7 +66,7 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
-    scripts=['compile_protos.sh'],
+    scripts=['compile.sh'],
     test_suite='tests',
     tests_require=test_requirements
 )

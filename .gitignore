@@ -1,3 +1,4 @@
+tensorboardX/proto/*_pb2.py
 proto_src/
 __pycache__
 docs/_*
