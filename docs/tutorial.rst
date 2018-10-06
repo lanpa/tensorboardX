@@ -75,7 +75,8 @@ tensor of size ``[3, H, W]``. The three dimensions correspond to R, G, B channel
 an image. After your image is computed, use ``writer.add_image('imresult', x,
 iteration)`` to save the image. If you have a batch of images to show, use
 ``torchvision``'s ``make_grid`` function to prepare the image array and send the result
-to ``add_image(...)`` (``make_grid`` takes a 4D tensor and returns tiled images in 3D tensor)
+to ``add_image(...)`` (``make_grid`` takes a 4D tensor and returns tiled images in 3D tensor).
+``figure`` input should be ``matplotlib.pyplot.figure`` or a list of ``matplotlib.pyplot.figure``.
 
 .. Note::
 	Remember to normalize your image.
