@@ -12,7 +12,8 @@ class PostDevelopCommand(develop):
     """Post-installation for development mode."""
     def run(self):
         # Dynamically compile protos
-        subprocess.call(['./compile.sh'])
+        res = subprocess.call(['./compile.sh'])
+        assert res == 0, 'cannot compile protobuf'
         develop.run(self)
 
 
@@ -20,7 +21,8 @@ class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
         # Dynamically compile protos
-        subprocess.call(['./compile.sh'])
+        res = subprocess.call(['./compile.sh'])
+        assert res == 0, 'cannot compile protobuf'
         install.run(self)
 
 with open('HISTORY.rst') as history_file:
