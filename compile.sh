@@ -7,16 +7,22 @@ set -e
 rm -rf tensorboardX/proto/*pb2*.py
 
 
-# Download protoc. Make sure we are using same version of protoc
-protoc="protoc-3.6.1-linux-x86_64.zip"
-if [ ! -f $protoc ]; then
-  wget https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/$protoc
+PROTOC_BIN=`which protoc`
+if [ -z ${PROTOC_BIN} ]; then
+  # Download and use the latest version of protoc.
+  if [ "$(uname)" == "Darwin" ]; then
+    PROTOC_ZIP="protoc-3.6.1-osx-x86_64.zip"
+  else
+    PROTOC_ZIP="protoc-3.6.1-linux-x86_64.zip"
+  fi 
+  wget https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/${PROTOC_ZIP}
+  rm -rf protoc
+  python -c "import zipfile; zipfile.ZipFile('"${PROTOC_ZIP}"','r').extractall('protoc')"
+  PROTOC_BIN=protoc/bin/protoc
+  chmod +x ${PROTOC_BIN}
 fi
-rm -rf protoc
-python -c "import zipfile; zipfile.ZipFile('protoc-3.6.1-linux-x86_64.zip','r').extractall('protoc')"
-chmod +x protoc/bin/protoc
 
 # Regenerate
-protoc/bin/protoc tensorboardX/proto/*.proto --python_out=.
+${PROTOC_BIN} tensorboardX/proto/*.proto --python_out=.
 
 echo "Done generating tensorboardX/proto/*pb2*.py"
