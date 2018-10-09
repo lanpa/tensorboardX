@@ -14,15 +14,23 @@ if [ -z ${PROTOC_BIN} ]; then
     PROTOC_ZIP="protoc-3.6.1-osx-x86_64.zip"
   else
     PROTOC_ZIP="protoc-3.6.1-linux-x86_64.zip"
-  fi 
-  wget https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/${PROTOC_ZIP}
-  rm -rf protoc
-  python -c "import zipfile; zipfile.ZipFile('"${PROTOC_ZIP}"','r').extractall('protoc')"
-  PROTOC_BIN=protoc/bin/protoc
-  chmod +x ${PROTOC_BIN}
+  fi
+  WGET_BIN=`which wget`
+  if [[ ! -z ${WGET_BIN} ]]; then
+    ${WGET_BIN} https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/${PROTOC_ZIP}
+    rm -rf protoc
+    python -c "import zipfile; zipfile.ZipFile('"${PROTOC_ZIP}"','r').extractall('protoc')"
+    PROTOC_BIN=protoc/bin/protoc
+    chmod +x ${PROTOC_BIN}
+  fi
 fi
 
 # Regenerate
-${PROTOC_BIN} tensorboardX/proto/*.proto --python_out=.
+if [[ ! -z ${PROTOC_BIN} ]]; then
+  ${PROTOC_BIN} tensorboardX/proto/*.proto --python_out=.
 
-echo "Done generating tensorboardX/proto/*pb2*.py"
+  echo "Done generating tensorboardX/proto/*pb2*.py"
+else
+  echo "protoc not installed so can't regenerate tensorboardX/proto/*pb2*.py"
+fi
+
