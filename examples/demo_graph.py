@@ -59,7 +59,7 @@ with SummaryWriter(comment='Net2') as w:
     w.add_graph(model, (dummy_input, ))
 
 
-dummy_input = Variable(torch.rand(1, 3, 224, 224))
+dummy_input = torch.Tensor(1, 3, 224, 224)
 
 with SummaryWriter(comment='alexnet') as w:
     model = torchvision.models.alexnet()
