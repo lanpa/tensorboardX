@@ -96,9 +96,12 @@ def run_pass(name, trace):
         graph = trace.graph()
 
     torch._C._jit_pass_lint(graph)
-    result = getattr(torch._C, '_jit_pass_' + name)(graph)
-    if result is not None:
-        graph = result
+    try:
+        result = getattr(torch._C, '_jit_pass_' + name)(graph)
+        if result is not None:
+            graph = result
+    except AttributeError:
+        pass
     torch._C._jit_pass_lint(graph)
 
     if set_graph:

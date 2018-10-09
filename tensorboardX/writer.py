@@ -510,20 +510,19 @@ class SummaryWriter(object):
     def add_onnx_graph(self, prototxt):
         self.file_writer.add_onnx_graph(gg(prototxt))
 
-    # Supports both Caffe2 and PyTorch models
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
-        # no, let tensorboard handles it and show its warning message.
+        # no, let tensorboard handle it and show its warning message.
         """Add graph data to summary.
 
         Args:
             model (torch.nn.Module): model to draw.
-            input_to_model (torch.autograd.Variable): a variable or a tuple of variables to be fed.
+            input_to_model (torch.autograd.Variable): a variable or a tuple of
+                variables to be fed.
 
         """
-        try:
+        if hasattr(model, 'forward'):
             # A valid PyTorch model should have a 'forward' method
-            _ = getattr(model, 'forward')
             import torch
             from distutils.version import LooseVersion
             if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
@@ -536,7 +535,7 @@ class SummaryWriter(object):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
             self.file_writer.add_graph(graph(model, input_to_model, verbose))
-        except AttributeError:
+        else:
             # Caffe2 models do not have the 'forward' method
             if not self.caffe2_enabled:
                 # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
