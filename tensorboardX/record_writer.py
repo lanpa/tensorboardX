@@ -1,6 +1,6 @@
 """
 To write tf_record into file. Here we use it for tensorboard's event writting.
-The code was borrow from https://github.com/TeamHG-Memex/tensorboard_logger
+The code was borrowed from https://github.com/TeamHG-Memex/tensorboard_logger
 """
 
 import io
@@ -48,7 +48,7 @@ def open_file(path):
     try:
         prefix = path.split(':')[0]
         factory = REGISTERED_FACTORIES[prefix]
-        return factory.open(path, 'wb')
+        return factory.open(path)
     except KeyError:
         return open(path, 'wb')
 
@@ -56,11 +56,9 @@ def open_file(path):
 class S3RecordWriter(object):
     """Writes tensorboard protocol buffer files to S3."""
 
-    def __init__(self, path, mode):
+    def __init__(self, path):
         if not S3_ENABLED:
             raise ImportError("boto3 must be installed for S3 support.")
-        if mode != "wb" and mode != "bw":
-            raise ValueError("mode {} is not supported.".format(mode))
         self.path = path
         self.buffer = io.BytesIO()
 
@@ -88,8 +86,8 @@ class S3RecordWriter(object):
 class S3RecordWriterFactory(object):
     """Factory for event protocol buffer files to S3."""
 
-    def open(self, path, mode="wb"):
-        return S3RecordWriter(path, mode)
+    def open(self, path):
+        return S3RecordWriter(path)
 
     def directory_check(self, path):
         # S3 doesn't need directories created before files are added
