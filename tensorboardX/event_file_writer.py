@@ -26,7 +26,7 @@ import time
 
 import six
 
-from .src import event_pb2
+from .proto import event_pb2
 from .record_writer import RecordWriter
 
 
@@ -118,7 +118,8 @@ class EventFileWriter(object):
         self._logdir = logdir
         directory_check(self._logdir)
         self._event_queue = six.moves.queue.Queue(max_queue)
-        self._ev_writer = EventsWriter(os.path.join(self._logdir, "events"), filename_suffix)
+        self._ev_writer = EventsWriter(os.path.join(
+            self._logdir, "events"), filename_suffix)
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)
