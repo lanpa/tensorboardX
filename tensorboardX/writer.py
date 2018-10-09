@@ -252,8 +252,8 @@ class SummaryWriter(object):
               this argument will no effect.
             purge_step (int):
               When logging crashes at step :math:`T+X` and restarts at step :math:`T`, any events
-              whose global_step larger or euqal to :math:`T` will be purged and hiding from TensorBoard.
-              Note that the resumed experiment and the crashed experiment should have the same ``log_dir``.
+              whose global_step larger or equal to :math:`T` will be purged and hidden from TensorBoard.
+              Note that the resumed experiment and crashed experiment should have the same ``log_dir``.
             filename_suffix (string):
               Every event file's name is suffixed with suffix. example: ``SummaryWriter(filename_suffix='.123')``
             kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
@@ -266,11 +266,10 @@ class SummaryWriter(object):
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             log_dir = os.path.join(
                 'runs', current_time + '_' + socket.gethostname() + comment)
+        self.log_dir = log_dir
 
         if 'purge_step' in kwargs.keys():
             most_recent_step = kwargs.pop('purge_step')
-            if not os.path.exists(log_dir):
-                print('warning: you are purging unexisting data.')
             self.file_writer = FileWriter(logdir=log_dir, **kwargs)
             self.file_writer.add_event(
                 Event(step=most_recent_step, file_version='brain.Event:2'))

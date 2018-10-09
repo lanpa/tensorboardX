@@ -27,14 +27,7 @@ import time
 import six
 
 from .proto import event_pb2
-from .record_writer import RecordWriter
-
-
-def directory_check(path):
-    '''Initialize the directory for log files.'''
-    # If the direcotry does not exist, create it!
-    if not os.path.exists(path):
-        os.makedirs(path)
+from .record_writer import RecordWriter, directory_check
 
 
 class EventsWriter(object):
