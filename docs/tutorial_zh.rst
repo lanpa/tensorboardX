@@ -9,7 +9,7 @@ Google TensorFlow 附加的工具 Tensorboard 是一個很好用的視覺化工�
 安裝
 -------
 在命令列輸入 ``pip install tensorboardX`` 即可
-或是最新版源碼安裝 ``pip install git+https://github.com/lanpa/tensorboardX``
+或是最新版源碼安裝 ``pip install tensorboardX``
 
 使用
 -------
@@ -39,7 +39,7 @@ value 可以是 PyTorch tensor ， numpy或是 float，int 之類的python原生
 
 記錄影像
 -------------
-影像使用一個三維的矩陣來表示。這三個維度分別代表紅色，綠色，藍色的強度。一張寬200， 高100的影像其對應的矩陣大小為[3, 100, 200] （CHW）。最簡單情況是只有一張影像要存。這時候只需要注意一下是不是符合上述的規格然後將它傳到：``writer.add_image('imresult', image, iteration)``即可。 
+影像使用一個三維的矩陣來表示。這三個維度分別代表紅色，綠色，藍色的強度。一張寬200， 高100的影像其對應的矩陣大小為[3, 100, 200] （CHW）。最簡單情況是只有一張影像要存。這時候只需要注意一下是不是符合上述的規格然後將它傳到: ``writer.add_image('imresult', image, iteration)`` 即可。 
 通常訓練的時候會採用批次處理，所以有一大堆影像要存。這時候請確定你的資料維度是 ``(NCHW)``, 其中 ``N`` 是batchsize。``add_image`` 會自動將他排列成適當大小。要注意的是，如果要記錄的影像是 OpenCV/numpy 格式，他們通常呈現 ``(HWC)`` 的排列，這時候要呼叫 ``numpy.transpose`` 將其轉為正確的維度，否則會報錯。另外就是注意影像的值的範圍要介於 [0, 1] 之間。 
 
 紀錄直方圖（histogram）
