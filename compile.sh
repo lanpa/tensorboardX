@@ -3,8 +3,6 @@
 # Exit on error
 set -e
 
-# Delete all existing Python protobuf (*_pb2.py) output
-rm -rf tensorboardX/proto/*pb2*.py
 
 
 PROTOC_BIN=`which protoc`
@@ -27,10 +25,12 @@ fi
 
 # Regenerate
 if [[ ! -z ${PROTOC_BIN} ]]; then
+  # Delete all existing Python protobuf (*_pb2.py) output
+  rm -rf tensorboardX/proto/*pb2*.py
   ${PROTOC_BIN} tensorboardX/proto/*.proto --python_out=.
 
   echo "Done generating tensorboardX/proto/*pb2*.py"
 else
-  echo "protoc not installed so can't regenerate tensorboardX/proto/*pb2*.py"
+  echo "protoc not installed so can't regenerate tensorboardX/proto/*pb2*.py, using precompiled version."
 fi
 
