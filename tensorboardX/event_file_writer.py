@@ -112,6 +112,7 @@ class EventFileWriter(object):
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)
+        self.flush_secs = flush_secs
 
         self._worker.start()
 
@@ -126,6 +127,9 @@ class EventFileWriter(object):
         Does nothing if the EventFileWriter was not closed.
         """
         if self._closed:
+            self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
+                                              self.flush_secs)
+            self._worker.start()
             self._closed = False
 
     def add_event(self, event):
@@ -148,9 +152,11 @@ class EventFileWriter(object):
         """Flushes the event file to disk and close the file.
         Call this method when you do not need the summary writer anymore.
         """
-        self.flush()
-        self._ev_writer.close()
-        self._closed = True
+        if not self._closed:
+            self._event_queue.put(None)
+            self.flush()
+            self._ev_writer.close()
+            self._closed = True
 
 
 class _EventLoggerThread(threading.Thread):
@@ -177,6 +183,8 @@ class _EventLoggerThread(threading.Thread):
         while True:
             event = self._queue.get()
             try:
+                if event is None:
+                    break
                 self._ev_writer.write_event(event)
                 # Flush the event writer every so often.
                 now = time.time()
