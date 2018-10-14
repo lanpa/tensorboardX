@@ -24,8 +24,11 @@ def parse(graph):
                 scope[inputs[i]] = n.scopeName()
 
         uname = next(iter(n.outputs())).uniqueName()
-        assert n.scopeName() != '', '{} has empty scope name'.format(n)
-        scope[uname] = n.scopeName()
+        if n.scopeName() == '':
+            print('{} has empty scope name. FIXME!'.format(n))
+            scope[uname] = 'unknownScope'
+        else:
+            scope[uname] = n.scopeName()
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         scope['0'] = 'input'
     else:
@@ -76,8 +79,11 @@ def parse(graph):
 
     mapping = {}
     for n in nodes:
-        mapping[n['name']] = scope[n['name']] + '/' + \
-            n['op'].replace('onnx::', '') + '_' + n['name']
+        if scope[n['name']] != '':
+            mapping[n['name']] = scope[n['name']] + '/' + \
+                n['op'].replace('onnx::', '') + '_' + n['name']
+        else:
+            mapping[n['name']] = n['op'].replace('onnx::', '') + '_' + n['name']
     for n in nodes:
         n['name'] = mapping[n['name']]
         for i, s in enumerate(n['inputs']):
@@ -126,10 +132,7 @@ def graph(model, args, verbose=False):
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
     if LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
-        run_pass('cse', trace)
-        run_pass('canonicalize', trace)
-        run_pass('remove_expands', trace)
-
+        torch.onnx._optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
     elif LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
     else:
