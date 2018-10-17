@@ -75,7 +75,7 @@ forward propagate 一次 ``m(x)`` 或是多個輸入時：``m((x, y, z))``
 
 高維度資料視覺化／降維 (embedding)
 ---------------------------------------------------
-因為人類對物體的了解程度只有三維，所以當資料的維度超過三的時候我們沒辦法將他視覺化。這時候就需要降維來讓資料的維度小於等於三。降維運算由 tensorboard 以 Javascript 執行，演算法有 PCA 及 t-sne 兩種可選。這邊我們只需要負責提供每個點的高維度特徵即可。提供的格式是一個矩陣，一個 ``n x d`` 的矩陣 ``n`` 點的數量， ``d`` 是維度的多寡。 高維度特徵可以是原始資料。比如說影像，或是網路學到的壓縮結果。這原始資料決定了資料的分佈情形。如果要看得更清楚一點，你可以再傳 metadata / label_imgs 的參數進去（metadata是一個 python list 長度為 ``n``, ``label_imgs`` 是一個 4 維矩陣，大小是 ``nCHW``。這樣每個點就會有他對應的文字或圖在旁邊。不懂的話就看範例吧：https://github.com/lanpa/tensorboardX/blob/master/demo_embedding.py
+因為人類對物體的了解程度只有三維，所以當資料的維度超過三的時候我們沒辦法將他視覺化。這時候就需要降維來讓資料的維度小於等於三。降維運算由 tensorboard 以 Javascript 執行，演算法有 PCA 及 t-sne 兩種可選。這邊我們只需要負責提供每個點的高維度特徵即可。提供的格式是一個矩陣，一個 ``n x d`` 的矩陣 ``n`` 點的數量， ``d`` 是維度的多寡。 高維度特徵可以是原始資料。比如說影像，或是網路學到的壓縮結果。這原始資料決定了資料的分佈情形。如果要看得更清楚一點，你可以再傳 metadata / label_imgs 的參數進去（metadata是一個 python list 長度為 ``n``, ``label_imgs`` 是一個 4 維矩陣，大小是 ``nCHW``。這樣每個點就會有他對應的文字或圖在旁邊。不懂的話就看範例吧：https://github.com/lanpa/tensorboardX/blob/master/examples/demo_embedding.py
 
 紀錄短片
 ---------------

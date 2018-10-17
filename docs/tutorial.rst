@@ -122,7 +122,7 @@ distant points have very different label (semantically or visually). Here the
 metadata is a list of labels, and the length of the list should equal to ``n``, the
 number of the points. The ``label_imgs`` is a 4D tensor of size ``NCHW``. ``N`` should equal
 to ``n`` as well. See
-`The embedding demo <https://github.com/lanpa/tensorboardX/blob/master/demo_embedding.py>`_ for
+`The embedding demo <https://github.com/lanpa/tensorboardX/blob/master/examples/demo_embedding.py>`_ for
 complete example.
 
 
