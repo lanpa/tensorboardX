@@ -28,9 +28,8 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - which python
-  - conda install -y -q -c caffe2 caffe2 
+  - conda install -y -q -c pytorch pytorch-nightly 
   - pip install chainer -q
-  - pip install torch==0.4.1 -q
   - pip install torchvision -q
   - pip install moviepy==0.2.3.2 -q
   - pip install matplotlib -q
