@@ -5,19 +5,19 @@ from __future__ import unicode_literals
 
 import unittest
 
-try:
-    import numpy as np
-    import caffe2.python.brew as brew
-    import caffe2.python.cnn as cnn
-    import caffe2.python.core as core
-    import caffe2.python.model_helper as model_helper
-    from caffe2.proto import caffe2_pb2
-    from caffe2.python import workspace
-    import tensorboardX.caffe2_graph as tb
-    caffe2_installed = True
-except (SystemExit, ImportError):
-    print('Caffe2 is not installed, skipping test')
-    caffe2_installed = False
+# try:
+import numpy as np
+import caffe2.python.brew as brew
+import caffe2.python.cnn as cnn
+import caffe2.python.core as core
+import caffe2.python.model_helper as model_helper
+from caffe2.proto import caffe2_pb2
+from caffe2.python import workspace
+import tensorboardX.caffe2_graph as tb
+caffe2_installed = True
+# except (SystemExit, ImportError):
+#    print('Caffe2 is not installed, skipping test')
+#    caffe2_installed = False
 
 
 EXPECTED_CNN = """
