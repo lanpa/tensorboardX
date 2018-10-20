@@ -29,6 +29,7 @@ install:
   - source activate test-environment
   - which python
   - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+  - pip install future
   - pip install chainer -q
   - pip install torchvision -q
   - pip install moviepy==0.2.3.2 -q
