@@ -28,7 +28,7 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - which python
-  - conda install -y -q -c pytorch pytorch-nightly 
+  - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install chainer -q
   - pip install torchvision -q
   - pip install moviepy==0.2.3.2 -q
