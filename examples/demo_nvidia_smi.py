@@ -3,23 +3,22 @@ write gpu and (gpu) memory usage of nvidia cards as scalar
 """
 from tensorboardX import SummaryWriter
 import time
-
-# package: nvidia-ml-py or nvidia-ml-py3
+import torch
 try:
     import nvidia_smi
+    nvidia_smi.nvmlInit()
+    handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)  # gpu0
 except ImportError:
-    nvidia_smi = None
+    print('This demo needs nvidia-ml-py or nvidia-ml-py3')
+    exit()
 
 
 with SummaryWriter() as writer:
-
-    # only run when nvidia_smi is installed
-    if nvidia_smi:
-        nvidia_smi.nvmlInit()
-        handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)  # gpu0
-
-        for n_iter in range(10):
-            res = nvidia_smi.nvmlDeviceGetUtilizationRates(handle)
-            writer.add_scalar('nv/gpu', res.gpu, n_iter)
-            writer.add_scalar('nv/gpu_mem', res.memory, n_iter)
-            time.sleep(0.1)
+    x = []
+    for n_iter in range(50):
+        x.append(torch.Tensor(1000, 1000).cuda())
+        res = nvidia_smi.nvmlDeviceGetUtilizationRates(handle)
+        writer.add_scalar('nv/gpu', res.gpu, n_iter)
+        res = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
+        writer.add_scalar('nv/gpu_mem', res.used, n_iter)
+        time.sleep(0.1)
