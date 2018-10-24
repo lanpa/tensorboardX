@@ -668,8 +668,6 @@ def _operators_to_graph_def(
     Returns:
         current_graph: GraphDef representing the computation graph formed by the
             set of operators.
-        blob_name_tracker: (Filtered) list of blob names corresponding to input
-            and output nodes of the operators in the graph.
     '''
     if blob_name_tracker is not None:
         blob_name_tracker.clear()

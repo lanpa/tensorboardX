@@ -541,20 +541,22 @@ class SummaryWriter(object):
                 return
             from caffe2.proto import caffe2_pb2
             from caffe2.python import core
-            from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
+            from .caffe2_graph import (
+                model_to_graph_def, nets_to_graph_def, protos_to_graph_def
+            )
             # notimporterror should be already handled when checking self.caffe2_enabled
 
             '''Write graph to the summary. Check model type and handle accordingly.'''
             if isinstance(model, list):
                 if isinstance(model[0], core.Net):
-                    current_graph, track_blob_names = nets_to_graph(
+                    current_graph = nets_to_graph_def(
                         model, **kwargs)
                 elif isinstance(model[0], caffe2_pb2.NetDef):
-                    current_graph, track_blob_names = protos_to_graph(
+                    current_graph = protos_to_graph_def(
                         model, **kwargs)
             # Handles cnn.CNNModelHelper, model_helper.ModelHelper
             else:
-                current_graph, track_blob_names = model_to_graph(
+                current_graph = model_to_graph_def(
                     model, **kwargs)
             event = event_pb2.Event(
                 graph_def=current_graph.SerializeToString())
