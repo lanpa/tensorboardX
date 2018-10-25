@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from tensorboardX import SummaryWriter
 import unittest
 
 try:
@@ -1694,6 +1695,8 @@ if caffe2_installed:
             model.net.RunAllOnGPU()
             model.param_init_net.RunAllOnGPU()
             model.AddGradientOperators([loss], skip=1)
+            with SummaryWriter(filename_suffix='.test') as writer:
+                writer.add_graph(model)
             blob_name_tracker = {}
             graph = tb.model_to_graph_def(
                 model,
@@ -1754,6 +1757,8 @@ if caffe2_installed:
             model.net.RunAllOnGPU()
             model.param_init_net.RunAllOnGPU()
             model.AddGradientOperators([loss], skip=1)
+            with SummaryWriter(filename_suffix='.test') as writer:
+                writer.add_graph(model)
             blob_name_tracker = {}
             graph = tb.model_to_graph_def(
                 model,

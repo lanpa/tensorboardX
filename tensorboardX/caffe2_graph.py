@@ -316,7 +316,10 @@ def _tf_device(device_option):
     if device_option.device_type == caffe2_pb2.CPU:
         return "/cpu:*"
     if device_option.device_type == caffe2_pb2.CUDA:
-        return "/gpu:{}".format(device_option.cuda_gpu_id)
+        if device_option.HasField("device_id"):
+            return "/gpu:{}".format(device_option.device_id)
+        elif device_option.HasField("cuda_gpu_id"):
+            return "/gpu:{}".format(device_option.cuda_gpu_id)
     raise Exception("Unhandled device", device_option)
 
 
@@ -665,8 +668,6 @@ def _operators_to_graph_def(
     Returns:
         current_graph: GraphDef representing the computation graph formed by the
             set of operators.
-        blob_name_tracker: (Filtered) list of blob names corresponding to input
-            and output nodes of the operators in the graph.
     '''
     if blob_name_tracker is not None:
         blob_name_tracker.clear()
