@@ -215,8 +215,8 @@ class Caffe2Test(unittest.TestCase):
             pred = model.Softmax(fc, "pred")
             xent = model.LabelCrossEntropy([pred, "label"], "xent")
             loss = model.AveragedLoss(xent, "loss")
-        model.net.RunAllOnGPU()
-        model.param_init_net.RunAllOnGPU()
+        model.net.RunAllOnMKL()
+        model.param_init_net.RunAllOnMKL()
         model.AddGradientOperators([loss], skip=1)
         blob_name_tracker = {}
         graph = tb.model_to_graph_def(
@@ -232,6 +232,8 @@ class Caffe2Test(unittest.TestCase):
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
+        with open('tests/expect/caffe_overfeat.expect') as f:
+            EXPECTED_CNN = f.read()
         sep = "node {"
         expected = "\n".join(sorted(
             sep + "\n  " + part.strip()
@@ -271,8 +273,8 @@ class Caffe2Test(unittest.TestCase):
             xent = model.LabelCrossEntropy([softmax, "label"], 'xent')
             # compute the expected loss
             loss = model.AveragedLoss(xent, "loss")
-        model.net.RunAllOnGPU()
-        model.param_init_net.RunAllOnGPU()
+        model.net.RunAllOnMKL()
+        model.param_init_net.RunAllOnMKL()
         model.AddGradientOperators([loss], skip=1)
         blob_name_tracker = {}
         graph = tb.model_to_graph_def(
@@ -288,6 +290,8 @@ class Caffe2Test(unittest.TestCase):
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
+        with open('tests/expect/caffe_mnist.expect') as f:
+            EXPECTED_MNIST = f.read()
         sep = "node {"
         expected = "\n".join(sorted(
             sep + "\n  " + part.strip()
