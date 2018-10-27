@@ -15,9 +15,8 @@ class SummaryWriterTest(unittest.TestCase):
         # OSError: [Errno 24] Too many open files
         passed = True
         try:
-            for _ in range(2048):
-                writer = SummaryWriter()
-                writer.close()
+            writer = SummaryWriter()
+            writer.close()
         except OSError:
             passed = False
 
