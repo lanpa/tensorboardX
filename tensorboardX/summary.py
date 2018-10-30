@@ -167,7 +167,7 @@ def make_histogram(values, bins):
     limits = limits[start:end]
 
     if counts.size == 0 or limits.size == 0:
-        raise ValueError('The histogram is emtpy, please file a bug report.')
+        raise ValueError('The histogram is empty, please file a bug report.')
 
     sum_sq = values.dot(values)
     return HistogramProto(min=values.min(),
@@ -175,8 +175,8 @@ def make_histogram(values, bins):
                           num=len(values),
                           sum=values.sum(),
                           sum_squares=sum_sq,
-                          bucket_limit=limits,
-                          bucket=counts)
+                          bucket_limit=limits.tolist(),
+                          bucket=counts.tolist())
 
 
 def image(tag, tensor, rescale=1):
