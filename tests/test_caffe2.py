@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from tensorboardX import SummaryWriter
 import unittest
 
 # try:
@@ -304,6 +305,7 @@ class Caffe2Test(unittest.TestCase):
             if part.strip()
         ))
         # self.assertMultiLineEqual(actual, expected)
+
 
 
 if __name__ == "__main__":
