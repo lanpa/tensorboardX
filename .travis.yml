@@ -29,10 +29,11 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - which python
-  - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install future
   - pip install chainer -q
   - pip install torchvision -q
+  - pip uninstall torch -q
+  - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install moviepy==0.2.3.2 -q
   - pip install matplotlib -q
   - pip install requests -q
