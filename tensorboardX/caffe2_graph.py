@@ -313,13 +313,10 @@ def _tf_device(device_option):
     '''
     if not device_option.HasField("device_type"):
         return ""
-    if device_option.device_type == caffe2_pb2.CPU:
+    if device_option.device_type == caffe2_pb2.CPU or device_option.device_type == caffe2_pb2.MKLDNN:
         return "/cpu:*"
     if device_option.device_type == caffe2_pb2.CUDA:
-        if device_option.HasField("device_id"):
-            return "/gpu:{}".format(device_option.device_id)
-        elif device_option.HasField("cuda_gpu_id"):
-            return "/gpu:{}".format(device_option.cuda_gpu_id)
+        return "/gpu:{}".format(device_option.device_id)
     raise Exception("Unhandled device", device_option)
 
 
