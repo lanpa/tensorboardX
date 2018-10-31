@@ -40,3 +40,8 @@ class PyTorchNumpyTest(unittest.TestCase):
     def test_pytorch_write(self):
         with SummaryWriter() as w:
             w.add_scalar('scalar', torch.autograd.Variable(torch.rand(1)), 0)
+
+    def test_pytorch_histogram(self):
+        with SummaryWriter() as w:
+            w.add_histogram('float histogram', torch.rand((50,)))
+            w.add_histogram('int histogram', torch.randint(0, 100, (50,)))
