@@ -1,3 +1,4 @@
+dist: xenial
 language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
@@ -28,10 +29,11 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - which python
-  - conda install -y -q -c caffe2 caffe2 
+  - pip install future
   - pip install chainer -q
-  - pip install torch==0.4.0 -q
   - pip install torchvision -q
+  - pip uninstall torch -y
+  - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install moviepy==0.2.3.2 -q
   - pip install matplotlib -q
   - pip install requests -q

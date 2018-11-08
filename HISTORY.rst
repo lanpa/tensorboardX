@@ -1,12 +1,13 @@
 History
 =======
-1.3 (2018-08-06)
+1.4 (2018-08-09)
 -----------------
 * Made add_text compatible with tensorboard>1.6
 * Fix the issue of strange histogram if default binning method is used
-* Implement support for matplotlib figures
+* Supports passing matplotlib figures to add_image()
 * Resolve namespace confliction with TF tensorboard
 * add_image_boxes function
+* Supports custom timestamp for event
 
 1.2 (2018-04-21)
 -----------------

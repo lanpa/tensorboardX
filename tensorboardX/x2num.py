@@ -6,13 +6,6 @@ from __future__ import print_function
 import numpy as np
 import six
 
-try:
-    from caffe2.python import workspace
-except ImportError:
-    # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
-    # Caffe2 is not installed, disabling Caffe2 functionality
-    pass
-
 
 def make_np(x, modality=None):
     if isinstance(x, np.ndarray):
@@ -27,6 +20,8 @@ def make_np(x, modality=None):
         return prepare_chainer(x, modality)
     if 'mxnet' in str(type(x)):
         return prepare_mxnet(x, modality)
+    raise NotImplementedError(
+        'Got {}, but expected numpy array or torch tensor.'.format(type(x)))
 
 
 def prepare_numpy(x, modality):
@@ -57,6 +52,12 @@ def prepare_theano(x):
 
 
 def prepare_caffe2(x, modality):
+    try:
+        from caffe2.python import workspace
+    except ImportError:
+        # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
+        # Caffe2 is not installed, disabling Caffe2 functionality
+        pass
     x = workspace.FetchBlob(x)
     if modality == 'IMG':
         x = _prepare_image(x)
@@ -79,7 +80,8 @@ def prepare_chainer(x, modality):
 
 
 def make_grid(I, ncols=8):
-    assert isinstance(I, np.ndarray), 'plugin error, should pass numpy array here'
+    assert isinstance(
+        I, np.ndarray), 'plugin error, should pass numpy array here'
     assert I.ndim == 4 and I.shape[1] == 3
     nimg = I.shape[0]
     H = I.shape[2]
@@ -99,7 +101,8 @@ def make_grid(I, ncols=8):
 
 def _prepare_image(I):
     # convert [N]CHW image to HWC
-    assert isinstance(I, np.ndarray), 'plugin error, should pass numpy array here'
+    assert isinstance(
+        I, np.ndarray), 'plugin error, should pass numpy array here'
     assert I.ndim == 2 or I.ndim == 3 or I.ndim == 4
     if I.ndim == 4:  # NCHW
         if I.shape[1] == 1:  # N1HW
@@ -128,7 +131,8 @@ def _prepare_video(V):
     # pad to nearest power of 2, all at once
     if not is_power2(V.shape[0]):
         len_addition = int(2**V.shape[0].bit_length() - V.shape[0])
-        V = np.concatenate((V, np.zeros(shape=(len_addition, c, t, h, w))), axis=0)
+        V = np.concatenate(
+            (V, np.zeros(shape=(len_addition, c, t, h, w))), axis=0)
 
     b = V.shape[0]
     n_rows = 2**((b.bit_length() - 1) // 2)

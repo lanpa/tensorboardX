@@ -42,13 +42,14 @@ import re as _re
 # pylint: disable=unused-import
 from six import StringIO
 from six.moves import range
-from .src.summary_pb2 import Summary
-from .src.summary_pb2 import HistogramProto
-from .src.summary_pb2 import SummaryMetadata
-from .src.tensor_pb2 import TensorProto
-from .src.tensor_shape_pb2 import TensorShapeProto
-from .src.plugin_pr_curve_pb2 import PrCurvePluginData
-from .src.plugin_text_pb2 import TextPluginData
+from .proto.summary_pb2 import Summary
+from .proto.summary_pb2 import HistogramProto
+from .proto.summary_pb2 import SummaryMetadata
+from .proto.tensor_pb2 import TensorProto
+from .proto.tensor_shape_pb2 import TensorShapeProto
+from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
+from .proto.plugin_text_pb2 import TextPluginData
+from .proto import layout_pb2
 from .x2num import make_np
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -71,7 +72,8 @@ def _clean_tag(name):
         new_name = _INVALID_TAG_CHARACTERS.sub('_', name)
         new_name = new_name.lstrip('/')  # Remove leading slashes
         if new_name != name:
-            logging.info('Summary name %s is illegal; using %s instead.' % (name, new_name))
+            logging.info(
+                'Summary name %s is illegal; using %s instead.' % (name, new_name))
             name = new_name
     return name
 
@@ -145,6 +147,8 @@ def histogram(name, values, bins, collections=None):
 
 def make_histogram(values, bins):
     """Convert values into a histogram proto using logic from histogram.cc."""
+    if values.size == 0:
+        raise ValueError('The input has no element.')
     values = values.reshape(-1)
     counts, limits = np.histogram(values, bins=bins)
     limits = limits[1:]
@@ -156,19 +160,23 @@ def make_histogram(values, bins):
 
     for i, c in enumerate(reversed(counts)):
         if c > 0:
-            end = -(i)
+            end = counts.size - i
             break
 
     counts = counts[start:end]
     limits = limits[start:end]
+
+    if counts.size == 0 or limits.size == 0:
+        raise ValueError('The histogram is empty, please file a bug report.')
+
     sum_sq = values.dot(values)
     return HistogramProto(min=values.min(),
                           max=values.max(),
                           num=len(values),
                           sum=values.sum(),
                           sum_squares=sum_sq,
-                          bucket_limit=limits,
-                          bucket=counts)
+                          bucket_limit=limits.tolist(),
+                          bucket=counts.tolist())
 
 
 def image(tag, tensor, rescale=1):
@@ -210,7 +218,8 @@ def image_boxes(tag, tensor_image, tensor_boxes, rescale=1):
     '''Outputs a `Summary` protocol buffer with images.'''
     tensor_image = make_np(tensor_image, 'IMG')
     tensor_boxes = make_np(tensor_boxes)
-    tensor_image = tensor_image.astype(np.float32) * _calc_scale_factor(tensor_image)
+    tensor_image = tensor_image.astype(
+        np.float32) * _calc_scale_factor(tensor_image)
     rois = tensor_boxes[:, 1:5]
     image = make_image(tensor_image.astype(np.uint8),
                        rescale=rescale,
@@ -336,9 +345,39 @@ def audio(tag, tensor, sample_rate=44100):
     return Summary(value=[Summary.Value(tag=tag, audio=audio)])
 
 
+def custom_scalars(layout):
+    categoriesnames = layout.keys()
+    categories = []
+    layouts = []
+    for k, v in layout.items():
+        charts = []
+        for chart_name, chart_meatadata in v.items():
+            tags = chart_meatadata[1]
+            if chart_meatadata[0] == 'Margin':
+                assert len(tags) == 3
+                mgcc = layout_pb2.MarginChartContent(series=[layout_pb2.MarginChartContent.Series(value=tags[0],
+                                                                                                  lower=tags[1],
+                                                                                                  upper=tags[2])])
+                chart = layout_pb2.Chart(title=chart_name, margin=mgcc)
+            else:
+                mlcc = layout_pb2.MultilineChartContent(tag=tags)
+                chart = layout_pb2.Chart(title=chart_name, multiline=mlcc)
+            charts.append(chart)
+        categories.append(layout_pb2.Category(title=k, chart=charts))
+
+    layout = layout_pb2.Layout(category=categories)
+    PluginData = [SummaryMetadata.PluginData(plugin_name='custom_scalars')]
+    smd = SummaryMetadata(plugin_data=PluginData)
+    tensor = TensorProto(dtype='DT_STRING',
+                         string_val=[layout.SerializeToString()],
+                         tensor_shape=TensorShapeProto())
+    return Summary(value=[Summary.Value(tag='custom_scalars__config__', tensor=tensor, metadata=smd)])
+
+
 def text(tag, text):
     import json
-    PluginData = [SummaryMetadata.PluginData(plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_STRING',
                          string_val=[text.encode(encoding='utf_8')],
@@ -350,8 +389,10 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, wei
     if num_thresholds > 127:  # wierd, value > 127 breaks protobuf
         num_thresholds = 127
     data = np.stack((tp, fp, tn, fn, precision, recall))
-    pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    pr_curve_plugin_data = PrCurvePluginData(
+        version=0, num_thresholds=num_thresholds).SerializeToString()
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
@@ -361,10 +402,14 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, wei
 
 
 def pr_curve(tag, labels, predictions, num_thresholds=127, weights=None):
-    num_thresholds = min(num_thresholds, 127)  # weird, value > 127 breaks protobuf
-    data = compute_curve(labels, predictions, num_thresholds=num_thresholds, weights=weights)
-    pr_curve_plugin_data = PrCurvePluginData(version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    # weird, value > 127 breaks protobuf
+    num_thresholds = min(num_thresholds, 127)
+    data = compute_curve(labels, predictions,
+                         num_thresholds=num_thresholds, weights=weights)
+    pr_curve_plugin_data = PrCurvePluginData(
+        version=0, num_thresholds=num_thresholds).SerializeToString()
+    PluginData = [SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)]
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
