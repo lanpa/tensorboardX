@@ -10,6 +10,7 @@ import struct
 try:
     import boto3
     S3_ENABLED = True
+    from smart_open import smart_open
 except ImportError:
     S3_ENABLED = False
 
@@ -60,7 +61,7 @@ class S3RecordWriter(object):
         if not S3_ENABLED:
             raise ImportError("boto3 must be installed for S3 support.")
         self.path = path
-        self.buffer = io.BytesIO()
+        self.buffer = smart_open(self.path, 'wb')
 
     def __del__(self):
         self.close()
@@ -75,12 +76,11 @@ class S3RecordWriter(object):
         self.buffer.write(val)
 
     def flush(self):
-        s3 = boto3.client('s3')
-        bucket, path = self.bucket_and_path()
-        s3.upload_fileobj(self.buffer, bucket, path)
+        self.buffer.flush()
 
     def close(self):
         self.flush()
+        self.buffer.close()
 
 
 class S3RecordWriterFactory(object):
