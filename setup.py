@@ -32,6 +32,7 @@ requirements = [
     'numpy',
     'protobuf >= 3.2.0',
     'six',
+    'smart_open',
 ]
 
 test_requirements = [
