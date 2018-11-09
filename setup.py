@@ -23,7 +23,7 @@ class PostInstallCommand(install):
         # Dynamically compile protos
         res = subprocess.call(['./compile.sh'])
         assert res == 0, 'cannot compile protobuf'
-        install.run(self)
+        install.do_egg_install(self)
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
