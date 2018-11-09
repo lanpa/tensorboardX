@@ -16,19 +16,23 @@ def parse(graph):
     scope = {}
     for n in graph.nodes():
         if n.kind() == 'prim::Undefined':
-            scope[next(iter(n.outputs())).uniqueName()] = 'Undefined'
+            for outputnode in iter(n.outputs()):
+                scope[outputnode.uniqueName()] = 'Undefined'
             continue
         inputs = [i.uniqueName() for i in n.inputs()]
         for i in range(0, len(inputs)):
             if inputs[i] not in scope.keys():
                 scope[inputs[i]] = n.scopeName()
 
-        uname = next(iter(n.outputs())).uniqueName()
-        if n.scopeName() == '':
+        scopename = n.scopeName()
+        if not scopename:
             print('{} has empty scope name. FIXME!'.format(n))
-            scope[uname] = 'unknownScope'
-        else:
-            scope[uname] = n.scopeName()
+            scopename = 'unknownScope'
+
+        for outputnode in iter(n.outputs()):
+            uname = outputnode.uniqueName()
+            scope[uname] = scopename
+
     if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         scope['0'] = 'input'
     else:
@@ -51,20 +55,18 @@ def parse(graph):
                 "Error getting attributes of node {}, error is {}".format(attrs, e))
         # singlequote will be escaped by tensorboard
         attrs = attrs.replace("'", ' ')
-        inputs = [i.uniqueName() for i in n.inputs()]
-        # FIXME: only first output is considered (only Dropout)
-        outputnode = next(iter(n.outputs()))
-        uname = outputnode.uniqueName()
-        if outputnode.type().kind() == 'TensorType':
-            outputsize = outputnode.type().sizes()
-            nodes.append({'name': uname,
-                          'op': n.kind(),
-                          'inputs': inputs,
-                          'attr': attrs,
-                          'outputsize': outputsize})
-        else:
-            nodes.append({'name': uname, 'op': n.kind(),
-                          'inputs': inputs, 'attr': attrs})
+        for outputnode in iter(n.outputs()):
+            inputs = [i.uniqueName() for i in n.inputs()]
+            uname = outputnode.uniqueName()
+            if outputnode.type().kind() == 'TensorType':
+                outputsize = outputnode.type().sizes()
+                nodes.append({'name': uname,
+                              'op': n.kind(),
+                              'inputs': inputs,
+                              'attr': attrs,
+                              'outputsize': outputsize})
+            else:
+                nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
 
     for n in graph.inputs():
         uname = n.uniqueName()
