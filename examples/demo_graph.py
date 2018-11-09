@@ -21,6 +21,18 @@ with SummaryWriter(comment='LinearModel') as w:
 
 
 
+class MultipleOutput(nn.Module):
+    def __init__(self):
+        super(MultipleOutput, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+        self.Linear_2 = nn.Linear(3, 7)
+
+    def forward(self, x):
+        return self.Linear_1(x), self.Linear_2(x)
+
+with SummaryWriter(comment='MultipleOutput') as w:
+    w.add_graph(MultipleOutput(), dummy_input, True)
+
 
 
 class SimpleModel(nn.Module):
