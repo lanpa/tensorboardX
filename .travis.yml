@@ -43,8 +43,14 @@ install:
   - python setup.py install
 
 script:
-  - flake8 tensorboardX
   - pytest
+  - python examples/demo.py
+  - python examples/demo_graph.py
+  - python examples/demo_embedding.py
+  - python examples/demo_custom_scalars.py
+  - python examples/demo_multiple_embedding.py
+  - python examples/demo_purge.py
+  - python examples/demo_matplotlib.py
   - pip uninstall -y tensorboardX
   - pip install tensorboardX
   - pytest
