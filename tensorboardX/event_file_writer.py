@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
 import os.path
 import socket
 import threading
@@ -40,9 +39,6 @@ class EventsWriter(object):
         '''
         self._file_name = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." +\
             socket.gethostname() + filename_suffix
-
-        # Open(Create) the log file with the particular form of name.
-        logging.basicConfig(filename=self._file_name)
 
         self._num_outstanding_events = 0
 
