@@ -252,8 +252,8 @@ class SummaryWriter(object):
               this argument will no effect.
             purge_step (int):
               When logging crashes at step :math:`T+X` and restarts at step :math:`T`, any events
-              whose global_step larger or euqal to :math:`T` will be purged and hiding from TensorBoard.
-              Note that the resumed experiment and the crashed experiment should have the same ``log_dir``.
+              whose global_step larger or equal to :math:`T` will be purged and hidden from TensorBoard.
+              Note that the resumed experiment and crashed experiment should have the same ``log_dir``.
             filename_suffix (string):
               Every event file's name is suffixed with suffix. example: ``SummaryWriter(filename_suffix='.123')``
             kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
@@ -266,11 +266,10 @@ class SummaryWriter(object):
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             log_dir = os.path.join(
                 'runs', current_time + '_' + socket.gethostname() + comment)
+        self.log_dir = log_dir
 
         if 'purge_step' in kwargs.keys():
             most_recent_step = kwargs.pop('purge_step')
-            if not os.path.exists(log_dir):
-                print('warning: you are purging unexisting data.')
             self.file_writer = FileWriter(logdir=log_dir, **kwargs)
             self.file_writer.add_event(
                 Event(step=most_recent_step, file_version='brain.Event:2'))
@@ -510,20 +509,19 @@ class SummaryWriter(object):
     def add_onnx_graph(self, prototxt):
         self.file_writer.add_onnx_graph(gg(prototxt))
 
-    # Supports both Caffe2 and PyTorch models
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
-        # no, let tensorboard handles it and show its warning message.
+        # no, let tensorboard handle it and show its warning message.
         """Add graph data to summary.
 
         Args:
             model (torch.nn.Module): model to draw.
-            input_to_model (torch.autograd.Variable): a variable or a tuple of variables to be fed.
+            input_to_model (torch.autograd.Variable): a variable or a tuple of
+                variables to be fed.
 
         """
-        try:
+        if hasattr(model, 'forward'):
             # A valid PyTorch model should have a 'forward' method
-            _ = getattr(model, 'forward')
             import torch
             from distutils.version import LooseVersion
             if LooseVersion(torch.__version__) >= LooseVersion("0.3.1"):
@@ -536,27 +534,29 @@ class SummaryWriter(object):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
             self.file_writer.add_graph(graph(model, input_to_model, verbose))
-        except AttributeError:
+        else:
             # Caffe2 models do not have the 'forward' method
             if not self.caffe2_enabled:
                 # TODO (ml7): Remove when PyTorch 1.0 merges PyTorch and Caffe2
                 return
             from caffe2.proto import caffe2_pb2
             from caffe2.python import core
-            from .caffe2_graph import model_to_graph, nets_to_graph, protos_to_graph
+            from .caffe2_graph import (
+                model_to_graph_def, nets_to_graph_def, protos_to_graph_def
+            )
             # notimporterror should be already handled when checking self.caffe2_enabled
 
             '''Write graph to the summary. Check model type and handle accordingly.'''
             if isinstance(model, list):
                 if isinstance(model[0], core.Net):
-                    current_graph, track_blob_names = nets_to_graph(
+                    current_graph = nets_to_graph_def(
                         model, **kwargs)
                 elif isinstance(model[0], caffe2_pb2.NetDef):
-                    current_graph, track_blob_names = protos_to_graph(
+                    current_graph = protos_to_graph_def(
                         model, **kwargs)
             # Handles cnn.CNNModelHelper, model_helper.ModelHelper
             else:
-                current_graph, track_blob_names = model_to_graph(
+                current_graph = model_to_graph_def(
                     model, **kwargs)
             event = event_pb2.Event(
                 graph_def=current_graph.SerializeToString())

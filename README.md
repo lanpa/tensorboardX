@@ -27,7 +27,7 @@ or build from source:
 
 ## Example
 
-* Run the demo script: `python demo.py`
+* Run the demo script: `python examples/demo.py`
 * Use TensorBoard with `tensorboard --logdir runs`  (needs to install TensorFlow)
 
 ```python
@@ -94,7 +94,8 @@ writer.close()
 
 ## Tweaks
 
-To add more ticks for the slider (show more image history), check https://github.com/lanpa/tensorboardX/issues/44
+To add more ticks for the slider (show more image history), check https://github.com/lanpa/tensorboardX/issues/44 or 
+https://github.com/tensorflow/tensorboard/pull/1138
 
 ## Reference
 

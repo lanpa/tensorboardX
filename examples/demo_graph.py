@@ -5,6 +5,90 @@ import torchvision
 from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 
+dummy_input = (torch.zeros(1, 3),)
+
+
+class LinearLanpa(nn.Module):
+    def __init__(self):
+        super(LinearLanpa, self).__init__()
+        self.l = nn.Linear(3, 5)
+
+    def forward(self, x):
+        return self.l(x)
+
+with SummaryWriter(comment='LinearModel') as w:
+    w.add_graph(LinearLanpa(), dummy_input, True)
+
+
+
+class MultipleOutput(nn.Module):
+    def __init__(self):
+        super(MultipleOutput, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+        self.Linear_2 = nn.Linear(3, 7)
+
+    def forward(self, x):
+        return self.Linear_1(x), self.Linear_2(x)
+
+with SummaryWriter(comment='MultipleOutput') as w:
+    w.add_graph(MultipleOutput(), dummy_input, True)
+
+
+
+class SimpleModel(nn.Module):
+    def __init__(self):
+        super(SimpleModel, self).__init__()
+
+    def forward(self, x):
+        return x * 2
+
+
+model = SimpleModel()
+dummy_input = (torch.zeros(1, 2, 3),)
+
+with SummaryWriter(comment='constantModel') as w:
+    w.add_graph(model, dummy_input, True)
+
+
+def conv3x3(in_planes, out_planes, stride=1):
+    """3x3 convolution with padding"""
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                     padding=1, bias=False)
+
+
+class BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
+        super(BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        # self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = F.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out += residual
+        out = F.relu(out)
+        return out
+
+
+dummy_input = torch.rand(1, 3, 224, 224)
+
+with SummaryWriter(comment='basicblock') as w:
+    model = BasicBlock(3, 3)
+    w.add_graph(model, (dummy_input, ), verbose=True)
+
+
+
 
 class Net1(nn.Module):
     def __init__(self):
@@ -59,8 +143,7 @@ model = Net2()
 with SummaryWriter(comment='Net2') as w:
     w.add_graph(model, (dummy_input, ))
 
-
-dummy_input = Variable(torch.rand(1, 3, 224, 224))
+dummy_input = torch.Tensor(1, 3, 224, 224)
 
 with SummaryWriter(comment='alexnet') as w:
     model = torchvision.models.alexnet()
@@ -78,58 +161,6 @@ with SummaryWriter(comment='resnet18') as w:
     model = torchvision.models.resnet18()
     w.add_graph(model, (dummy_input, ))
 
-
-class SimpleModel(nn.Module):
-    def __init__(self):
-        super(SimpleModel, self).__init__()
-
-    def forward(self, x):
-        return x * 2
-
-
-model = SimpleModel()
-dummy_input = (torch.zeros(1, 2, 3),)
-
-with SummaryWriter(comment='constantModel') as w:
-    w.add_graph(model, dummy_input)
-
-
-def conv3x3(in_planes, out_planes, stride=1):
-    """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
-
-
-class BasicBlock(nn.Module):
-    expansion = 1
-
-    def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(BasicBlock, self).__init__()
-        self.conv1 = conv3x3(inplanes, planes, stride)
-        self.bn1 = nn.BatchNorm2d(planes)
-        # self.relu = nn.ReLU(inplace=True)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.stride = stride
-
-    def forward(self, x):
-        residual = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = F.relu(out)
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out += residual
-        out = F.relu(out)
-        return out
-
-
-dummy_input = torch.rand(1, 3, 224, 224)
-
-with SummaryWriter(comment='basicblock') as w:
-    model = BasicBlock(3, 3)
-    w.add_graph(model, (dummy_input, ))  # , verbose=True)
 
 
 class RNN(nn.Module):
