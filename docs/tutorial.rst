@@ -76,7 +76,6 @@ an image. After your image is computed, use ``writer.add_image('imresult', x,
 iteration)`` to save the image. If you have a batch of images to show, use
 ``torchvision``'s ``make_grid`` function to prepare the image array and send the result
 to ``add_image(...)`` (``make_grid`` takes a 4D tensor and returns tiled images in 3D tensor).
-``figure`` input should be ``matplotlib.pyplot.figure`` or a list of ``matplotlib.pyplot.figure``.
 
 .. Note::
 	Remember to normalize your image.
@@ -95,7 +94,8 @@ add video
 
 add figure
 ----------
-
+You can save a matplotlib figure to tensorboard with the add_figure function. ``figure`` input should be ``matplotlib.pyplot.figure`` or a list of ``matplotlib.pyplot.figure``.
+Check `<https://tensorboardx.readthedocs.io/en/latest/tensorboard.html#tensorboardX.SummaryWriter.add_figure>`_ for the detailed usage.
 
 add text
 --------
