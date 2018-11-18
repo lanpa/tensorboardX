@@ -6,8 +6,9 @@ python:
   - "3.6"
 
 env:
-  - MPLBACKEND=Agg
-  - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
+  global:
+    - MPLBACKEND=Agg
+    - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
