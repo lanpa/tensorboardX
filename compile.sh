@@ -17,7 +17,7 @@ fi
 echo "using" $PROTOC_BIN
 
 CURRENT_PROTOC_VER=`${PROTOC_BIN} --version`
-if [ -z ${PROTOC_BIN} ] || [[ "$CURRENT_PROTOC_VER" == "libprotoc 2."* ]]; then
+if [ -z ${PROTOC_BIN} ] || [[ "$CURRENT_PROTOC_VER" != "libprotoc "$DESIRED_PROTO_VERSION ]]; then
   # Download and use the latest version of protoc.
   if [ "$(uname)" == "Darwin" ]; then
     PROTOC_ZIP="protoc-"$DESIRED_PROTO_VERSION"-osx-x86_64.zip"
