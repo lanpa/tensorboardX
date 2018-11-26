@@ -23,7 +23,7 @@ Tested on anaconda2 / anaconda3, with PyTorch 0.4 / torchvision 0.2 / tensorboar
 
 or build from source:
 
-`pip install git+https://github.com/lanpa/tensorboardX`
+`git clone https://github.com/lanpa/tensorboardX && cd tensorboardX && python setup.py install`
 
 
 ## Example
