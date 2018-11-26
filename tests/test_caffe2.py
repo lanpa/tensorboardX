@@ -15,8 +15,14 @@ import caffe2.python.model_helper as model_helper
 from caffe2.proto import caffe2_pb2
 from caffe2.python import workspace
 import tensorboardX.caffe2_graph as tb
-
+from tensorboardX import x2num
 class Caffe2Test(unittest.TestCase):
+    def test_caffe2_np(self):
+        workspace.FeedBlob("testBlob", np.random.randn(1, 3, 64, 64).astype(np.float32))
+        assert isinstance(x2num.make_np('testBlob'), np.ndarray)
+        assert isinstance(x2num.make_np('testBlob', 'IMG'), np.ndarray)
+
+
     def test_that_operators_gets_non_colliding_names(self):
         op = caffe2_pb2.OperatorDef()
         op.type = 'foo'
