@@ -93,30 +93,6 @@ def parse(graph):
     return nodes
 
 
-# https://github.com/pytorch/pytorch/blob/cca247635c6edb323176eeac7a18d3e9ab71c558/test/test_jit.py#L127
-def run_pass(name, trace):
-    import torch
-    if isinstance(trace, torch._C.Graph):
-        graph = trace
-        set_graph = False
-    else:
-        set_graph = True
-        graph = trace.graph()
-
-    torch._C._jit_pass_lint(graph)
-    try:
-        result = getattr(torch._C, '_jit_pass_' + name)(graph)
-        if result is not None:
-            graph = result
-    except AttributeError:
-        pass
-    torch._C._jit_pass_lint(graph)
-
-    if set_graph:
-        trace.set_graph(graph)
-    return graph
-
-
 def graph(model, args, verbose=False):
     import torch
     with torch.onnx.set_training(model, False):
