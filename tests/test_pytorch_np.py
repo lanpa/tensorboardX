@@ -37,6 +37,12 @@ class PyTorchNumpyTest(unittest.TestCase):
             x = torch.Tensor(np.random.random_sample(s))
             assert x2num.make_np(x, 'IMG').shape[2] == 3
 
+    def test_pytorch_vid(self):
+        shapes = [(16, 3, 30, 28, 28), (19, 3, 30, 28, 28), (19, 3, 29, 23, 19)]
+        for s in shapes:
+            x = torch.Tensor(np.random.random_sample(s))
+            assert x2num.make_np(x, 'VID').shape[3] == 3
+
     def test_pytorch_write(self):
         with SummaryWriter() as w:
             w.add_scalar('scalar', torch.autograd.Variable(torch.rand(1)), 0)
