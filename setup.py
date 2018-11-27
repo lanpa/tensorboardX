@@ -23,6 +23,8 @@ class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
         compileProtoBuf()
+        import os
+        os.system("pip install protobuf")
         install.run(self)
 
 with open('HISTORY.rst') as history_file:
