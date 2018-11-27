@@ -7,23 +7,25 @@ from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
+# Dynamically compile protos
+def compileProtoBuf():
+    res = subprocess.call(['./compile.sh'])
+    assert res == 0, 'cannot compile protobuf'
 
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
     def run(self):
-        # Dynamically compile protos
-        res = subprocess.call(['./compile.sh'])
-        assert res == 0, 'cannot compile protobuf'
+        compileProtoBuf()
         develop.run(self)
 
 
 class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
-        # Dynamically compile protos
-        res = subprocess.call(['./compile.sh'])
-        assert res == 0, 'cannot compile protobuf'
-        install.do_egg_install(self)
+        compileProtoBuf()
+        import os
+        os.system("pip install protobuf")
+        install.run(self)
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
@@ -47,7 +49,7 @@ setup(
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
     url='https://github.com/lanpa/tensorboardX',
-    packages=find_packages(exclude=['docs', 'tests', 'examples']),
+    packages=['tensorboardX'],
     include_package_data=True,
     install_requires=requirements,
     license='MIT license',
@@ -68,7 +70,6 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
-    scripts=['compile.sh'],
     test_suite='tests',
     tests_require=test_requirements
 )
