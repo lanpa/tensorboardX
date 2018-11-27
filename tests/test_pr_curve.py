@@ -1,3 +1,4 @@
+import unittest
 import torch
 import numpy as np
 from tensorboardX import SummaryWriter
@@ -9,12 +10,14 @@ false_negative_counts = [0, 11, 54, 70, 75]
 precision = [0.3333333, 0.3786982, 0.5384616, 1.0, 0.0]
 recall = [1.0, 0.8533334, 0.28, 0.0666667, 0.0]
 
-with SummaryWriter() as writer:
-    writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(
-        100), 1)  # needs tensorboard 0.4RC or later
-    writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts,
-                            false_positive_counts,
-                            true_negative_counts,
-                            false_negative_counts,
-                            precision,
-                            recall, 1)
+class PRCurveTest(unittest.TestCase):
+    def test_pr_purve(self):
+        with SummaryWriter() as writer:
+            writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(
+                100), 1)  # needs tensorboard 0.4RC or later
+            writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts,
+                                    false_positive_counts,
+                                    true_negative_counts,
+                                    false_negative_counts,
+                                    precision,
+                                    recall, 1)
