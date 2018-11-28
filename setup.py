@@ -24,7 +24,7 @@ class PostInstallCommand(install):
     def run(self):
         compileProtoBuf()
         import os
-        os.system("pip install protobuf")
+        os.system("pip install protobuf numpy six")
         install.run(self)
 
 with open('HISTORY.rst') as history_file:
