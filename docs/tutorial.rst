@@ -94,8 +94,8 @@ Add graph
 Graph drawing is based on ``autograd``'s backward tracing. It goes along the
 ``next_functions`` attribute in a tensor recursively, drawing each encountered
 nodes. To draw the graph, you need a model ``m`` and an input tensor ``t``
-that have correct size for ``m``. Let ``r = m(t)``, then invoke
-``writer.add_graph(m, r)`` to save the graph. By default, the input tensor does not
+that have correct size for ``m``. Then invoke
+``writer.add_graph(m, (t, ))`` to save the graph. By default, the input tensor does not
 require gradient, therefore it will be omitted when back tracing. To draw the
 input node, pass an additional parameter ``requires_grad=True`` when creating the
 input tensor. See
