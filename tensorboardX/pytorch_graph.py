@@ -71,7 +71,7 @@ def parse(graph):
     for n in graph.inputs():
         uname = n.uniqueName()
         if uname not in scope.keys():
-            scope[uname] = 'unused'
+            scope[uname] = 'unknown'
         outputsize = n.type().sizes()
         nodes.append({'name': uname,
                       'op': 'Parameter',
