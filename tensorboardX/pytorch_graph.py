@@ -95,6 +95,52 @@ def parse(graph):
 
 def graph(model, args, verbose=False):
     import torch
+    from torch.onnx.utils import OperatorExportTypes
+    def _optimize_graph(graph, operator_export_type):
+        # torch._C._jit_pass_remove_inplace_ops(graph)
+        # we record now record some ops like ones/zeros
+        # into a trace where we previously recorded constants
+        # use constant prop to maintain our current level of onnx support
+        # without implementing symbolics for all of them
+        torch._C._jit_pass_constant_propagation(graph)
+        torch.onnx.utils._split_tensor_list_constants(graph, graph)
+        # run dce to eliminate dead parts of the graph that might have been
+        # left behind by things like symbolic_override
+        torch._C._jit_pass_dce(graph)
+        torch._C._jit_pass_lint(graph)
+
+        # torch._C._jit_pass_canonicalize_ops(graph)
+        torch._C._jit_pass_lint(graph)
+
+        torch._C._jit_pass_peephole(graph, True)
+        torch._C._jit_pass_lint(graph)
+
+        # onnx only supports tensors, but 1 / 2 = 0.5 and tensor(1) / tensor(2) = 0
+        torch._C._jit_pass_prepare_division_for_onnx(graph)
+        # onnx only supports tensors, so we turn all out number types into tensors
+        torch._C._jit_pass_erase_number_types(graph)
+        # onnx does not support tuples, so try to remove them
+        torch._C._jit_pass_lower_all_tuples(graph)
+        torch._C._jit_pass_peephole(graph, True)
+        torch._C._jit_pass_lint(graph)
+
+        if operator_export_type != OperatorExportTypes.RAW:
+            graph = torch._C._jit_pass_onnx(graph, operator_export_type)
+            torch._C._jit_pass_lint(graph)
+            # torch._C._jit_pass_onnx_peephole(graph)
+            torch._C._jit_pass_lint(graph)
+        torch._C._jit_pass_dce(graph)
+        torch._C._jit_pass_lint(graph)
+        torch._C._jit_pass_fixup_onnx_loops(graph)
+        torch._C._jit_pass_lint(graph)
+        graph = torch._C._jit_pass_canonicalize(graph)
+        torch._C._jit_pass_lint(graph)
+        return graph
+
+    def _optimize_trace(trace, operator_export_type):
+        from torch.onnx import utils
+        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
+
     with torch.onnx.set_training(model, False):
         try:
             trace, _ = torch.jit.get_trace_graph(model, args)
@@ -109,7 +155,9 @@ def graph(model, args, verbose=False):
             except RuntimeError:
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
-    if LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
+    if LooseVersion(torch.__version__) >= LooseVersion("1.0.0"):
+        _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
+    elif LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
         torch.onnx._optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
     elif LooseVersion(torch.__version__) >= LooseVersion("0.4"):
         torch.onnx._optimize_trace(trace, False)
