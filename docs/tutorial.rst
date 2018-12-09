@@ -91,14 +91,7 @@ Check `<https://tensorboardx.readthedocs.io/en/latest/tensorboard.html#tensorboa
 
 Add graph
 ---------
-Graph drawing is based on ``autograd``'s backward tracing. It goes along the
-``next_functions`` attribute in a tensor recursively, drawing each encountered
-nodes. To draw the graph, you need a model ``m`` and an input tensor ``t``
-that have correct size for ``m``. Then invoke
-``writer.add_graph(m, (t, ))`` to save the graph. By default, the input tensor does not
-require gradient, therefore it will be omitted when back tracing. To draw the
-input node, pass an additional parameter ``requires_grad=True`` when creating the
-input tensor. See
+Graph drawing is based on ``torch.JIT``'s forward tracing. During tracing, an input tensor ``t`` with reasonable shape is fed to your model ``m``. After you have prepared ``m`` and ``t``, just call ``writer.add_graph(m, (t, ))`` to save the graph. See
 `The graph demo <https://github.com/lanpa/tensorboardX/blob/master/examples/demo_graph.py>`_ for
 complete example.
 
