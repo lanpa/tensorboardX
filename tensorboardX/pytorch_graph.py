@@ -96,6 +96,7 @@ def parse(graph):
 def graph(model, args, verbose=False):
     import torch
     from torch.onnx.utils import OperatorExportTypes
+
     def _optimize_graph(graph, operator_export_type):
         # torch._C._jit_pass_remove_inplace_ops(graph)
         # we record now record some ops like ones/zeros
