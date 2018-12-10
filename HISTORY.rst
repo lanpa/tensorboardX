@@ -1,5 +1,12 @@
 History
 =======
+1.5 (2018-12-10)
+-----------------
+* Add API for Custom scalar
+* Add support for logging directly to S3
+* Add support for Caffe2 graph
+* Pytorch 1.0.0 JIT graph support (alpha-release)
+
 1.4 (2018-08-09)
 -----------------
 * Made add_text compatible with tensorboard>1.6

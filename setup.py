@@ -43,7 +43,7 @@ test_requirements = [
 
 setup(
     name='tensorboardX',
-    version='1.4',
+    version='1.5',
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description=history,
     author='Tzu-Wei Huang',
