@@ -9,7 +9,7 @@ from setuptools.command.install import install
 
 # Dynamically compile protos
 def compileProtoBuf():
-    res = subprocess.call(['./compile.sh'])
+    res = subprocess.call(['bash', './compile.sh'])
     assert res == 0, 'cannot compile protobuf'
 
 class PostDevelopCommand(develop):
