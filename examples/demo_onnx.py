@@ -11,3 +11,4 @@ res = subprocess.call(['tar', 'xf', 'mnist.tar.gz', '-C', 'examples/', 'mnist/mo
 
 with SummaryWriter() as w:
     w.add_onnx_graph('examples/mnist/model.onnx')
+    # w.add_onnx_graph('/Users/dexter/Downloads/resnet50/model.onnx')
