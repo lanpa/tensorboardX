@@ -35,7 +35,7 @@ Before logging anything, we need to create a writer instance. This can be done w
     writer2 = SummaryWriter()
     #creates writer2 object with auto generated file name, the dir will be something like 'runs/Aug20-17-20-33'
     writer3 = SummaryWriter(comment='3x learning rate')
-    #creates writer2 object with auto generated file name, the comment will be appended to the filename. The dir will be something like 'runs/Aug20-17-20-33-3xlearning rate'
+    #creates writer3 object with auto generated file name, the comment will be appended to the filename. The dir will be something like 'runs/Aug20-17-20-33-3xlearning rate'
 
 Each subfolder will be treated as different experiments in tensorboard. Each
 time you re-run the experiment with different settings, you should change the
