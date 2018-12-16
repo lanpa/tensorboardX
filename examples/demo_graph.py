@@ -34,6 +34,17 @@ with SummaryWriter(comment='MultipleOutput') as w:
     w.add_graph(MultipleOutput(), dummy_input, True)
 
 
+class MultipleOutput_shared(nn.Module):
+    def __init__(self):
+        super(MultipleOutput_shared, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+
+    def forward(self, x):
+        return self.Linear_1(x), self.Linear_1(x)
+
+with SummaryWriter(comment='MultipleOutput') as w:
+    w.add_graph(MultipleOutput_shared(), dummy_input, True)
+
 
 class SimpleModel(nn.Module):
     def __init__(self):
@@ -143,6 +154,7 @@ model = Net2()
 with SummaryWriter(comment='Net2') as w:
     w.add_graph(model, (dummy_input, ))
 
+exit()
 dummy_input = torch.Tensor(1, 3, 224, 224)
 
 with SummaryWriter(comment='alexnet') as w:

@@ -1,16 +1,132 @@
 import time
 import warnings
-
+import itertools
 from distutils.version import LooseVersion
-
+from collections import OrderedDict
 from .proto.attr_value_pb2 import AttrValue
 from .proto.graph_pb2 import GraphDef
 from .proto.node_def_pb2 import NodeDef
 from .proto.step_stats_pb2 import RunMetadata, StepStats, DeviceStepStats, NodeExecStats, AllocatorMemoryUsed
 from .proto.tensor_shape_pb2 import TensorShapeProto
 from .proto.versions_pb2 import VersionDef
+from .proto_graph import Node_proto
+
+methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs', 'kind', 'output', 'outputs', 'outputsSize', 'scopeName']
+methods_IO = ['node', 'offset', 'uniqueName']  #  'unique' <int> , 'type' <Tensor<class 'torch._C.Type'>>
+
+class Node_py(object):
+    def __init__(self, Node_cpp, valid_mothods):
+        self.valid_mothods = valid_mothods.copy()
+        if 'hasMultipleOutputs' in valid_mothods: # OP type
+            if Node_cpp.hasMultipleOutputs():
+                self.valid_mothods.remove('output')
+                self.uniqueName = next(Node_cpp.outputs()).uniqueName() # multiple output, which scope should we choose?
+            else:
+                self.uniqueName = Node_cpp.output().uniqueName()
+                # print(self.uniqueName, Node_cpp.output().uniqueName())
+        # else:
+        #     self.inputs = [] # IO type
+
+        for m in self.valid_mothods:
+            if m == 'inputs' or m == 'outputs':
+                get_io_fn = getattr(Node_cpp, m)
+                io_uniqueName_list = [n.uniqueName() for n in get_io_fn()]
+                setattr(self, m, io_uniqueName_list)
+            else:
+                setattr(self, m, getattr(Node_cpp, m)())
+
+    def __repr__(self):
+        repr = []
+        repr.append(str(type(self)))
+        for m in dir(self):
+            if '__' not in m:
+                repr.append(m + ': ' + str(getattr(self, m)) + str(type(getattr(self, m))))
+        return '\n'.join(repr)+'\n\n'
 
 
+class Node_py_IO(Node_py):
+    def __init__(self, Node_cpp):
+        super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
+
+class Node_py_OP(Node_py):
+    def __init__(self, Node_cpp):
+        super(Node_py_OP, self).__init__(Node_cpp, methods_OP)
+
+
+class Graph_py(object):
+    def __init__(self):
+        self.nodes_OP = OrderedDict()
+        self.nodes_IO = OrderedDict()
+        # self.nodes = itertools.chain(self.nodes_IO, self.nodes_OP)
+
+    def append(self, x):
+        if type(x) == Node_py_IO:
+            self.nodes_IO[x.uniqueName] = x
+        if type(x) == Node_py_OP:
+            self.nodes_OP[x.uniqueName] = x
+
+    def printall(self):
+        print('all nodes')
+        for key in self.nodes_OP:
+            print(self.nodes_OP[key])
+        for key in self.nodes_IO:
+            print(self.nodes_IO[key])
+
+    def populate_namespace_from_OP_to_IO(self):
+        scope = {}
+        for key, node in self.nodes_OP.items():
+            scope[key] = node.scopeName + '/' + node.uniqueName
+            for i in node.inputs:
+                if i == 'input':
+                    scope[i] = i
+                    continue
+                if i in self.nodes_IO.keys():
+                    scope[i] = node.scopeName + '/' + self.nodes_IO[i].uniqueName
+
+        print(scope)
+
+        for key, node in self.nodes_OP.items():
+            node.uniqueName = scope[key]
+            new_input = []
+            for i in node.inputs:
+                if i in self.nodes_IO.keys():
+                    self.nodes_IO[i].uniqueName = scope[i]
+
+                if i in self.nodes_OP.keys():
+                    self.nodes_OP[i].uniqueName = scope[i]
+                    # self.nodes_OP[i].uniqueName = newname
+                new_input.append(scope[i])
+            node.inputs = new_input
+
+    def to_proto(self):
+        nodes = []
+        for v in self.nodes_OP.values():
+            nodes.append(Node_proto(v.uniqueName, input=v.inputs, op=v.kind))
+        for v in self.nodes_IO.values():
+            nodes.append(Node_proto(v.uniqueName, op='Parameter'))
+        return nodes
+
+
+# one argument: 'hasAttribute', 'hasAttributes', 
+def parse_2(graph):
+    import torch
+    scope = {}
+    nodes_py = Graph_py()
+
+    #, graph.outputs() # let's see what to do later...
+
+    for node in graph.inputs():
+        nodes_py.append(Node_py_IO(node))
+
+    for node in graph.nodes():
+        nodes_py.append(Node_py_OP(node))
+
+    for node in graph.outputs():
+        nodes_py.append(Node_py_IO(node))
+
+    # nodes_py.printall()
+    nodes_py.populate_namespace_from_OP_to_IO()
+    return nodes_py.to_proto()
 def parse(graph):
     import torch
     scope = {}
@@ -45,7 +161,7 @@ def parse(graph):
         scope[uname] = 'output'
         nodes.append({'name': uname, 'op': 'output', 'inputs': [
                      n.uniqueName()], 'attr': 'output'})
-
+        Node_proto(uname, 'output', n.uniqueName())
     for n in graph.nodes():
         try:
             attrs = str({k: n[k] for k in n.attributeNames()})
@@ -67,6 +183,7 @@ def parse(graph):
                               'outputsize': outputsize})
             else:
                 nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
+            Node_proto(uname, n.kind(), inputs)
 
     for n in graph.inputs():
         uname = n.uniqueName()
@@ -78,6 +195,7 @@ def parse(graph):
                       'inputs': [],
                       'attr': str(n.type()),
                       'outputsize': outputsize})
+        Node_proto(uname, 'output', [])
 
     mapping = {}
     for n in nodes:
@@ -167,9 +285,14 @@ def graph(model, args, verbose=False):
     graph = trace.graph()
     if verbose:
         print(graph)
-    list_of_nodes = parse(graph)
+    list_of_nodes = parse_2(graph)
     nodes = []
     node_stats = []
+    stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
+                                                                            node_stats=node_stats)]))
+    return GraphDef(node=list_of_nodes, versions=VersionDef(producer=22)), stepstats
+
+
     for node in list_of_nodes:
         if 'outputsize' in node.keys():
             shapeproto = TensorShapeProto(
