@@ -8,18 +8,29 @@ from tensorboardX import SummaryWriter
 dummy_input = (torch.zeros(1, 3),)
 
 
-class LinearLanpa(nn.Module):
+class LinearInLinear(nn.Module):
     def __init__(self):
-        super(LinearLanpa, self).__init__()
+        super(LinearInLinear, self).__init__()
         self.l = nn.Linear(3, 5)
 
     def forward(self, x):
         return self.l(x)
 
-with SummaryWriter(comment='LinearModel') as w:
-    w.add_graph(LinearLanpa(), dummy_input, True)
+with SummaryWriter(comment='LinearInLinear') as w:
+    w.add_graph(LinearInLinear(), dummy_input, True)
 
 
+class MultipleInput(nn.Module):
+    def __init__(self):
+        super(MultipleInput, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+
+
+    def forward(self, x, y):
+        return self.Linear_1(x+y)
+
+with SummaryWriter(comment='MultipleInput') as w:
+    w.add_graph(MultipleInput(), (torch.zeros(1, 3), torch.zeros(1, 3)), True)
 
 class MultipleOutput(nn.Module):
     def __init__(self):
@@ -42,7 +53,7 @@ class MultipleOutput_shared(nn.Module):
     def forward(self, x):
         return self.Linear_1(x), self.Linear_1(x)
 
-with SummaryWriter(comment='MultipleOutput') as w:
+with SummaryWriter(comment='MultipleOutput_shared') as w:
     w.add_graph(MultipleOutput_shared(), dummy_input, True)
 
 
@@ -154,7 +165,6 @@ model = Net2()
 with SummaryWriter(comment='Net2') as w:
     w.add_graph(model, (dummy_input, ))
 
-exit()
 dummy_input = torch.Tensor(1, 3, 224, 224)
 
 with SummaryWriter(comment='alexnet') as w:

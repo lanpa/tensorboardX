@@ -45,9 +45,10 @@ class Node_py(object):
 
 
 class Node_py_IO(Node_py):
-    def __init__(self, Node_cpp):
+    def __init__(self, Node_cpp, input_or_output=None):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
-
+        if input_or_output is not None:
+            self.input_or_output = input_or_output
 class Node_py_OP(Node_py):
     def __init__(self, Node_cpp):
         super(Node_py_OP, self).__init__(Node_cpp, methods_OP)
@@ -74,16 +75,17 @@ class Graph_py(object):
 
     def populate_namespace_from_OP_to_IO(self):
         scope = {}
+        for key, node in self.nodes_IO.items():
+            if hasattr(node, 'input_or_output'):
+                scope[key] = node.input_or_output + '/' + node.uniqueName
+
         for key, node in self.nodes_OP.items():
             scope[key] = node.scopeName + '/' + node.uniqueName
             for i in node.inputs:
-                if i == 'input':
-                    scope[i] = i
-                    continue
                 if i in self.nodes_IO.keys():
-                    scope[i] = node.scopeName + '/' + self.nodes_IO[i].uniqueName
+                    if not hasattr(self.nodes_IO[i], 'input_or_output'):
+                        scope[i] = node.scopeName + '/' + self.nodes_IO[i].uniqueName
 
-        print(scope)
 
         for key, node in self.nodes_OP.items():
             node.uniqueName = scope[key]
@@ -91,38 +93,52 @@ class Graph_py(object):
             for i in node.inputs:
                 if i in self.nodes_IO.keys():
                     self.nodes_IO[i].uniqueName = scope[i]
-
                 if i in self.nodes_OP.keys():
                     self.nodes_OP[i].uniqueName = scope[i]
                     # self.nodes_OP[i].uniqueName = newname
                 new_input.append(scope[i])
             node.inputs = new_input
 
+        for key, node in self.nodes_IO.items():
+            if hasattr(node, 'input_or_output'):
+                if node.input_or_output == 'output':
+                    node.inputs = [scope[node.uniqueName]]
+                    node.uniqueName = 'output/' + node.uniqueName
+
     def to_proto(self):
         nodes = []
         for v in self.nodes_OP.values():
             nodes.append(Node_proto(v.uniqueName, input=v.inputs, op=v.kind))
         for v in self.nodes_IO.values():
-            nodes.append(Node_proto(v.uniqueName, op='Parameter'))
+            if not hasattr(v, 'input_or_output'):
+                nodes.append(Node_proto(v.uniqueName, op='Parameter'))
+            elif v.input_or_output == 'input':
+                nodes.append(Node_proto(v.uniqueName, op='Input'))
+            else:
+                nodes.append(Node_proto(v.uniqueName, op='Output', input=v.inputs))
+                print('outputname:==', v.uniqueName)
         return nodes
 
 
 # one argument: 'hasAttribute', 'hasAttributes', 
-def parse_2(graph):
+def parse_2(graph, args=None):
     import torch
+    n_inputs = len(args) # not sure...
+
     scope = {}
     nodes_py = Graph_py()
-
     #, graph.outputs() # let's see what to do later...
-
-    for node in graph.inputs():
-        nodes_py.append(Node_py_IO(node))
+    for i, node in enumerate(graph.inputs()):
+        if i < n_inputs:
+            nodes_py.append(Node_py_IO(node, 'input'))
+        else:
+            nodes_py.append(Node_py_IO(node))
 
     for node in graph.nodes():
         nodes_py.append(Node_py_OP(node))
 
     for node in graph.outputs():
-        nodes_py.append(Node_py_IO(node))
+        nodes_py.append(Node_py_IO(node, 'output'))
 
     # nodes_py.printall()
     nodes_py.populate_namespace_from_OP_to_IO()
@@ -285,7 +301,7 @@ def graph(model, args, verbose=False):
     graph = trace.graph()
     if verbose:
         print(graph)
-    list_of_nodes = parse_2(graph)
+    list_of_nodes = parse_2(graph, args)
     nodes = []
     node_stats = []
     stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
