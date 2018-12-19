@@ -211,7 +211,7 @@ class RNN(nn.Module):
         output = self.o2o(output_combined)
         output = self.dropout(output)
         output = self.softmax(output)
-        return output, hidden
+        return output, hidden, input
 
     def initHidden(self):
         return torch.zeros(1, self.hidden_size)
@@ -226,9 +226,23 @@ dummy_input = torch.Tensor(1, n_letters)
 hidden = torch.Tensor(1, n_hidden)
 
 
-out, hidden = rnn(cat, dummy_input, hidden)
+out, hidden, input = rnn(cat, dummy_input, hidden)
 with SummaryWriter(comment='RNN') as w:
     w.add_graph(rnn, (cat, dummy_input, hidden), verbose=False)
+
+
+
+lstm = torch.nn.LSTM(3, 3)  # Input dim is 3, output dim is 3
+inputs = [torch.randn(1, 3) for _ in range(5)]  # make a sequence of length 5
+
+# initialize the hidden state.
+hidden = (torch.randn(1, 1, 3),
+          torch.randn(1, 1, 3))
+for i in inputs:
+    out, hidden = lstm(i.view(1, 1, -1), hidden)
+
+# with SummaryWriter(comment='lstm') as w:
+#     w.add_graph(lstm, (torch.randn(1, 3).view(1, 1, -1), hidden), verbose=True)
 
 
 import pytest

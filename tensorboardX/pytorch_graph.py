@@ -25,9 +25,6 @@ class Node_py(object):
                 self.uniqueName = next(Node_cpp.outputs()).uniqueName()  # multiple output, which should we choose?
             else:
                 self.uniqueName = Node_cpp.output().uniqueName()
-                # print(self.uniqueName, Node_cpp.output().uniqueName())
-        # else:
-        #     self.inputs = [] # IO type
 
         for m in self.valid_mothods:
             if m == 'inputs' or m == 'outputs':
@@ -51,6 +48,9 @@ class Node_py_IO(Node_py):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         if input_or_output is not None:
             self.input_or_output = input_or_output
+            if input_or_output == 'output':
+                self.inputs = [self.uniqueName]  # dummy output: input is itself
+                self.uniqueName = 'output/' + self.uniqueName  # dummy output: new name is its output/uniquename
 
 
 class Node_py_OP(Node_py):
@@ -62,7 +62,6 @@ class Graph_py(object):
     def __init__(self):
         self.nodes_OP = OrderedDict()
         self.nodes_IO = OrderedDict()
-        # self.nodes = itertools.chain(self.nodes_IO, self.nodes_OP)
 
     def append(self, x):
         if type(x) == Node_py_IO:
@@ -105,8 +104,7 @@ class Graph_py(object):
         for key, node in self.nodes_IO.items():
             if hasattr(node, 'input_or_output'):
                 if node.input_or_output == 'output':
-                    node.inputs = [scope[node.uniqueName]]
-                    node.uniqueName = 'output/' + node.uniqueName
+                    node.inputs = [scope[node.inputs[0]]]
 
     def to_proto(self):
         nodes = []
@@ -131,7 +129,7 @@ def parse_2(graph, args=None, omit_useless_nodes=True):
     nodes_py = Graph_py()
     for i, node in enumerate(graph.inputs()):
         if omit_useless_nodes:
-            if len(node.uses()) == 0:
+            if len(node.uses()) == 0:  # number of user of the node (= number of outputs/ fanout)
                 continue
 
         if i < n_inputs:
@@ -142,7 +140,7 @@ def parse_2(graph, args=None, omit_useless_nodes=True):
     for node in graph.nodes():
         nodes_py.append(Node_py_OP(node))
 
-    for node in graph.outputs():
+    for node in graph.outputs():  # must place last.
         nodes_py.append(Node_py_IO(node, 'output'))
 
     # nodes_py.printall()
