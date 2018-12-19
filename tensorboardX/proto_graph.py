@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import List
 from typing import Dict
 
+
 def AttrValue_proto(type,
                     shape,
                     s,
@@ -19,7 +20,7 @@ def Node_proto(name,
                op='UnSpecified',
                input=[],
                dtype=None,
-               shape=None, # type: tuple
+               shape=None,  # type: tuple
                outputsize=None,
                ):
     if not isinstance(input, list):
@@ -29,6 +30,3 @@ def Node_proto(name,
         op=op,
         input=input,
     )
-
-
-

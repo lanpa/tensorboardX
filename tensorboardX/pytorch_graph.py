@@ -11,16 +11,18 @@ from .proto.tensor_shape_pb2 import TensorShapeProto
 from .proto.versions_pb2 import VersionDef
 from .proto_graph import Node_proto
 
-methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs', 'kind', 'output', 'outputs', 'outputsSize', 'scopeName']
-methods_IO = ['node', 'offset', 'uniqueName']  #  'unique' <int> , 'type' <Tensor<class 'torch._C.Type'>>
+methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
+              'kind', 'output', 'outputs', 'outputsSize', 'scopeName']
+methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor<class 'torch._C.Type'>>
+
 
 class Node_py(object):
     def __init__(self, Node_cpp, valid_mothods):
         self.valid_mothods = valid_mothods.copy()
-        if 'hasMultipleOutputs' in valid_mothods: # OP type
+        if 'hasMultipleOutputs' in valid_mothods:  # OP type
             if Node_cpp.hasMultipleOutputs():
                 self.valid_mothods.remove('output')
-                self.uniqueName = next(Node_cpp.outputs()).uniqueName() # multiple output, which scope should we choose?
+                self.uniqueName = next(Node_cpp.outputs()).uniqueName()  # multiple output, which should we choose?
             else:
                 self.uniqueName = Node_cpp.output().uniqueName()
                 # print(self.uniqueName, Node_cpp.output().uniqueName())
@@ -41,7 +43,7 @@ class Node_py(object):
         for m in dir(self):
             if '__' not in m:
                 repr.append(m + ': ' + str(getattr(self, m)) + str(type(getattr(self, m))))
-        return '\n'.join(repr)+'\n\n'
+        return '\n'.join(repr) + '\n\n'
 
 
 class Node_py_IO(Node_py):
@@ -49,6 +51,8 @@ class Node_py_IO(Node_py):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         if input_or_output is not None:
             self.input_or_output = input_or_output
+
+
 class Node_py_OP(Node_py):
     def __init__(self, Node_cpp):
         super(Node_py_OP, self).__init__(Node_cpp, methods_OP)
@@ -86,7 +90,6 @@ class Graph_py(object):
                     if not hasattr(self.nodes_IO[i], 'input_or_output'):
                         scope[i] = node.scopeName + '/' + self.nodes_IO[i].uniqueName
 
-
         for key, node in self.nodes_OP.items():
             node.uniqueName = scope[key]
             new_input = []
@@ -116,19 +119,21 @@ class Graph_py(object):
                 nodes.append(Node_proto(v.uniqueName, op='Input'))
             else:
                 nodes.append(Node_proto(v.uniqueName, op='Output', input=v.inputs))
-                print('outputname:==', v.uniqueName)
         return nodes
 
 
-# one argument: 'hasAttribute', 'hasAttributes', 
-def parse_2(graph, args=None):
+# one argument: 'hasAttribute', 'hasAttributes',
+def parse_2(graph, args=None, omit_useless_nodes=True):
     import torch
-    n_inputs = len(args) # not sure...
+    n_inputs = len(args)  # not sure...
 
     scope = {}
     nodes_py = Graph_py()
-    #, graph.outputs() # let's see what to do later...
     for i, node in enumerate(graph.inputs()):
+        if omit_useless_nodes:
+            if len(node.uses()) == 0:
+                continue
+
         if i < n_inputs:
             nodes_py.append(Node_py_IO(node, 'input'))
         else:
@@ -143,6 +148,8 @@ def parse_2(graph, args=None):
     # nodes_py.printall()
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
+
+
 def parse(graph):
     import torch
     scope = {}
@@ -227,7 +234,7 @@ def parse(graph):
     return nodes
 
 
-def graph(model, args, verbose=False):
+def graph(model, args, verbose=False, omit_useless_nodes=True):
     import torch
     from torch.onnx.utils import OperatorExportTypes
 
@@ -301,13 +308,12 @@ def graph(model, args, verbose=False):
     graph = trace.graph()
     if verbose:
         print(graph)
-    list_of_nodes = parse_2(graph, args)
+    list_of_nodes = parse_2(graph, args, omit_useless_nodes)
     nodes = []
     node_stats = []
     stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
                                                                             node_stats=node_stats)]))
     return GraphDef(node=list_of_nodes, versions=VersionDef(producer=22)), stepstats
-
 
     for node in list_of_nodes:
         if 'outputsize' in node.keys():

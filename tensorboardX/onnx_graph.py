@@ -5,11 +5,13 @@ from .proto.attr_value_pb2 import AttrValue
 from .proto.tensor_shape_pb2 import TensorShapeProto
 # from .proto.onnx_pb2 import ModelProto
 
+
 def gg(fname):
     import onnx  # 0.2.1
     m = onnx.load(fname)
     g = m.graph
     return parse(g)
+
 
 def parse(graph):
     nodes_proto = []
