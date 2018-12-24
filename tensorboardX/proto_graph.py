@@ -8,12 +8,29 @@ from collections import defaultdict
 from typing import List
 from typing import Dict
 
+# nodes.append(
+#     NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
+#             attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8')),
+#                   '_output_shapes': AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))}))
+
 
 def AttrValue_proto(type,
                     shape,
                     s,
                     ):
-    return
+    attr = {}
+
+    if s is not None:
+        attr['attr'] = AttrValue(s=s.encode(encoding='utf_8'))
+
+    if shape is not None:
+        shapeproto = TensorShape_proto(shape)
+        attr['_output_shapes'] = AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))
+    return attr
+
+
+def TensorShape_proto(outputsize):
+    return TensorShapeProto(dim=[TensorShapeProto.Dim(size=d) for d in outputsize])
 
 
 def Node_proto(name,
@@ -29,4 +46,5 @@ def Node_proto(name,
         name=name.encode(encoding='utf_8'),
         op=op,
         input=input,
+        attr=AttrValue_proto(dtype, outputsize, 'ii')
     )
