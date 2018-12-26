@@ -5,8 +5,6 @@ from .proto.attr_value_pb2 import AttrValue
 from .proto.tensor_shape_pb2 import TensorShapeProto
 
 from collections import defaultdict
-from typing import List
-from typing import Dict
 
 # nodes.append(
 #     NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
