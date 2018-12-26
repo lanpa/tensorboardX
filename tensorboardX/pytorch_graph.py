@@ -17,11 +17,14 @@ methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor
 
 
 class Node_base(object):
-    def __init__(self, uniqueName, inputs, scope=None):
+    def __init__(self, uniqueName, inputs, scope=None, tensorSize=None):
         self.uniqueName = uniqueName
         self.inputs = inputs
+        self.tensorSize = tensorSize
+
         if scope is not None:
             self.scope = scope
+        # if tensorSize is not None:
 
     def __repr__(self):
         repr = []
@@ -33,8 +36,8 @@ class Node_base(object):
 
 
 class Node_dummy(Node_base):
-    def __init__(self, uniqueName, inputs, scope):
-        super(Node_dummy, self).__init__(uniqueName, inputs, scope)
+    def __init__(self, uniqueName, inputs, scope, tensorSize=None):
+        super(Node_dummy, self).__init__(uniqueName, inputs, scope, tensorSize)
 
 
 class Node_py(object):
@@ -43,9 +46,20 @@ class Node_py(object):
         self.inputs = []
         for m in self.valid_mothods:
             if m == 'inputs' or m == 'outputs':
-                list_of_node = getattr(Node_cpp, m)()
-                io_uniqueName_list = [n.uniqueName() for n in list_of_node]
+                list_of_node = list(getattr(Node_cpp, m)())
+                io_uniqueName_list = []
+                io_tensorSize_list = []
+                for n in list_of_node:
+                    io_uniqueName_list.append(n.uniqueName())
+                    if n.type().kind() in ['DynamicType', 'ListType']:  # segfault
+                        io_tensorSize_list.append(None)
+                    else:
+                        io_tensorSize_list.append(n.type().sizes())
+
+                # io_tensorSize_list = [n.uniqueName() for n in list_of_node]
+                print(io_uniqueName_list, io_tensorSize_list)
                 setattr(self, m, io_uniqueName_list)
+                setattr(self, m + 'TensorSize', io_tensorSize_list)
 
             else:
                 setattr(self, m, getattr(Node_cpp, m)())
@@ -54,6 +68,7 @@ class Node_py(object):
 class Node_py_IO(Node_py):
     def __init__(self, Node_cpp, input_or_output=None):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
+        self.tensorSize = Node_cpp.type().sizes()
         if input_or_output is not None:
             self.input_or_output = input_or_output
 
@@ -76,8 +91,8 @@ class Graph_py(object):
             self.nodes_IO[x.uniqueName] = x
         if type(x) == Node_py_OP:
             self.nodes_OP.append(x)
-            for node_output in x.outputs:
-                self.nodes_IO[node_output] = Node_dummy(node_output, x.inputs, x.scopeName)
+            for node_output, outputSize in zip(x.outputs, x.outputsTensorSize):
+                self.nodes_IO[node_output] = Node_dummy(node_output, x.inputs, x.scopeName, outputSize)
 
     def printall(self):
         print('all nodes')
@@ -90,11 +105,8 @@ class Graph_py(object):
         for node in self.nodes_OP:
             for input_node_id in node.inputs:
                 self.uniqueNameToScopedName[input_node_id] = node.scopeName + '/' + input_node_id
-                # self.uniqueNameToScopedName[node.uniqueName] = node.scopeName + '/' + node.uniqueName
+
         for key, node in self.nodes_IO.items():
-            # if hasattr(node, 'input_or_output'):
-            #     if node.input_or_output == 'output':
-            #         self.uniqueNameToScopedName[key] = node.input_or_output + '/' + node.uniqueName
             if type(node) == Node_dummy:
                 self.uniqueNameToScopedName[key] = node.scope + '/' + node.uniqueName
 
@@ -108,7 +120,7 @@ class Graph_py(object):
     def to_proto(self):
         nodes = []
         for v in self.nodes_IO.values():
-            nodes.append(Node_proto(v.uniqueName, input=v.inputs))
+            nodes.append(Node_proto(v.uniqueName, input=v.inputs, outputsize=v.tensorSize))
 
         return nodes
 
@@ -287,14 +299,9 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
             except RuntimeError:
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
-    if LooseVersion(torch.__version__) >= LooseVersion("1.0.0"):
-        _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
-    elif LooseVersion(torch.__version__) >= LooseVersion("0.4.1"):
-        torch.onnx._optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
-    elif LooseVersion(torch.__version__) >= LooseVersion("0.4"):
-        torch.onnx._optimize_trace(trace, False)
-    else:
-        torch.onnx._optimize_trace(trace)
+    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
+    _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
+
     graph = trace.graph()
     if verbose:
         print(graph)

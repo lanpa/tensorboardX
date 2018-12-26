@@ -241,8 +241,8 @@ hidden = (torch.randn(1, 1, 3),
 for i in inputs:
     out, hidden = lstm(i.view(1, 1, -1), hidden)
 
-# with SummaryWriter(comment='lstm') as w:
-#     w.add_graph(lstm, (torch.randn(1, 3).view(1, 1, -1), hidden), verbose=True)
+with SummaryWriter(comment='lstm') as w:
+    w.add_graph(lstm, (torch.randn(1, 3).view(1, 1, -1), hidden), verbose=True)
 
 
 import pytest
