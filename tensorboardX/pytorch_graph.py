@@ -42,7 +42,7 @@ class Node_dummy(Node_base):
 
 class Node_py(object):
     def __init__(self, Node_cpp, valid_mothods):
-        self.valid_mothods = valid_mothods.copy()
+        self.valid_mothods = valid_mothods[:]
         self.inputs = []
         for m in self.valid_mothods:
             if m == 'inputs' or m == 'outputs':
@@ -56,8 +56,6 @@ class Node_py(object):
                     else:
                         io_tensorSize_list.append(n.type().sizes())
 
-                # io_tensorSize_list = [n.uniqueName() for n in list_of_node]
-                print(io_uniqueName_list, io_tensorSize_list)
                 setattr(self, m, io_uniqueName_list)
                 setattr(self, m + 'TensorSize', io_tensorSize_list)
 
