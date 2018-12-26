@@ -8,18 +8,29 @@ from tensorboardX import SummaryWriter
 dummy_input = (torch.zeros(1, 3),)
 
 
-class LinearLanpa(nn.Module):
+class LinearInLinear(nn.Module):
     def __init__(self):
-        super(LinearLanpa, self).__init__()
+        super(LinearInLinear, self).__init__()
         self.l = nn.Linear(3, 5)
 
     def forward(self, x):
         return self.l(x)
 
-with SummaryWriter(comment='LinearModel') as w:
-    w.add_graph(LinearLanpa(), dummy_input, True)
+with SummaryWriter(comment='LinearInLinear') as w:
+    w.add_graph(LinearInLinear(), dummy_input, True)
 
 
+class MultipleInput(nn.Module):
+    def __init__(self):
+        super(MultipleInput, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+
+
+    def forward(self, x, y):
+        return self.Linear_1(x+y)
+
+with SummaryWriter(comment='MultipleInput') as w:
+    w.add_graph(MultipleInput(), (torch.zeros(1, 3), torch.zeros(1, 3)), True)
 
 class MultipleOutput(nn.Module):
     def __init__(self):
@@ -33,6 +44,17 @@ class MultipleOutput(nn.Module):
 with SummaryWriter(comment='MultipleOutput') as w:
     w.add_graph(MultipleOutput(), dummy_input, True)
 
+
+class MultipleOutput_shared(nn.Module):
+    def __init__(self):
+        super(MultipleOutput_shared, self).__init__()
+        self.Linear_1 = nn.Linear(3, 5)
+
+    def forward(self, x):
+        return self.Linear_1(x), self.Linear_1(x)
+
+with SummaryWriter(comment='MultipleOutput_shared') as w:
+    w.add_graph(MultipleOutput_shared(), dummy_input, True)
 
 
 class SimpleModel(nn.Module):
@@ -189,7 +211,7 @@ class RNN(nn.Module):
         output = self.o2o(output_combined)
         output = self.dropout(output)
         output = self.softmax(output)
-        return output, hidden
+        return output, hidden, input
 
     def initHidden(self):
         return torch.zeros(1, self.hidden_size)
@@ -204,9 +226,23 @@ dummy_input = torch.Tensor(1, n_letters)
 hidden = torch.Tensor(1, n_hidden)
 
 
-out, hidden = rnn(cat, dummy_input, hidden)
+out, hidden, input = rnn(cat, dummy_input, hidden)
 with SummaryWriter(comment='RNN') as w:
     w.add_graph(rnn, (cat, dummy_input, hidden), verbose=False)
+
+
+
+lstm = torch.nn.LSTM(3, 3)  # Input dim is 3, output dim is 3
+inputs = [torch.randn(1, 3) for _ in range(5)]  # make a sequence of length 5
+
+# initialize the hidden state.
+hidden = (torch.randn(1, 1, 3),
+          torch.randn(1, 1, 3))
+for i in inputs:
+    out, hidden = lstm(i.view(1, 1, -1), hidden)
+
+with SummaryWriter(comment='lstm') as w:
+    w.add_graph(lstm, (torch.randn(1, 3).view(1, 1, -1), hidden), verbose=True)
 
 
 import pytest
