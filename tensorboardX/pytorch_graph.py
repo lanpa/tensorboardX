@@ -17,11 +17,12 @@ methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor
 
 
 class Node_base(object):
-    def __init__(self, uniqueName, inputs, scope=None, tensorSize=None):
+    def __init__(self, uniqueName, inputs, scope=None, tensorSize=None, op_type='UnSpecified', attributes=''):
         self.uniqueName = uniqueName
         self.inputs = inputs
         self.tensorSize = tensorSize
-
+        self.kind = op_type
+        self.attributes = attributes
         if scope is not None:
             self.scope = scope
         # if tensorSize is not None:
@@ -36,14 +37,15 @@ class Node_base(object):
 
 
 class Node_dummy(Node_base):
-    def __init__(self, uniqueName, inputs, scope, tensorSize=None):
-        super(Node_dummy, self).__init__(uniqueName, inputs, scope, tensorSize)
+    def __init__(self, uniqueName, inputs, scope, tensorSize=None, op_type='UnSpecified', attributes=''):
+        super(Node_dummy, self).__init__(uniqueName, inputs, scope, tensorSize, op_type, attributes)
 
 
 class Node_py(object):
     def __init__(self, Node_cpp, valid_mothods):
         self.valid_mothods = valid_mothods[:]
         self.inputs = []
+
         for m in self.valid_mothods:
             if m == 'inputs' or m == 'outputs':
                 list_of_node = list(getattr(Node_cpp, m)())
@@ -67,6 +69,8 @@ class Node_py_IO(Node_py):
     def __init__(self, Node_cpp, input_or_output=None):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         self.tensorSize = Node_cpp.type().sizes()
+        self.kind = 'Parameter'
+        self.attributes = ''
         if input_or_output is not None:
             self.input_or_output = input_or_output
 
@@ -74,6 +78,8 @@ class Node_py_IO(Node_py):
 class Node_py_OP(Node_py):
     def __init__(self, Node_cpp):
         super(Node_py_OP, self).__init__(Node_cpp, methods_OP)
+        self.attributes = str({k: Node_cpp[k] for k in Node_cpp.attributeNames()}).replace("'", ' ')
+        self.kind = Node_cpp.kind()
 
 
 class Graph_py(object):
@@ -90,7 +96,12 @@ class Graph_py(object):
         if type(x) == Node_py_OP:
             self.nodes_OP.append(x)
             for node_output, outputSize in zip(x.outputs, x.outputsTensorSize):
-                self.nodes_IO[node_output] = Node_dummy(node_output, x.inputs, x.scopeName, outputSize)
+                self.nodes_IO[node_output] = Node_dummy(node_output,
+                                                        x.inputs,
+                                                        x.scopeName,
+                                                        outputSize,
+                                                        op_type=x.kind,
+                                                        attributes=x.attributes)
 
     def printall(self):
         print('all nodes')
@@ -109,7 +120,7 @@ class Graph_py(object):
                 self.uniqueNameToScopedName[key] = node.scope + '/' + node.uniqueName
 
         # replace name
-        print(self.uniqueNameToScopedName)
+        # print(self.uniqueNameToScopedName)
         for key, node in self.nodes_IO.items():
             self.nodes_IO[key].inputs = [self.uniqueNameToScopedName[node_input_id] for node_input_id in node.inputs]
             if node.uniqueName in self.uniqueNameToScopedName:
@@ -118,7 +129,11 @@ class Graph_py(object):
     def to_proto(self):
         nodes = []
         for v in self.nodes_IO.values():
-            nodes.append(Node_proto(v.uniqueName, input=v.inputs, outputsize=v.tensorSize))
+            nodes.append(Node_proto(v.uniqueName,
+                                    input=v.inputs,
+                                    outputsize=v.tensorSize,
+                                    op=v.kind,
+                                    attributes=v.attributes))
 
         return nodes
 
@@ -171,11 +186,6 @@ def parse(graph):
         for outputnode in iter(n.outputs()):
             uname = outputnode.uniqueName()
             scope[uname] = scopename
-
-    if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
-        scope['0'] = 'input'
-    else:
-        scope['1'] = 'input'
 
     nodes = []
 

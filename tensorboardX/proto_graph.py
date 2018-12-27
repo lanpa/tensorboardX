@@ -12,7 +12,7 @@ from collections import defaultdict
 #                   '_output_shapes': AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))}))
 
 
-def AttrValue_proto(type,
+def AttrValue_proto(dtype,
                     shape,
                     s,
                     ):
@@ -37,6 +37,7 @@ def Node_proto(name,
                dtype=None,
                shape=None,  # type: tuple
                outputsize=None,
+               attributes=''
                ):
     if not isinstance(input, list):
         input = [input]
@@ -44,5 +45,5 @@ def Node_proto(name,
         name=name.encode(encoding='utf_8'),
         op=op,
         input=input,
-        attr=AttrValue_proto(dtype, outputsize, 'ii')
+        attr=AttrValue_proto(dtype, outputsize, attributes)
     )
