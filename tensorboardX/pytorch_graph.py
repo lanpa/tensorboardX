@@ -17,14 +17,14 @@ methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor
 
 
 class Node_base(object):
-    def __init__(self, uniqueName, inputs, scope=None, tensorSize=None):
+    def __init__(self, uniqueName=None, inputs=None, scope=None, tensorSize=None, op_type='UnSpecified', attributes=''):
         self.uniqueName = uniqueName
         self.inputs = inputs
         self.tensorSize = tensorSize
-
+        self.kind = op_type
+        self.attributes = attributes
         if scope is not None:
             self.scope = scope
-        # if tensorSize is not None:
 
     def __repr__(self):
         repr = []
@@ -35,15 +35,12 @@ class Node_base(object):
         return '\n'.join(repr) + '\n\n'
 
 
-class Node_dummy(Node_base):
-    def __init__(self, uniqueName, inputs, scope, tensorSize=None):
-        super(Node_dummy, self).__init__(uniqueName, inputs, scope, tensorSize)
-
-
-class Node_py(object):
+class Node_py(Node_base):
     def __init__(self, Node_cpp, valid_mothods):
+        super(Node_py, self).__init__(Node_py)
         self.valid_mothods = valid_mothods[:]
         self.inputs = []
+
         for m in self.valid_mothods:
             if m == 'inputs' or m == 'outputs':
                 list_of_node = list(getattr(Node_cpp, m)())
@@ -67,13 +64,14 @@ class Node_py_IO(Node_py):
     def __init__(self, Node_cpp, input_or_output=None):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         self.tensorSize = Node_cpp.type().sizes()
-        if input_or_output is not None:
-            self.input_or_output = input_or_output
+        self.kind = 'Parameter'
 
 
 class Node_py_OP(Node_py):
     def __init__(self, Node_cpp):
         super(Node_py_OP, self).__init__(Node_cpp, methods_OP)
+        self.attributes = str({k: Node_cpp[k] for k in Node_cpp.attributeNames()}).replace("'", ' ')
+        self.kind = Node_cpp.kind()
 
 
 class Graph_py(object):
@@ -84,13 +82,16 @@ class Graph_py(object):
 
     def append(self, x):
         if type(x) == Node_py_IO:
-            # if hasattr(x, 'input_or_output'):
-            #     if x.input_or_output == 'output':
             self.nodes_IO[x.uniqueName] = x
         if type(x) == Node_py_OP:
             self.nodes_OP.append(x)
             for node_output, outputSize in zip(x.outputs, x.outputsTensorSize):
-                self.nodes_IO[node_output] = Node_dummy(node_output, x.inputs, x.scopeName, outputSize)
+                self.nodes_IO[node_output] = Node_base(node_output,
+                                                       x.inputs,
+                                                       x.scopeName,
+                                                       outputSize,
+                                                       op_type=x.kind,
+                                                       attributes=x.attributes)
 
     def printall(self):
         print('all nodes')
@@ -105,26 +106,39 @@ class Graph_py(object):
                 self.uniqueNameToScopedName[input_node_id] = node.scopeName + '/' + input_node_id
 
         for key, node in self.nodes_IO.items():
-            if type(node) == Node_dummy:
+            if type(node) == Node_base:
                 self.uniqueNameToScopedName[key] = node.scope + '/' + node.uniqueName
 
         # replace name
-        print(self.uniqueNameToScopedName)
+        # print(self.uniqueNameToScopedName)
         for key, node in self.nodes_IO.items():
             self.nodes_IO[key].inputs = [self.uniqueNameToScopedName[node_input_id] for node_input_id in node.inputs]
             if node.uniqueName in self.uniqueNameToScopedName:
                 self.nodes_IO[key].uniqueName = self.uniqueNameToScopedName[node.uniqueName]
 
     def to_proto(self):
+        import numpy as np
         nodes = []
+        node_stats = []
         for v in self.nodes_IO.values():
-            nodes.append(Node_proto(v.uniqueName, input=v.inputs, outputsize=v.tensorSize))
+            nodes.append(Node_proto(v.uniqueName,
+                                    input=v.inputs,
+                                    outputsize=v.tensorSize,
+                                    op=v.kind,
+                                    attributes=v.attributes))
 
-        return nodes
+            if v.tensorSize and len(v.tensorSize) > 0:  # assume data is float32, only parameter is counted
+                node_stats.append(NodeExecStats(node_name=v.uniqueName,
+                                                all_start_micros=int(time.time() * 1e7),
+                                                all_end_rel_micros=42,
+                                                memory=[AllocatorMemoryUsed(allocator_name="cpu",
+                                                                            total_bytes=np.prod(v.tensorSize) * 4)]))
+
+        return nodes, node_stats
 
 
 # one argument: 'hasAttribute', 'hasAttributes',
-def parse_2(graph, args=None, omit_useless_nodes=True):
+def parse(graph, args=None, omit_useless_nodes=True):
     import torch
     n_inputs = len(args)  # not sure...
 
@@ -144,99 +158,18 @@ def parse_2(graph, args=None, omit_useless_nodes=True):
         nodes_py.append(Node_py_OP(node))
 
     for node in graph.outputs():  # must place last.
-        # nodes_py.append(Node_py_IO(node, 'output'))
         Node_py_IO(node, 'output')
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
 
 
-def parse(graph):
-    import torch
-    scope = {}
-    for n in graph.nodes():
-        if n.kind() == 'prim::Undefined':
-            for outputnode in iter(n.outputs()):
-                scope[outputnode.uniqueName()] = 'Undefined'
-            continue
-        inputs = [i.uniqueName() for i in n.inputs()]
-        for i in range(0, len(inputs)):
-            if inputs[i] not in scope.keys():
-                scope[inputs[i]] = n.scopeName()
-
-        scopename = n.scopeName()
-        if not scopename:
-            print('{} has empty scope name. FIXME!'.format(n))
-            scopename = 'unknownScope'
-
-        for outputnode in iter(n.outputs()):
-            uname = outputnode.uniqueName()
-            scope[uname] = scopename
-
-    if LooseVersion(torch.__version__) >= LooseVersion("0.4"):
-        scope['0'] = 'input'
-    else:
-        scope['1'] = 'input'
-
-    nodes = []
-
-    for count, n in enumerate(graph.outputs()):
-        uname = 'output' + str(count)
-        scope[uname] = 'output'
-        nodes.append({'name': uname, 'op': 'output', 'inputs': [
-                     n.uniqueName()], 'attr': 'output'})
-        Node_proto(uname, 'output', n.uniqueName())
-    for n in graph.nodes():
-        try:
-            attrs = str({k: n[k] for k in n.attributeNames()})
-        except RuntimeError as e:
-            attrs = str(n).strip()
-            warnings.warn(
-                "Error getting attributes of node {}, error is {}".format(attrs, e))
-        # singlequote will be escaped by tensorboard
-        attrs = attrs.replace("'", ' ')
-        for outputnode in iter(n.outputs()):
-            inputs = [i.uniqueName() for i in n.inputs()]
-            uname = outputnode.uniqueName()
-            if outputnode.type().kind() == 'TensorType':
-                outputsize = outputnode.type().sizes()
-                nodes.append({'name': uname,
-                              'op': n.kind(),
-                              'inputs': inputs,
-                              'attr': attrs,
-                              'outputsize': outputsize})
-            else:
-                nodes.append({'name': uname, 'op': n.kind(), 'inputs': inputs, 'attr': attrs})
-            Node_proto(uname, n.kind(), inputs)
-
-    for n in graph.inputs():
-        uname = n.uniqueName()
-        if uname not in scope.keys():
-            scope[uname] = 'unknown'
-        outputsize = n.type().sizes()
-        nodes.append({'name': uname,
-                      'op': 'Parameter',
-                      'inputs': [],
-                      'attr': str(n.type()),
-                      'outputsize': outputsize})
-        Node_proto(uname, 'output', [])
-
-    mapping = {}
-    for n in nodes:
-        if scope[n['name']] != '':
-            mapping[n['name']] = scope[n['name']] + '/' + \
-                n['op'].replace('onnx::', '') + '_' + n['name']
-        else:
-            mapping[n['name']] = n['op'].replace('onnx::', '') + '_' + n['name']
-    for n in nodes:
-        n['name'] = mapping[n['name']]
-        for i, s in enumerate(n['inputs']):
-            n['inputs'][i] = mapping[s]
-    return nodes
-
-
 def graph(model, args, verbose=False, omit_useless_nodes=True):
     import torch
     from torch.onnx.utils import OperatorExportTypes
+    from torch.onnx import utils
+
+    def _optimize_trace(trace, operator_export_type):
+        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
 
     def _optimize_graph(graph, operator_export_type):
         # torch._C._jit_pass_remove_inplace_ops(graph)
@@ -279,9 +212,7 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
         torch._C._jit_pass_lint(graph)
         return graph
 
-    def _optimize_trace(trace, operator_export_type):
-        from torch.onnx import utils
-        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
+    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
 
     with torch.onnx.set_training(model, False):
         try:
@@ -297,42 +228,13 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
             except RuntimeError:
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
-    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
+
     _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
 
     graph = trace.graph()
     if verbose:
         print(graph)
-    list_of_nodes = parse_2(graph, args, omit_useless_nodes)
-    # list_of_nodes = parse(graph)
-    nodes = []
-    node_stats = []
+    list_of_nodes, node_stats = parse(graph, args, omit_useless_nodes)
     stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
                                                                             node_stats=node_stats)]))
     return GraphDef(node=list_of_nodes, versions=VersionDef(producer=22)), stepstats
-
-    for node in list_of_nodes:
-        if 'outputsize' in node.keys():
-            shapeproto = TensorShapeProto(
-                dim=[TensorShapeProto.Dim(size=d) for d in node['outputsize']])
-            nodes.append(
-                NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
-                        attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8')),
-                              '_output_shapes': AttrValue(list=AttrValue.ListValue(shape=[shapeproto]))}))
-            # FIXME: fill with profile data
-            node_stats.append(NodeExecStats(node_name=node['name'],
-                                            all_start_micros=int(
-                                                time.time() * 1e7),
-                                            all_end_rel_micros=42,
-                                            memory=[AllocatorMemoryUsed(allocator_name="cpu",
-                                                                        total_bytes=19950829,
-                                                                        peak_bytes=19950829,
-                                                                        live_bytes=19950829)]))
-        else:
-            nodes.append(
-                NodeDef(name=node['name'], op=node['op'], input=node['inputs'],
-                        attr={'lanpa': AttrValue(s=node['attr'].encode(encoding='utf_8'))}))
-
-    stepstats = RunMetadata(step_stats=StepStats(dev_stats=[DeviceStepStats(device="/device:CPU:0",
-                                                                            node_stats=node_stats)]))
-    return GraphDef(node=nodes, versions=VersionDef(producer=22)), stepstats
