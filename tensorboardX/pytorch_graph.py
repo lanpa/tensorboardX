@@ -17,7 +17,7 @@ methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor
 
 
 class Node_base(object):
-    def __init__(self, uniqueName, inputs, scope=None, tensorSize=None, op_type='UnSpecified', attributes=''):
+    def __init__(self, uniqueName=None, inputs=None, scope=None, tensorSize=None, op_type='UnSpecified', attributes=''):
         self.uniqueName = uniqueName
         self.inputs = inputs
         self.tensorSize = tensorSize
@@ -35,8 +35,9 @@ class Node_base(object):
         return '\n'.join(repr) + '\n\n'
 
 
-class Node_py(object):
+class Node_py(Node_base):
     def __init__(self, Node_cpp, valid_mothods):
+        super(Node_py, self).__init__(Node_py)
         self.valid_mothods = valid_mothods[:]
         self.inputs = []
 
@@ -64,9 +65,6 @@ class Node_py_IO(Node_py):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         self.tensorSize = Node_cpp.type().sizes()
         self.kind = 'Parameter'
-        self.attributes = ''
-        if input_or_output is not None:
-            self.input_or_output = input_or_output
 
 
 class Node_py_OP(Node_py):
@@ -129,10 +127,9 @@ class Graph_py(object):
                                     op=v.kind,
                                     attributes=v.attributes))
 
-            if v.tensorSize and len(v.tensorSize) > 0:  # assume data is float32
+            if v.tensorSize and len(v.tensorSize) > 0:  # assume data is float32, only parameter is counted
                 node_stats.append(NodeExecStats(node_name=v.uniqueName,
-                                                all_start_micros=int(
-                                                    time.time() * 1e7),
+                                                all_start_micros=int(time.time() * 1e7),
                                                 all_end_rel_micros=42,
                                                 memory=[AllocatorMemoryUsed(allocator_name="cpu",
                                                                             total_bytes=np.prod(v.tensorSize) * 4)]))
@@ -169,6 +166,10 @@ def parse(graph, args=None, omit_useless_nodes=True):
 def graph(model, args, verbose=False, omit_useless_nodes=True):
     import torch
     from torch.onnx.utils import OperatorExportTypes
+    from torch.onnx import utils
+
+    def _optimize_trace(trace, operator_export_type):
+        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
 
     def _optimize_graph(graph, operator_export_type):
         # torch._C._jit_pass_remove_inplace_ops(graph)
@@ -211,9 +212,7 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
         torch._C._jit_pass_lint(graph)
         return graph
 
-    def _optimize_trace(trace, operator_export_type):
-        from torch.onnx import utils
-        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
+    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
 
     with torch.onnx.set_training(model, False):
         try:
@@ -230,7 +229,6 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
 
-    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
     _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
 
     graph = trace.graph()
