@@ -51,6 +51,7 @@ from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
 from .proto.plugin_text_pb2 import TextPluginData
 from .proto import layout_pb2
 from .x2num import make_np
+from .utils import _prepare_video, _prepare_image, make_grid
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -179,7 +180,7 @@ def make_histogram(values, bins):
                           bucket=counts.tolist())
 
 
-def image(tag, tensor, rescale=1):
+def image(tag, tensor, rescale=1, dataformats='NCHW'):
     """Outputs a `Summary` protocol buffer with images.
     The summary has up to `max_images` summary values containing images. The
     images are built from `tensor` which must be 3-D with shape `[height, width,
@@ -205,7 +206,8 @@ def image(tag, tensor, rescale=1):
       buffer.
     """
     tag = _clean_tag(tag)
-    tensor = make_np(tensor, 'IMG')
+    tensor = make_np(tensor)
+    tensor = _prepare_image(tensor, dataformats)
     # Do not assume that user passes in values in [0, 255], use data type to detect
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)
@@ -214,9 +216,10 @@ def image(tag, tensor, rescale=1):
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def image_boxes(tag, tensor_image, tensor_boxes, rescale=1):
+def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='NCHW'):
     '''Outputs a `Summary` protocol buffer with images.'''
-    tensor_image = make_np(tensor_image, 'IMG')
+    tensor_image = make_np(tensor_image)
+    tensor_image = _prepare_image(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
     tensor_image = tensor_image.astype(
         np.float32) * _calc_scale_factor(tensor_image)
@@ -264,9 +267,10 @@ def make_image(tensor, rescale=1, rois=None):
                          encoded_image_string=image_string)
 
 
-def video(tag, tensor, fps=4):
+def video(tag, tensor, fps=4, dataformats='NCTHW'):
     tag = _clean_tag(tag)
-    tensor = make_np(tensor, 'VID')
+    tensor = make_np(tensor)
+    tensor = _prepare_video(tensor, dataformats)
     # If user passes in uint8, then we don't need to rescale by 255
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)
