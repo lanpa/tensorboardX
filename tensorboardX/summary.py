@@ -51,7 +51,7 @@ from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
 from .proto.plugin_text_pb2 import TextPluginData
 from .proto import layout_pb2
 from .x2num import make_np
-from .utils import _prepare_video, _prepare_image, make_grid
+from .utils import _prepare_video, convert_to_HWC
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -207,7 +207,7 @@ def image(tag, tensor, rescale=1, dataformats='NCHW'):
     """
     tag = _clean_tag(tag)
     tensor = make_np(tensor)
-    tensor = _prepare_image(tensor, dataformats)
+    tensor = convert_to_HWC(tensor, dataformats)
     # Do not assume that user passes in values in [0, 255], use data type to detect
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)
@@ -219,7 +219,7 @@ def image(tag, tensor, rescale=1, dataformats='NCHW'):
 def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='NCHW'):
     '''Outputs a `Summary` protocol buffer with images.'''
     tensor_image = make_np(tensor_image)
-    tensor_image = _prepare_image(tensor_image, dataformats)
+    tensor_image = convert_to_HWC(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
     tensor_image = tensor_image.astype(
         np.float32) * _calc_scale_factor(tensor_image)

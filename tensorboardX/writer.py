@@ -405,7 +405,7 @@ class SummaryWriter(object):
         self.file_writer.add_summary(
             histogram(tag, values, bins), global_step, walltime)
 
-    def add_image(self, tag, img_tensor, global_step=None, walltime=None):
+    def add_image(self, tag, img_tensor, global_step=None, walltime=None, dataformats='CHW'):
         """Add image data to summary.
 
         Note that this requires the ``pillow`` package.
@@ -421,10 +421,28 @@ class SummaryWriter(object):
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
         self.file_writer.add_summary(
-            image(tag, img_tensor), global_step, walltime)
+            image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
+
+    def add_images(self, tag, img_tensor, global_step=None, walltime=None, dataformats='NCHW'):
+        """Add image data to summary.
+
+        Note that this requires the ``pillow`` package.
+
+        Args:
+            tag (string): Data identifier
+            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
+            global_step (int): Global step value to record
+            walltime (float): Optional override default walltime (time.time()) of event
+        Shape:
+            img_tensor: :math:`(N, 3, H, W)`.
+        """
+        if self._check_caffe2(img_tensor):
+            img_tensor = workspace.FetchBlob(img_tensor)
+        self.file_writer.add_summary(
+            image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None,
-                             walltime=None, **kwargs):
+                             walltime=None, dataformats='NCHW', **kwargs):
         """Add image boxes data to summary (useful for models such as Detectron).
 
         Args:
@@ -439,7 +457,7 @@ class SummaryWriter(object):
         if self._check_caffe2(box_tensor):
             box_tensor = workspace.FetchBlob(box_tensor)
         self.file_writer.add_summary(image_boxes(
-            tag, img_tensor, box_tensor, **kwargs), global_step, walltime)
+            tag, img_tensor, box_tensor, dataformats, **kwargs), global_step, walltime)
 
     def add_figure(self, tag, figure, global_step=None, close=True, walltime=None):
         """Render matplotlib figure into an image and add it to summary.
@@ -453,8 +471,10 @@ class SummaryWriter(object):
             close (bool): Flag to automatically close the figure
             walltime (float): Optional override default walltime (time.time()) of event
         """
-        self.add_image(tag, figure_to_image(
-            figure, close), global_step, walltime)
+        if isinstance(figure, list):
+            self.add_image(tag, figure_to_image(figure, close), global_step, walltime, dataformats='NCHW')
+        else:
+            self.add_image(tag, figure_to_image(figure, close), global_step, walltime, dataformats='CHW')
 
     def add_video(self, tag, vid_tensor, global_step=None, fps=4, walltime=None):
         """Add video data to summary.

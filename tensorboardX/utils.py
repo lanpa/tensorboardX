@@ -29,37 +29,37 @@ def figure_to_image(figures, close=True):
             plt.close(figure)
         return image_chw
 
-    if not isinstance(figures, list):
-        image = render_to_rgb(figures)
-        return image
-    else:
+    if isinstance(figures, list):
         images = [render_to_rgb(figure) for figure in figures]
         return np.stack(images)
+    else:
+        image = render_to_rgb(figures)
+        return image
 
 
 def graphviz_to_image():
     pass
 
 
-def _prepare_image(I, dataformats='NCHW'):
-    import numpy as np
-    # convert [N]CHW image to HWC
-    assert isinstance(
-        I, np.ndarray), 'plugin error, should pass numpy array here'
-    assert I.ndim == 2 or I.ndim == 3 or I.ndim == 4
-    if I.ndim == 4:  # NCHW
-        if I.shape[1] == 1:  # N1HW
-            I = np.concatenate((I, I, I), 1)  # N3HW
-        assert I.shape[1] == 3
-        I = make_grid(I)  # 3xHxW
-    if I.ndim == 3 and I.shape[0] == 1:  # 1xHxW
-        I = np.concatenate((I, I, I), 0)  # 3xHxW
-    if I.ndim == 2:  # HxW
-        I = np.expand_dims(I, 0)  # 1xHxW
-        I = np.concatenate((I, I, I), 0)  # 3xHxW
-    I = I.transpose(1, 2, 0)  # HWC
+# def _prepare_image(I, dataformats='NCHW'):
+#     import numpy as np
+#     # convert [N]CHW image to HWC
+#     assert isinstance(
+#         I, np.ndarray), 'plugin error, should pass numpy array here'
+#     assert I.ndim == 2 or I.ndim == 3 or I.ndim == 4
+#     if I.ndim == 4:  # NCHW
+#         if I.shape[1] == 1:  # N1HW
+#             I = np.concatenate((I, I, I), 1)  # N3HW
+#         assert I.shape[1] == 3
+#         I = make_grid(I)  # 3xHxW
+#     if I.ndim == 3 and I.shape[0] == 1:  # 1xHxW
+#         I = np.concatenate((I, I, I), 0)  # 3xHxW
+#     if I.ndim == 2:  # HxW
+#         I = np.expand_dims(I, 0)  # 1xHxW
+#         I = np.concatenate((I, I, I), 0)  # 3xHxW
+#     I = I.transpose(1, 2, 0)  # HWC
 
-    return I
+#     return I
 
 
 def _prepare_video(V, dataformats):
@@ -114,24 +114,23 @@ def make_grid(I, ncols=8):
     #         x = x.astype(np.float32) / 255.0
 
 
-def convert_to_NCHW(tensor, input_format):  # tensor: numpy array
+def convert_to_HWC(tensor, input_format):  # tensor: numpy array
+    assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice."
+    assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different"
     input_format = input_format.upper()
 
     if len(input_format) == 4:
-        print(tensor.shape)
         index = [input_format.find(c) for c in 'NCHW']
-        return tensor.transpose(index)
+        tensor_NCHW = tensor.transpose(index)
+        tensor_CHW = make_grid(tensor_NCHW)
+        return tensor_CHW.transpose(1, 2, 0)
 
     if len(input_format) == 3:
-        index = [input_format.find(c) for c in 'CHW']
-
-        return tensor
+        index = [input_format.find(c) for c in 'HWC']
+        return tensor.transpose(index)
 
     if len(input_format) == 2:
         index = [input_format.find(c) for c in 'HW']
         tensor = tensor.transpose(index)
-        tensor = np.expand_dims(tensor, 0)  # 1xHxW
-        tensor = np.expand_dims(tensor, 0)  # 1x1xHxW
+        tensor = np.stack([tensor, tensor, tensor], 2)
         return tensor
-
-# #NCDHW
