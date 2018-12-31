@@ -41,30 +41,9 @@ def graphviz_to_image():
     pass
 
 
-# def _prepare_image(I, dataformats='NCHW'):
-#     import numpy as np
-#     # convert [N]CHW image to HWC
-#     assert isinstance(
-#         I, np.ndarray), 'plugin error, should pass numpy array here'
-#     assert I.ndim == 2 or I.ndim == 3 or I.ndim == 4
-#     if I.ndim == 4:  # NCHW
-#         if I.shape[1] == 1:  # N1HW
-#             I = np.concatenate((I, I, I), 1)  # N3HW
-#         assert I.shape[1] == 3
-#         I = make_grid(I)  # 3xHxW
-#     if I.ndim == 3 and I.shape[0] == 1:  # 1xHxW
-#         I = np.concatenate((I, I, I), 0)  # 3xHxW
-#     if I.ndim == 2:  # HxW
-#         I = np.expand_dims(I, 0)  # 1xHxW
-#         I = np.concatenate((I, I, I), 0)  # 3xHxW
-#     I = I.transpose(1, 2, 0)  # HWC
-
-#     return I
-
-
-def _prepare_video(V, dataformats):
+def _prepare_video(V):
     import numpy as np
-    b, c, t, h, w = V.shape
+    b, t, c, h, w = V.shape
 
     if V.dtype == np.uint8:
         V = np.float32(V) / 255.
@@ -78,7 +57,6 @@ def _prepare_video(V, dataformats):
         V = np.concatenate(
             (V, np.zeros(shape=(len_addition, c, t, h, w))), axis=0)
 
-    b = V.shape[0]
     n_rows = 2**((b.bit_length() - 1) // 2)
     n_cols = b // n_rows
 

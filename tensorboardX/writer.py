@@ -488,7 +488,7 @@ class SummaryWriter(object):
             fps (float or int): Frames per second
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            vid_tensor: :math:`(B, C, T, H, W)`.
+            vid_tensor: :math:`(N, T, C, H, W)`.
         """
         self.file_writer.add_summary(
             video(tag, vid_tensor, fps), global_step, walltime)

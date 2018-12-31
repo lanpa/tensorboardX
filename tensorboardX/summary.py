@@ -267,10 +267,10 @@ def make_image(tensor, rescale=1, rois=None):
                          encoded_image_string=image_string)
 
 
-def video(tag, tensor, fps=4, dataformats='NCTHW'):
+def video(tag, tensor, fps=4):
     tag = _clean_tag(tag)
     tensor = make_np(tensor)
-    tensor = _prepare_video(tensor, dataformats)
+    tensor = _prepare_video(tensor)
     # If user passes in uint8, then we don't need to rescale by 255
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)
