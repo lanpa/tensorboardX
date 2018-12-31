@@ -51,6 +51,7 @@ from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
 from .proto.plugin_text_pb2 import TextPluginData
 from .proto import layout_pb2
 from .x2num import make_np
+from .utils import _prepare_video, convert_to_HWC
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -78,8 +79,9 @@ def _clean_tag(name):
     return name
 
 
-def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, font, color='black', color_text='black', thickness=2):
-    import PIL.ImageDraw as ImageDraw
+def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', color_text='black', thickness=2):
+    from PIL import ImageDraw, ImageFont
+    font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
     draw.line([(left, top), (left, bottom), (right, bottom),
@@ -179,7 +181,7 @@ def make_histogram(values, bins):
                           bucket=counts.tolist())
 
 
-def image(tag, tensor, rescale=1):
+def image(tag, tensor, rescale=1, dataformats='NCHW'):
     """Outputs a `Summary` protocol buffer with images.
     The summary has up to `max_images` summary values containing images. The
     images are built from `tensor` which must be 3-D with shape `[height, width,
@@ -205,7 +207,8 @@ def image(tag, tensor, rescale=1):
       buffer.
     """
     tag = _clean_tag(tag)
-    tensor = make_np(tensor, 'IMG')
+    tensor = make_np(tensor)
+    tensor = convert_to_HWC(tensor, dataformats)
     # Do not assume that user passes in values in [0, 255], use data type to detect
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)
@@ -214,31 +217,30 @@ def image(tag, tensor, rescale=1):
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def image_boxes(tag, tensor_image, tensor_boxes, rescale=1):
+def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW'):
     '''Outputs a `Summary` protocol buffer with images.'''
-    tensor_image = make_np(tensor_image, 'IMG')
+    tensor_image = make_np(tensor_image)
+    tensor_image = convert_to_HWC(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
     tensor_image = tensor_image.astype(
         np.float32) * _calc_scale_factor(tensor_image)
-    rois = tensor_boxes[:, 1:5]
     image = make_image(tensor_image.astype(np.uint8),
                        rescale=rescale,
-                       rois=rois)
+                       rois=tensor_boxes)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def draw_boxes(disp_image, gt_boxes):
-    num_boxes = gt_boxes.shape[0]
+def draw_boxes(disp_image, boxes):
+    # xyxy format
+    num_boxes = boxes.shape[0]
     list_gt = range(num_boxes)
-    shuffle(list_gt)
     for i in list_gt:
         disp_image = _draw_single_box(disp_image,
-                                      gt_boxes[i, 0],
-                                      gt_boxes[i, 1],
-                                      gt_boxes[i, 2],
-                                      gt_boxes[i, 3],
-                                      None,
-                                      FONT,
+                                      boxes[i, 0],
+                                      boxes[i, 1],
+                                      boxes[i, 2],
+                                      boxes[i, 3],
+                                      display_str=None,
                                       color='Red')
     return disp_image
 
@@ -266,7 +268,8 @@ def make_image(tensor, rescale=1, rois=None):
 
 def video(tag, tensor, fps=4):
     tag = _clean_tag(tag)
-    tensor = make_np(tensor, 'VID')
+    tensor = make_np(tensor)
+    tensor = _prepare_video(tensor)
     # If user passes in uint8, then we don't need to rescale by 255
     scale_factor = _calc_scale_factor(tensor)
     tensor = tensor.astype(np.float32)

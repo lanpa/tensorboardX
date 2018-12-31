@@ -33,9 +33,7 @@ for n_iter in range(100):
     if n_iter % 10 == 0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)
         writer.add_image('Image', x, n_iter)  # Tensor
-        # writer.add_image('astronaut', skimage.data.astronaut(), n_iter) # numpy
-        # writer.add_image('imread',
-        # skimage.io.imread('screenshots/audio.png'), n_iter) # numpy
+        writer.add_image_with_boxes('imagebox', x, torch.Tensor([[10, 10, 40, 40]]), n_iter)
         x = torch.zeros(sample_rate * 2)
         for i in range(x.size(0)):
             # sound amplitude should in [-1, 1]
@@ -80,7 +78,7 @@ writer.add_embedding(all_features, metadata=all_labels, label_img=all_images.uns
 
 # VIDEO
 vid_images = dataset.train_data[:16 * 48]
-vid = vid_images.view(16, 1, 48, 28, 28)  # BxCxTxHxW
+vid = vid_images.view(16, 48, 1, 28, 28)  # BxTxCxHxW
 
 writer.add_video('video', vid_tensor=vid)
 writer.add_video('video_1_fps', vid_tensor=vid, fps=1)

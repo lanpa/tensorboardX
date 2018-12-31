@@ -31,3 +31,12 @@ class SummaryTest(unittest.TestCase):
         print('expect error here:')
         with pytest.raises(Exception) as e_info:
             summary.histogram('dummy', np.ndarray(0), 'tensorflow')
+
+    def test_image_with_boxes(self):
+        summary.image_boxes('dummy',
+                            np.random.rand(3, 32, 32).astype(np.float32),
+                            np.array([[10, 10, 40, 40]]))
+
+    def test_image_with_one_channel(self):
+        summary.image('dummy', np.random.rand(1, 32, 32).astype(np.float32), dataformats='CHW')
+        summary.image('dummy', np.random.rand(32, 32).astype(np.float32), dataformats='HW')
