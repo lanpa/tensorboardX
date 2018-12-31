@@ -33,9 +33,7 @@ for n_iter in range(100):
     if n_iter % 10 == 0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)
         writer.add_image('Image', x, n_iter)  # Tensor
-        # writer.add_image('astronaut', skimage.data.astronaut(), n_iter) # numpy
-        # writer.add_image('imread',
-        # skimage.io.imread('screenshots/audio.png'), n_iter) # numpy
+        writer.add_image_with_boxes('imagebox', x, torch.Tensor([[10, 10, 40, 40]]), n_iter)
         x = torch.zeros(sample_rate * 2)
         for i in range(x.size(0)):
             # sound amplitude should in [-1, 1]

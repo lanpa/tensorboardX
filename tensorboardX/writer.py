@@ -442,7 +442,7 @@ class SummaryWriter(object):
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None,
-                             walltime=None, dataformats='NCHW', **kwargs):
+                             walltime=None, dataformats='CHW', **kwargs):
         """Add image boxes data to summary (useful for models such as Detectron).
 
         Args:
@@ -457,7 +457,7 @@ class SummaryWriter(object):
         if self._check_caffe2(box_tensor):
             box_tensor = workspace.FetchBlob(box_tensor)
         self.file_writer.add_summary(image_boxes(
-            tag, img_tensor, box_tensor, dataformats, **kwargs), global_step, walltime)
+            tag, img_tensor, box_tensor, dataformats=dataformats, **kwargs), global_step, walltime)
 
     def add_figure(self, tag, figure, global_step=None, close=True, walltime=None):
         """Render matplotlib figure into an image and add it to summary.

@@ -79,8 +79,9 @@ def _clean_tag(name):
     return name
 
 
-def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, font, color='black', color_text='black', thickness=2):
-    import PIL.ImageDraw as ImageDraw
+def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', color_text='black', thickness=2):
+    from PIL import ImageDraw, ImageFont
+    font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
     draw.line([(left, top), (left, bottom), (right, bottom),
@@ -216,32 +217,30 @@ def image(tag, tensor, rescale=1, dataformats='NCHW'):
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='NCHW'):
+def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW'):
     '''Outputs a `Summary` protocol buffer with images.'''
     tensor_image = make_np(tensor_image)
     tensor_image = convert_to_HWC(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
     tensor_image = tensor_image.astype(
         np.float32) * _calc_scale_factor(tensor_image)
-    rois = tensor_boxes[:, 1:5]
     image = make_image(tensor_image.astype(np.uint8),
                        rescale=rescale,
-                       rois=rois)
+                       rois=tensor_boxes)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def draw_boxes(disp_image, gt_boxes):
-    num_boxes = gt_boxes.shape[0]
+def draw_boxes(disp_image, boxes):
+    # xyxy format
+    num_boxes = boxes.shape[0]
     list_gt = range(num_boxes)
-    shuffle(list_gt)
     for i in list_gt:
         disp_image = _draw_single_box(disp_image,
-                                      gt_boxes[i, 0],
-                                      gt_boxes[i, 1],
-                                      gt_boxes[i, 2],
-                                      gt_boxes[i, 3],
-                                      None,
-                                      FONT,
+                                      boxes[i, 0],
+                                      boxes[i, 1],
+                                      boxes[i, 2],
+                                      boxes[i, 3],
+                                      display_str=None,
                                       color='Red')
     return disp_image
 
