@@ -93,6 +93,7 @@ def make_grid(I, ncols=8):
 
 
 def convert_to_HWC(tensor, input_format):  # tensor: numpy array
+    import numpy as np
     assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice."
     assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different"
     input_format = input_format.upper()
@@ -105,7 +106,10 @@ def convert_to_HWC(tensor, input_format):  # tensor: numpy array
 
     if len(input_format) == 3:
         index = [input_format.find(c) for c in 'HWC']
-        return tensor.transpose(index)
+        tensor_HWC = tensor.transpose(index)
+        if tensor_HWC.shape[2] == 1:
+            tensor_HWC = np.concatenate([tensor_HWC, tensor_HWC, tensor_HWC], 2)
+        return tensor_HWC
 
     if len(input_format) == 2:
         index = [input_format.find(c) for c in 'HW']
