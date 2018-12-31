@@ -416,7 +416,7 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            img_tensor: Default is :math:`(3, H, W)`. You can use ``torchvision.utils.make_grid()`` to 
+            img_tensor: Default is :math:`(3, H, W)`. You can use ``torchvision.utils.make_grid()`` to
             convert a batch of tensor into 3xHxW format or call ``add_images`` and let tensorboardX do the job.
             Tensor with :math:`(1, H, W)`, :math:`(H, W)`, :math:`(H, W, 3)` is also suitible as long as
             corresponding ``dataformats`` argument is passed. e.g. CHW, HWC, HW.
@@ -459,7 +459,7 @@ class SummaryWriter(object):
             img_tensor: Default is :math:`(3, H, W)`. It can be specified with ``dataformat`` agrument.
             e.g. CHW or HWC
 
-            box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of 
+            box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of
             boxes and each 4 elememts in a row represents (xmin, ymin, xmax, ymax).
         """
         if self._check_caffe2(img_tensor):
