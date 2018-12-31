@@ -416,7 +416,10 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            img_tensor: :math:`(3, H, W)`. Use ``torchvision.utils.make_grid()`` to prepare it is a good idea.
+            img_tensor: Default is :math:`(3, H, W)`. You can use ``torchvision.utils.make_grid()`` to
+            convert a batch of tensor into 3xHxW format or call ``add_images`` and let tensorboardX do the job.
+            Tensor with :math:`(1, H, W)`, :math:`(H, W)`, :math:`(H, W, 3)` is also suitible as long as
+            corresponding ``dataformats`` argument is passed. e.g. CHW, HWC, HW.
         """
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
@@ -434,7 +437,8 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            img_tensor: :math:`(N, 3, H, W)`.
+            img_tensor: Default is :math:`(N, 3, H, W)`. If ``dataformats`` is specified, other shape will be
+            accepted. e.g. NCHW or NHWC.
         """
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
@@ -443,7 +447,7 @@ class SummaryWriter(object):
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None,
                              walltime=None, dataformats='CHW', **kwargs):
-        """Add image boxes data to summary (useful for models such as Detectron).
+        """Add image and draw bounding boxes on the image.
 
         Args:
             tag (string): Data identifier
@@ -451,6 +455,12 @@ class SummaryWriter(object):
             box_tensor (torch.Tensor, numpy.array, or string/blobname): Box data (for detected objects)
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
+        Shape:
+            img_tensor: Default is :math:`(3, H, W)`. It can be specified with ``dataformat`` agrument.
+            e.g. CHW or HWC
+
+            box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of
+            boxes and each 4 elememts in a row represents (xmin, ymin, xmax, ymax).
         """
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
