@@ -65,6 +65,8 @@ class Node_py_IO(Node_py):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
         self.tensorSize = Node_cpp.type().sizes()
         self.kind = 'Parameter'
+        if input_or_output:
+            self.input_or_output = input_or_output
 
 
 class Node_py_OP(Node_py):
@@ -108,7 +110,8 @@ class Graph_py(object):
         for key, node in self.nodes_IO.items():
             if type(node) == Node_base:
                 self.uniqueNameToScopedName[key] = node.scope + '/' + node.uniqueName
-
+            if hasattr(node, 'input_or_output'):
+                self.uniqueNameToScopedName[key] = node.input_or_output + '/' + node.uniqueName
         # replace name
         # print(self.uniqueNameToScopedName)
         for key, node in self.nodes_IO.items():

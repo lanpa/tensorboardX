@@ -165,6 +165,26 @@ model = Net2()
 with SummaryWriter(comment='Net2') as w:
     w.add_graph(model, (dummy_input, ))
 
+
+class SiameseNetwork(nn.Module):
+    def __init__(self):
+        super(SiameseNetwork, self).__init__()
+        self.cnn1 = Net1()
+
+    def forward_once(self, x):
+        output = self.cnn1(x)
+        return output
+
+    def forward(self, input1, input2):
+        output1 = self.forward_once(input1)
+        output2 = self.forward_once(input2)
+        return output1, output2
+
+model = SiameseNetwork()
+with SummaryWriter(comment='SiameseNetwork') as w:
+    w.add_graph(model, (dummy_input, dummy_input))
+
+
 dummy_input = torch.Tensor(1, 3, 224, 224)
 
 with SummaryWriter(comment='alexnet') as w:

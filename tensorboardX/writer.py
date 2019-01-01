@@ -546,7 +546,7 @@ class SummaryWriter(object):
 
         Args:
             model (torch.nn.Module): model to draw.
-            input_to_model (torch.autograd.Variable): a variable or a tuple of
+            input_to_model (torch.Tensor or list of torch.Tensor): a variable or a tuple of
                 variables to be fed.
 
         """
