@@ -91,7 +91,8 @@ Check `<https://tensorboardx.readthedocs.io/en/latest/tensorboard.html#tensorboa
 
 Add graph
 ---------
-Graph drawing is based on ``torch.JIT``'s forward tracing. During tracing, an input tensor ``t`` with reasonable shape is fed to your model ``m``. After you have prepared ``m`` and ``t``, just call ``writer.add_graph(m, (t, ))`` to save the graph. See
+To visualize a model, you need a model ``m`` and the input ``t``. ``t`` can be a tensor or a list of tensors
+depending on your model. If error happens, make sure that ``m(t)`` runs without problem first. See
 `The graph demo <https://github.com/lanpa/tensorboardX/blob/master/examples/demo_graph.py>`_ for
 complete example.
 
