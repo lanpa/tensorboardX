@@ -40,3 +40,12 @@ class SummaryTest(unittest.TestCase):
     def test_image_with_one_channel(self):
         summary.image('dummy', np.random.rand(1, 32, 32).astype(np.float32), dataformats='CHW')
         summary.image('dummy', np.random.rand(32, 32).astype(np.float32), dataformats='HW')
+
+    def test_video(self):
+        summary.video('dummy', np.random.rand(16, 48, 1, 28, 28).astype(np.float32))
+
+    def test_audio(self):
+        summary.audio('dummy', np.random.rand(65535))
+
+    def test_text(self):
+        summary.text('dummy', 'text 123')
