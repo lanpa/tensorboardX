@@ -22,9 +22,6 @@ import subprocess
 import time
 
 import numpy as np
-# import tensorflow as tf
-
-from tensorboard.plugins.beholder import im_util
 
 
 class VideoWriter(object):
@@ -122,8 +119,12 @@ class PNGVideoOutput(VideoOutput):
 
     def emit_frame(self, np_array):
         filename = self.directory + '/{:05}.png'.format(self.frame_num)
-        im_util.write_image(np_array.astype(np.uint8), filename)
+        _write_image(np_array.astype(np.uint8), filename)
         self.frame_num += 1
+
+    def _write_image(im, filename):
+        from PIL import Image
+        Image.fromarray(im).save(filename)
 
     def close(self):
         pass
