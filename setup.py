@@ -43,7 +43,7 @@ test_requirements = [
 
 setup(
     name='tensorboardX',
-    version='1.5',
+    version='1.6',
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description=history,
     author='Tzu-Wei Huang',
@@ -74,5 +74,11 @@ setup(
     tests_require=test_requirements
 )
 
+
+# checklist: update History.rst readme.md
+# bump version number in setup.py
+# commit
+# add tag
 # python setup.py sdist bdist_wheel --universal
 # twine upload dist/*
+# push commit

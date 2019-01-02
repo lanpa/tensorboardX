@@ -1,5 +1,12 @@
 History
 =======
+1.6 (2019-01-02)
+-----------------
+* Many graph related bug is fixed in this version.
+* New function: add_images(). This function accepts 4D iamge tensor. See documentation.
+* Make add_image_with_boxes() usable.
+* API change: add_video now accepts BxTxCxHxW instead of BxCxTxHxW tensor.
+
 1.5 (2018-12-10)
 -----------------
 * Add API for Custom scalar

@@ -17,7 +17,7 @@ Write TensorBoard events with simple function call.
 
 ## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 0.4 / torchvision 0.2 / tensorboard 1.7.0
+Tested on anaconda2 / anaconda3, with PyTorch 1.0.0 / torchvision 0.2.1 / tensorboard 1.12.0
 
 `pip install tensorboardX`
 
