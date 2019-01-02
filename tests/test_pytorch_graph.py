@@ -2,7 +2,7 @@ import unittest
 import torch
 from tensorboardX import SummaryWriter
 
-class NumpyTest(unittest.TestCase):
+class PytorchGraphTest(unittest.TestCase):
     def test_pytorch_graph(self):
         dummy_input = (torch.zeros(1, 3),)
 
