@@ -3,6 +3,7 @@ To write tf_record into file. Here we use it for tensorboard's event writting.
 The code was borrowed from https://github.com/TeamHG-Memex/tensorboard_logger
 """
 
+import copy
 import io
 import os.path
 import re
