@@ -80,7 +80,9 @@ class S3RecordWriter(object):
     def flush(self):
         s3 = boto3.client('s3')
         bucket, path = self.bucket_and_path()
-        s3.upload_fileobj(self.buffer, bucket, path)
+        upload_buffer = copy.copy(self.buffer)
+        upload_buffer.seek(0)
+        s3.upload_fileobj(upload_buffer, bucket, path)
 
     def close(self):
         self.flush()
