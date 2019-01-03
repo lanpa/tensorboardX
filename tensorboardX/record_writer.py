@@ -71,7 +71,7 @@ class S3RecordWriter(object):
             path = path[len("s3://"):]
         bp = path.split("/")
         bucket = bp[0]
-        path = self.path[1 + len(bucket):]
+        path = path[1 + len(bucket):]
         return bucket, path
 
     def write(self, val):
