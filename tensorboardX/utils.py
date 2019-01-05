@@ -68,9 +68,12 @@ def _prepare_video(V):
 
 
 def make_grid(I, ncols=8):
+    # I: N1HW or N3HW
     import numpy as np
     assert isinstance(
         I, np.ndarray), 'plugin error, should pass numpy array here'
+    if I.shape[1] == 1:
+        I = np.concatenate([I, I, I], 1)
     assert I.ndim == 4 and I.shape[1] == 3
     nimg = I.shape[0]
     H = I.shape[2]
