@@ -3,6 +3,7 @@ To write tf_record into file. Here we use it for tensorboard's event writting.
 The code was borrowed from https://github.com/TeamHG-Memex/tensorboard_logger
 """
 
+import copy
 import io
 import os.path
 import re
@@ -71,7 +72,7 @@ class S3RecordWriter(object):
             path = path[len("s3://"):]
         bp = path.split("/")
         bucket = bp[0]
-        path = self.path[1 + len(bucket):]
+        path = path[1 + len(bucket):]
         return bucket, path
 
     def write(self, val):
@@ -80,7 +81,9 @@ class S3RecordWriter(object):
     def flush(self):
         s3 = boto3.client('s3')
         bucket, path = self.bucket_and_path()
-        s3.upload_fileobj(self.buffer, bucket, path)
+        upload_buffer = copy.copy(self.buffer)
+        upload_buffer.seek(0)
+        s3.upload_fileobj(upload_buffer, bucket, path)
 
     def close(self):
         self.flush()
