@@ -773,8 +773,6 @@ class SummaryWriter(object):
     def close(self):
         if self.file_writer is None:
             return  # ignore double close
-        self.file_writer.flush()
-        self.file_writer.close()
         for path, writer in self.all_writers.items():
             writer.flush()
             writer.close()
