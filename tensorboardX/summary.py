@@ -166,17 +166,19 @@ def make_histogram(values, bins, max_bins=None):
         new_limits[-1] = limits[-1]
         limits = new_limits
 
-    limits = limits[1:]
-
     # Find the first and the last bin defining the support of the histogram:
     cum_counts = np.cumsum(np.greater(counts, 0, dtype=np.int32))
     start, end = np.searchsorted(cum_counts, [0, cum_counts[-1] - 1], side="right")
-    start = int(start) - 1
+    start = int(start)
     end = int(end) + 1
     del cum_counts
 
-    counts = counts[start:end]
-    limits = limits[start:end]
+    # Tensorboard only includes the right bin limits. To still have the leftmost limit
+    # included, we include an empty bin left.
+    # If start == 0, we need to add an empty one left, otherwise we can just include the bin left to the
+    # first nonzero-count bin:
+    counts = counts[start - 1:end] if start > 0 else np.concatenate([[0], counts[:end]])
+    limits = limits[start:end + 1]
 
     if counts.size == 0 or limits.size == 0:
         raise ValueError('The histogram is empty, please file a bug report.')
