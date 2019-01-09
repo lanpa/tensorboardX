@@ -168,15 +168,12 @@ def make_histogram(values, bins, max_bins=None):
 
     limits = limits[1:]
 
-    for i, c in enumerate(counts):
-        if c > 0:
-            start = max(0, i - 1)
-            break
-
-    for i, c in enumerate(reversed(counts)):
-        if c > 0:
-            end = counts.size - i
-            break
+    # Find the first and the last bin defining the support of the histogram:
+    cum_counts = np.cumsum(np.greater(counts, 0, dtype=np.int32))
+    start, end = np.searchsorted(cum_counts, [0, cum_counts[-1] - 1], side="right")
+    start = int(start) - 1
+    end = int(end) + 1
+    del cum_counts
 
     counts = counts[start:end]
     limits = limits[start:end]
