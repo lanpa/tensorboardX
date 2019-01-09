@@ -123,7 +123,7 @@ def scalar(name, scalar, collections=None):
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
 
-def histogram(name, values, bins, collections=None):
+def histogram(name, values, bins, collections=None, max_bins=None):
     # pylint: disable=line-too-long
     """Outputs a `Summary` protocol buffer with a histogram.
     The generated
@@ -143,18 +143,31 @@ def histogram(name, values, bins, collections=None):
     """
     name = _clean_tag(name)
     values = make_np(values)
-    hist = make_histogram(values.astype(float), bins)
+    hist = make_histogram(values.astype(float), bins, max_bins)
     return Summary(value=[Summary.Value(tag=name, histo=hist)])
 
 
-def make_histogram(values, bins):
+def make_histogram(values, bins, max_bins=None):
     """Convert values into a histogram proto using logic from histogram.cc."""
     if values.size == 0:
         raise ValueError('The input has no element.')
     values = values.reshape(-1)
     counts, limits = np.histogram(values, bins=bins)
+    num_bins = len(counts)
+    if max_bins is not None and num_bins > max_bins:
+        subsampling = num_bins // max_bins
+        subsampling_remainder = num_bins % subsampling
+        if subsampling_remainder != 0:
+            counts = np.pad(counts, pad_width=[[0, subsampling - subsampling_remainder]],
+                            mode="constant", constant_values=0)
+        counts = counts.reshape(-1, subsampling).sum(axis=-1)
+        new_limits = np.empty((counts.size + 1,), limits.dtype)
+        new_limits[:-1] = limits[:-1:subsampling]
+        new_limits[-1] = limits[-1]
+        limits = new_limits
+
     limits = limits[1:]
-    # void Histogram::EncodeToProto in histogram.cc
+
     for i, c in enumerate(counts):
         if c > 0:
             start = max(0, i - 1)
