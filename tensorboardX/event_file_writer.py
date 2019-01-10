@@ -67,6 +67,7 @@ class EventsWriter(object):
     def flush(self):
         '''Flushes the event file to disk.'''
         self._num_outstanding_events = 0
+        self._py_recordio_writer.flush()
         return True
 
     def close(self):
@@ -109,6 +110,7 @@ class EventFileWriter(object):
         self._event_queue = six.moves.queue.Queue(max_queue)
         self._ev_writer = EventsWriter(os.path.join(
             self._logdir, "events"), filename_suffix)
+        self.flush_secs = flush_secs
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)
@@ -127,6 +129,10 @@ class EventFileWriter(object):
         """
         if self._closed:
             self._closed = False
+            self._worker = _EventLoggerThread(
+                self._event_queue, self._ev_writer,flush_secs
+            )
+            self._worker.start()
 
     def add_event(self, event):
         """Adds an event to the event file.
@@ -141,16 +147,19 @@ class EventFileWriter(object):
         Call this method to make sure that all pending events have been written to
         disk.
         """
-        self._event_queue.join()
-        self._ev_writer.flush()
+        if not self._closed:
+            self._event_queue.join()
+            self._ev_writer.flush()
 
     def close(self):
         """Flushes the event file to disk and close the file.
         Call this method when you do not need the summary writer anymore.
         """
-        self.flush()
-        self._ev_writer.close()
-        self._closed = True
+        if not self._closed:
+            self.flush()
+            self._worker.stop()
+            self._ev_writer.close()
+            self._closed = True
 
 
 class _EventLoggerThread(threading.Thread):
@@ -172,17 +181,35 @@ class _EventLoggerThread(threading.Thread):
         self._flush_secs = flush_secs
         # The first event will be flushed immediately.
         self._next_event_flush_time = 0
+        self.stop_event = threading.Event()
+
+    def stop(self):
+        self.stop_event.set()
+        self.join()
 
     def run(self):
-        while True:
-            event = self._queue.get()
+        while not self.stop_event.isSet():
+            # Here wait on the queue until an event appears, or till the next
+            # time to flush the writer, whichever is earlier. If we have an
+            # event, write it. If not, an empty queue exception will be raised
+            # and we can proceed to flush the writer.
+            now = time.time()
+            queue_wait_duration = self._next_event_flush_time - now
+            event = None
             try:
+                if queue_wait_duration > 0:
+                    event = self._queue.get(True, queue_wait_duration)
+                else:
+                    event = self._queue.get(False)
                 self._ev_writer.write_event(event)
-                # Flush the event writer every so often.
-                now = time.time()
-                if now > self._next_event_flush_time:
-                    self._ev_writer.flush()
-                    # Do it again in two minutes.
-                    self._next_event_flush_time = now + self._flush_secs
+            except six.moves.queue.Empty:
+                pass
             finally:
-                self._queue.task_done()
+                if event:
+                    self._queue.task_done()
+
+            now = time.time()
+            if now > self._next_event_flush_time:
+                self._ev_writer.flush()
+                # Do it again in flush_secs.
+                self._next_event_flush_time = now + self._flush_secs
