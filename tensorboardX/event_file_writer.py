@@ -124,9 +124,8 @@ class EventFileWriter(object):
     def reopen(self):
         """Reopens the EventFileWriter.
         Can be called after `close()` to add more events in the same directory.
-        The events will go into a new events file and a new periodic flushing
-        t
-        Does nothing if the EventFileWriter was not closed.
+        The events will go into a new events file and a new write/flush worker
+        is created. Does nothing if the EventFileWriter was not closed.
         """
         if self._closed:
             self._closed = False
