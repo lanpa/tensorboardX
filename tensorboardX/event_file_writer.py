@@ -124,13 +124,14 @@ class EventFileWriter(object):
     def reopen(self):
         """Reopens the EventFileWriter.
         Can be called after `close()` to add more events in the same directory.
-        The events will go into a new events file.
+        The events will go into a new events file and a new periodic flushing
+        t
         Does nothing if the EventFileWriter was not closed.
         """
         if self._closed:
             self._closed = False
             self._worker = _EventLoggerThread(
-                self._event_queue, self._ev_writer,flush_secs
+                self._event_queue, self._ev_writer, self.flush_secs
             )
             self._worker.start()
 
@@ -149,14 +150,13 @@ class EventFileWriter(object):
         """
         if not self._closed:
             self._event_queue.join()
-            self._ev_writer.flush()
 
     def close(self):
-        """Flushes the event file to disk and close the file.
-        Call this method when you do not need the summary writer anymore.
+        """Performs a final flush of the event file to disk, stops the
+        write/flush worker and closes the file. Call this method when you do not
+        need the summary writer anymore.
         """
         if not self._closed:
-            self.flush()
             self._worker.stop()
             self._ev_writer.close()
             self._closed = True
