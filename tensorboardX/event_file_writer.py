@@ -149,6 +149,7 @@ class EventFileWriter(object):
         """
         if not self._closed:
             self._event_queue.join()
+            self._ev_writer.flush()
 
     def close(self):
         """Performs a final flush of the event file to disk, stops the
@@ -156,6 +157,7 @@ class EventFileWriter(object):
         need the summary writer anymore.
         """
         if not self._closed:
+            self.flush()
             self._worker.stop()
             self._ev_writer.close()
             self._closed = True
