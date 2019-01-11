@@ -49,6 +49,8 @@ class EventsWriter(object):
 
         self._event.wall_time = time.time()
 
+        self._lock = threading.Lock()
+
         self.write_event(self._event)
 
     def write_event(self, event):
@@ -61,19 +63,22 @@ class EventsWriter(object):
         return self._write_serialized_event(event.SerializeToString())
 
     def _write_serialized_event(self, event_str):
-        self._num_outstanding_events += 1
-        self._py_recordio_writer.write(event_str)
+        with self._lock:
+            self._num_outstanding_events += 1
+            self._py_recordio_writer.write(event_str)
 
     def flush(self):
         '''Flushes the event file to disk.'''
-        self._num_outstanding_events = 0
-        self._py_recordio_writer.flush()
+        with self._lock:
+            self._num_outstanding_events = 0
+            self._py_recordio_writer.flush()
         return True
 
     def close(self):
         '''Call self.flush().'''
         return_value = self.flush()
-        self._py_recordio_writer.close()
+        with self._lock:
+            self._py_recordio_writer.close()
         return return_value
 
 
@@ -110,7 +115,7 @@ class EventFileWriter(object):
         self._event_queue = six.moves.queue.Queue(max_queue)
         self._ev_writer = EventsWriter(os.path.join(
             self._logdir, "events"), filename_suffix)
-        self.flush_secs = flush_secs
+        self._flush_secs = flush_secs
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)
@@ -130,7 +135,7 @@ class EventFileWriter(object):
         if self._closed:
             self._closed = False
             self._worker = _EventLoggerThread(
-                self._event_queue, self._ev_writer, self.flush_secs
+                self._event_queue, self._ev_writer, self._flush_secs
             )
             self._worker.start()
 
@@ -182,18 +187,19 @@ class _EventLoggerThread(threading.Thread):
         self._flush_secs = flush_secs
         # The first event will be flushed immediately.
         self._next_event_flush_time = 0
-        self.stop_event = threading.Event()
+        self._has_pending_events = False
+        self._shutdown_signal = object()
 
     def stop(self):
-        self.stop_event.set()
+        self._queue.put(self._shutdown_signal)
         self.join()
 
     def run(self):
-        while not self.stop_event.isSet():
-            # Here wait on the queue until an event appears, or till the next
-            # time to flush the writer, whichever is earlier. If we have an
-            # event, write it. If not, an empty queue exception will be raised
-            # and we can proceed to flush the writer.
+        # Here wait on the queue until an event appears, or till the next
+        # time to flush the writer, whichever is earlier. If we have an
+        # event, write it. If not, an empty queue exception will be raised
+        # and we can proceed to flush the writer.
+        while True:
             now = time.time()
             queue_wait_duration = self._next_event_flush_time - now
             event = None
@@ -202,7 +208,11 @@ class _EventLoggerThread(threading.Thread):
                     event = self._queue.get(True, queue_wait_duration)
                 else:
                     event = self._queue.get(False)
+
+                if event == self._shutdown_signal:
+                    return
                 self._ev_writer.write_event(event)
+                self._has_pending_events = True
             except six.moves.queue.Empty:
                 pass
             finally:
@@ -211,6 +221,11 @@ class _EventLoggerThread(threading.Thread):
 
             now = time.time()
             if now > self._next_event_flush_time:
-                self._ev_writer.flush()
+                if self._has_pending_events:
+                    # Small optimization - if there are no pending events,
+                    # there's no need to flush, since each flush can be
+                    # expensive (e.g. uploading a new file to a server).
+                    self._ev_writer.flush()
+                    self._has_pending_events = False
                 # Do it again in flush_secs.
                 self._next_event_flush_time = now + self._flush_secs
