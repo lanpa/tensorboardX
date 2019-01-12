@@ -119,10 +119,10 @@ class PNGVideoOutput(VideoOutput):
 
     def emit_frame(self, np_array):
         filename = self.directory + '/{:05}.png'.format(self.frame_num)
-        _write_image(np_array.astype(np.uint8), filename)
+        self._write_image(np_array.astype(np.uint8), filename)
         self.frame_num += 1
 
-    def _write_image(im, filename):
+    def _write_image(self, im, filename):
         from PIL import Image
         Image.fromarray(im).save(filename)
 
@@ -183,8 +183,8 @@ class FFmpegVideoOutput(VideoOutput):
     def _handle_error(self):
         _, stderr = self.ffmpeg.communicate()
         bar = '=' * 40
-        print('Error writing to FFmpeg:\n%s\n%s\n%s',
-              bar, stderr.rstrip('\n'), bar)
+        print('Error writing to FFmpeg:\n{}\n{}\n{}',
+              bar, stderr, bar)
 
     def emit_frame(self, np_array):
         try:
