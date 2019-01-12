@@ -40,6 +40,7 @@ install:
   - pip install requests -q
   - pip install codecov
   - pip install onnx
+  - pip install boto3
   - conda install ffmpeg
   - conda list
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
