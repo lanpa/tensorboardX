@@ -10,7 +10,7 @@ def make_tsv(metadata, save_path, metadata_header=None):
         metadata = ['\t'.join(str(e) for e in l)
                     for l in [metadata_header] + metadata]
 
-    with open(os.path.join(save_path, 'metadata.tsv'), 'w') as f:
+    with open(os.path.join(save_path, 'metadata.tsv'), 'w', encoding='utf8') as f:
         for x in metadata:
             f.write(x + '\n')
 
