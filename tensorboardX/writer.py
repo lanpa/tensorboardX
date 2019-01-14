@@ -387,7 +387,7 @@ class SummaryWriter(object):
             json.dump(self.scalar_dict, f)
         self.scalar_dict = {}
 
-    def add_histogram(self, tag, values, global_step=None, bins='tensorflow', walltime=None):
+    def add_histogram(self, tag, values, global_step=None, bins='tensorflow', walltime=None, max_bins=None):
         """Add histogram to summary.
 
         Args:
@@ -403,7 +403,7 @@ class SummaryWriter(object):
         if isinstance(bins, six.string_types) and bins == 'tensorflow':
             bins = self.default_bins
         self.file_writer.add_summary(
-            histogram(tag, values, bins), global_step, walltime)
+            histogram(tag, values, bins, max_bins=max_bins), global_step, walltime)
 
     def add_image(self, tag, img_tensor, global_step=None, walltime=None, dataformats='CHW'):
         """Add image data to summary.
@@ -773,8 +773,6 @@ class SummaryWriter(object):
     def close(self):
         if self.file_writer is None:
             return  # ignore double close
-        self.file_writer.flush()
-        self.file_writer.close()
         for path, writer in self.all_writers.items():
             writer.flush()
             writer.close()

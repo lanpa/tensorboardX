@@ -123,7 +123,7 @@ def scalar(name, scalar, collections=None):
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
 
-def histogram(name, values, bins, collections=None):
+def histogram(name, values, bins, max_bins=None):
     # pylint: disable=line-too-long
     """Outputs a `Summary` protocol buffer with a histogram.
     The generated
@@ -135,38 +135,48 @@ def histogram(name, values, bins, collections=None):
         TensorBoard.
       values: A real numeric `Tensor`. Any shape. Values to use to
         build the histogram.
-      collections: Optional list of graph collections keys. The new summary op is
-        added to these collections. Defaults to `[GraphKeys.SUMMARIES]`.
     Returns:
       A scalar `Tensor` of type `string`. The serialized `Summary` protocol
       buffer.
     """
     name = _clean_tag(name)
     values = make_np(values)
-    hist = make_histogram(values.astype(float), bins)
+    hist = make_histogram(values.astype(float), bins, max_bins)
     return Summary(value=[Summary.Value(tag=name, histo=hist)])
 
 
-def make_histogram(values, bins):
+def make_histogram(values, bins, max_bins=None):
     """Convert values into a histogram proto using logic from histogram.cc."""
     if values.size == 0:
         raise ValueError('The input has no element.')
     values = values.reshape(-1)
     counts, limits = np.histogram(values, bins=bins)
-    limits = limits[1:]
-    # void Histogram::EncodeToProto in histogram.cc
-    for i, c in enumerate(counts):
-        if c > 0:
-            start = max(0, i - 1)
-            break
+    num_bins = len(counts)
+    if max_bins is not None and num_bins > max_bins:
+        subsampling = num_bins // max_bins
+        subsampling_remainder = num_bins % subsampling
+        if subsampling_remainder != 0:
+            counts = np.pad(counts, pad_width=[[0, subsampling - subsampling_remainder]],
+                            mode="constant", constant_values=0)
+        counts = counts.reshape(-1, subsampling).sum(axis=-1)
+        new_limits = np.empty((counts.size + 1,), limits.dtype)
+        new_limits[:-1] = limits[:-1:subsampling]
+        new_limits[-1] = limits[-1]
+        limits = new_limits
 
-    for i, c in enumerate(reversed(counts)):
-        if c > 0:
-            end = counts.size - i
-            break
+    # Find the first and the last bin defining the support of the histogram:
+    cum_counts = np.cumsum(np.greater(counts, 0, dtype=np.int32))
+    start, end = np.searchsorted(cum_counts, [0, cum_counts[-1] - 1], side="right")
+    start = int(start)
+    end = int(end) + 1
+    del cum_counts
 
-    counts = counts[start:end]
-    limits = limits[start:end]
+    # Tensorboard only includes the right bin limits. To still have the leftmost limit
+    # included, we include an empty bin left.
+    # If start == 0, we need to add an empty one left, otherwise we can just include the bin left to the
+    # first nonzero-count bin:
+    counts = counts[start - 1:end] if start > 0 else np.concatenate([[0], counts[:end]])
+    limits = limits[start:end + 1]
 
     if counts.size == 0 or limits.size == 0:
         raise ValueError('The histogram is empty, please file a bug report.')
