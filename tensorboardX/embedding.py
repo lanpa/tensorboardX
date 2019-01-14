@@ -9,10 +9,15 @@ def make_tsv(metadata, save_path, metadata_header=None):
             'len of header must be equal to the number of columns in metadata'
         metadata = ['\t'.join(str(e) for e in l)
                     for l in [metadata_header] + metadata]
-
-    with open(os.path.join(save_path, 'metadata.tsv'), 'w', encoding='utf8') as f:
-        for x in metadata:
-            f.write(x + '\n')
+    import sys
+    if sys.version_info[0] == 3:
+        with open(os.path.join(save_path, 'metadata.tsv'), 'w', encoding='utf8') as f:
+            for x in metadata:
+                f.write(x + '\n')
+    else:
+        with open(os.path.join(save_path, 'metadata.tsv'), 'wb') as f:
+            for x in metadata:
+                f.write((x + '\n').encode('utf-8'))
 
 
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
