@@ -49,3 +49,8 @@ class SummaryTest(unittest.TestCase):
 
     def test_text(self):
         summary.text('dummy', 'text 123')
+
+    def test_histogram(self):
+        summary.histogram('dummy', np.random.rand(1024), bins='auto', max_bins=5)
+        summary.histogram('dummy', np.random.rand(1024), bins='fd', max_bins=5)
+        summary.histogram('dummy', np.random.rand(1024), bins='doane', max_bins=5)

@@ -123,7 +123,7 @@ def scalar(name, scalar, collections=None):
     return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
 
-def histogram(name, values, bins, collections=None, max_bins=None):
+def histogram(name, values, bins, max_bins=None):
     # pylint: disable=line-too-long
     """Outputs a `Summary` protocol buffer with a histogram.
     The generated
@@ -135,8 +135,6 @@ def histogram(name, values, bins, collections=None, max_bins=None):
         TensorBoard.
       values: A real numeric `Tensor`. Any shape. Values to use to
         build the histogram.
-      collections: Optional list of graph collections keys. The new summary op is
-        added to these collections. Defaults to `[GraphKeys.SUMMARIES]`.
     Returns:
       A scalar `Tensor` of type `string`. The serialized `Summary` protocol
       buffer.
