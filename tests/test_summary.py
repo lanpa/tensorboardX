@@ -39,6 +39,8 @@ class SummaryTest(unittest.TestCase):
 
     def test_image_with_one_channel(self):
         summary.image('dummy', np.random.rand(1, 32, 32).astype(np.float32), dataformats='CHW')
+        summary.image('dummy', np.random.rand(4, 1, 32, 32).astype(np.float32), dataformats='NCHW')
+        summary.image('dummy', np.random.rand(4, 3, 32, 32).astype(np.float32), dataformats='NCHW')
         summary.image('dummy', np.random.rand(32, 32).astype(np.float32), dataformats='HW')
 
     def test_video(self):

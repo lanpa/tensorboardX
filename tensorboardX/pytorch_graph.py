@@ -37,7 +37,7 @@ class Node_base(object):
 
 class Node_py(Node_base):
     def __init__(self, Node_cpp, valid_mothods):
-        super(Node_py, self).__init__(Node_py)
+        super(Node_py, self).__init__(Node_cpp)
         self.valid_mothods = valid_mothods[:]
         self.inputs = []
 
@@ -63,10 +63,15 @@ class Node_py(Node_base):
 class Node_py_IO(Node_py):
     def __init__(self, Node_cpp, input_or_output=None):
         super(Node_py_IO, self).__init__(Node_cpp, methods_IO)
-        self.tensorSize = Node_cpp.type().sizes()
+        try:
+            tensorsize = Node_cpp.type().sizes()
+        except RuntimeError:
+            tensorsize = [1, ]  # fail when constant model is used.
+        self.tensorSize = tensorsize
         self.kind = 'Parameter'
         if input_or_output:
             self.input_or_output = input_or_output
+            self.kind = 'IO Node'
 
 
 class Node_py_OP(Node_py):
@@ -81,6 +86,8 @@ class Graph_py(object):
         self.nodes_OP = []
         self.nodes_IO = OrderedDict()
         self.uniqueNameToScopedName = {}
+        self.shallowestScopeName = 'default'
+        self.scope_name_appeared = []
 
     def append(self, x):
         if type(x) == Node_py_IO:
@@ -88,6 +95,7 @@ class Graph_py(object):
         if type(x) == Node_py_OP:
             self.nodes_OP.append(x)
             for node_output, outputSize in zip(x.outputs, x.outputsTensorSize):
+                self.scope_name_appeared.append(x.scopeName)
                 self.nodes_IO[node_output] = Node_base(node_output,
                                                        x.inputs,
                                                        x.scopeName,
@@ -102,16 +110,24 @@ class Graph_py(object):
         for key in self.nodes_IO:
             print(self.nodes_IO[key])
 
+    def findCommonRoot(self):
+        for fullscope in self.scope_name_appeared:
+            if fullscope:
+                self.shallowestScopeName = fullscope.split('/')[0]
+
     def populate_namespace_from_OP_to_IO(self):
         for node in self.nodes_OP:
             for input_node_id in node.inputs:
-                self.uniqueNameToScopedName[input_node_id] = node.scopeName + '/' + input_node_id
+                    self.uniqueNameToScopedName[input_node_id] = node.scopeName + '/' + input_node_id
 
         for key, node in self.nodes_IO.items():
             if type(node) == Node_base:
                 self.uniqueNameToScopedName[key] = node.scope + '/' + node.uniqueName
             if hasattr(node, 'input_or_output'):
                 self.uniqueNameToScopedName[key] = node.input_or_output + '/' + node.uniqueName
+            if hasattr(node, 'scope'):
+                if node.scope == '' and self.shallowestScopeName:
+                    self.uniqueNameToScopedName[node.uniqueName] = self.shallowestScopeName + '/' + node.uniqueName
         # replace name
         # print(self.uniqueNameToScopedName)
         for key, node in self.nodes_IO.items():
@@ -162,60 +178,15 @@ def parse(graph, args=None, omit_useless_nodes=True):
 
     for node in graph.outputs():  # must place last.
         Node_py_IO(node, 'output')
+    nodes_py.findCommonRoot()
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
 
 
 def graph(model, args, verbose=False, omit_useless_nodes=True):
     import torch
-    from torch.onnx.utils import OperatorExportTypes
-    from torch.onnx import utils
-
-    def _optimize_trace(trace, operator_export_type):
-        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
-
-    def _optimize_graph(graph, operator_export_type):
-        # torch._C._jit_pass_remove_inplace_ops(graph)
-        # we record now record some ops like ones/zeros
-        # into a trace where we previously recorded constants
-        # use constant prop to maintain our current level of onnx support
-        # without implementing symbolics for all of them
-        torch._C._jit_pass_constant_propagation(graph)
-        torch.onnx.utils._split_tensor_list_constants(graph, graph)
-        # run dce to eliminate dead parts of the graph that might have been
-        # left behind by things like symbolic_override
-        torch._C._jit_pass_dce(graph)
-        torch._C._jit_pass_lint(graph)
-
-        # torch._C._jit_pass_canonicalize_ops(graph)
-        torch._C._jit_pass_lint(graph)
-
-        torch._C._jit_pass_peephole(graph, True)
-        torch._C._jit_pass_lint(graph)
-
-        # onnx only supports tensors, but 1 / 2 = 0.5 and tensor(1) / tensor(2) = 0
-        torch._C._jit_pass_prepare_division_for_onnx(graph)
-        # onnx only supports tensors, so we turn all out number types into tensors
-        torch._C._jit_pass_erase_number_types(graph)
-        # onnx does not support tuples, so try to remove them
-        torch._C._jit_pass_lower_all_tuples(graph)
-        torch._C._jit_pass_peephole(graph, True)
-        torch._C._jit_pass_lint(graph)
-
-        if operator_export_type != OperatorExportTypes.RAW:
-            graph = torch._C._jit_pass_onnx(graph, operator_export_type)
-            torch._C._jit_pass_lint(graph)
-            # torch._C._jit_pass_onnx_peephole(graph)
-            torch._C._jit_pass_lint(graph)
-        torch._C._jit_pass_dce(graph)
-        torch._C._jit_pass_lint(graph)
-        torch._C._jit_pass_fixup_onnx_loops(graph)
-        torch._C._jit_pass_lint(graph)
-        graph = torch._C._jit_pass_canonicalize(graph)
-        torch._C._jit_pass_lint(graph)
-        return graph
-
-    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0")
+    assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0"),\
+        'This version of tensorboardX requires pytorch>=1.0.0.'
 
     with torch.onnx.set_training(model, False):
         try:
@@ -232,7 +203,7 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
 
-    _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
+    torch.onnx._optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
 
     graph = trace.graph()
     if verbose:

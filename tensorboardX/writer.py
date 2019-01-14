@@ -427,7 +427,7 @@ class SummaryWriter(object):
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_images(self, tag, img_tensor, global_step=None, walltime=None, dataformats='NCHW'):
-        """Add image data to summary.
+        """Add batched image data to summary.
 
         Note that this requires the ``pillow`` package.
 
