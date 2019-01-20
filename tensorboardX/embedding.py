@@ -23,20 +23,21 @@ def make_tsv(metadata, save_path, metadata_header=None):
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
     import math
-    import torch
-    import torchvision
+    import numpy as np
     from .x2num import make_np
+    from .utils import make_grid
+    from PIL import Image
     # this ensures the sprite image has correct dimension as described in
     # https://www.tensorflow.org/get_started/embedding_viz
     nrow = int(math.ceil((label_img.size(0)) ** 0.5))
+    arranged_img_CHW = make_grid(make_np(label_img), ncols=nrow)
 
-    label_img = torch.from_numpy(make_np(label_img))  # for other framework
     # augment images so that #images equals nrow*nrow
-    label_img = torch.cat((label_img, torch.randn(
-        nrow ** 2 - label_img.size(0), *label_img.size()[1:]) * 255), 0)
-
-    torchvision.utils.save_image(label_img, os.path.join(
-        save_path, 'sprite.png'), nrow=nrow, padding=0)
+    arranged_augment_square_HWC = np.ndarray((arranged_img_CHW.shape[2], arranged_img_CHW.shape[2], 3))
+    arranged_img_HWC = arranged_img_CHW.transpose(1, 2, 0)  # chw -> hwc
+    arranged_augment_square_HWC[:arranged_img_HWC.shape[0], :, :] = arranged_img_HWC
+    im = Image.fromarray(np.uint8((arranged_augment_square_HWC * 255).clip(0, 255)))
+    im.save(os.path.join(save_path, 'sprite.png'))
 
 
 def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
