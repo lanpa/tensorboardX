@@ -29,7 +29,11 @@ class SummaryWriterTest(unittest.TestCase):
 
 
     def test_pathlib(self):
-        import pathlib
+        import sys
+        if sys.version_info.major == 2:
+            import pathlib2 as pathlib
+        else:
+            import pathlib
         p = pathlib.Path('./pathlibtest')
         with SummaryWriter(p) as writer:
             writer.add_scalar('test', 1)
