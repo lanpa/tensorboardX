@@ -21,3 +21,15 @@ class SummaryWriterTest(unittest.TestCase):
             passed = False
 
         assert passed
+
+
+    def test_windowsPath(self):
+        with SummaryWriter("C:\\Downloads") as writer:
+            writer.add_scalar('test', 1)
+
+
+    def test_pathlib(self):
+        import pathlib
+        p = pathlib.Path('./pathlibtest')
+        with SummaryWriter(p) as writer:
+            writer.add_scalar('test', 1)
