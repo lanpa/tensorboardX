@@ -197,6 +197,7 @@ class FileWriter(SummaryToEventTransformer):
             pending events and summaries to disk.
           graph_def: DEPRECATED: Use the `graph` argument instead.
         """
+        logdir = str(logdir)
         event_writer = EventFileWriter(
             logdir, max_queue, flush_secs, filename_suffix)
         super(FileWriter, self).__init__(event_writer, graph, graph_def)
