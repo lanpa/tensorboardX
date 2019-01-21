@@ -60,8 +60,8 @@ def _prepare_video(V):
     n_rows = 2**((b.bit_length() - 1) // 2)
     n_cols = b // n_rows
 
-    V = np.reshape(V, newshape=(n_rows, n_cols, c, t, h, w))
-    V = np.transpose(V, axes=(3, 0, 4, 1, 5, 2))
+    V = np.reshape(V, newshape=(n_rows, n_cols, t, c, h, w))
+    V = np.transpose(V, axes=(2, 0, 4, 1, 5, 3))
     V = np.reshape(V, newshape=(t, n_rows * h, n_cols * w, c))
 
     return V
