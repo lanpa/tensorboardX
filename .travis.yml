@@ -52,6 +52,7 @@ install:
 
 script:
   - visdom &
+  - sleep 5
   - python -c "import visdom; v = visdom.Visdom()"
   - py.test --cov=tensorboardX tests/
   - python examples/demo.py
