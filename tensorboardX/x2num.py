@@ -8,6 +8,8 @@ import six
 
 
 def make_np(x):
+    if isinstance(x, list):
+        return np.array(x)
     if isinstance(x, np.ndarray):
         return x
     if isinstance(x, six.string_types):  # Caffe2 will pass name of blob(s) to fetch
