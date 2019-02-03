@@ -30,11 +30,9 @@ from .pytorch_graph import graph
 from .proto import event_pb2
 from .proto import summary_pb2
 from .proto import graph_pb2
-from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video, custom_scalars
+from .proto.event_pb2 import SessionLog, Event
+from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video, custom_scalars, image_boxes
 from .utils import figure_to_image
-from tensorboardX.proto.event_pb2 import SessionLog
-from tensorboardX.proto.event_pb2 import Event
-from tensorboardX.summary import image_boxes
 
 
 class SummaryToEventTransformer(object):
