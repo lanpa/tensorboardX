@@ -35,7 +35,7 @@ sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').stri
 version_git = version + '+' + sha[:7]
 
 with open('tensorboardX/__init__.py', 'a') as f:
-    f.write('\n__version__ = "{}"'.format(version_git))
+    f.write('\n__version__ = "{}"\n'.format(version_git))
 
 
 requirements = [
