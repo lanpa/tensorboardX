@@ -13,7 +13,7 @@ matrix:
   include:
     env: PYTORCH_VER="torch"
   allow_failures:
-    env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+    - env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
 install:
   - sudo apt-get update
