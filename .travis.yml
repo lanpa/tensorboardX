@@ -9,11 +9,11 @@ env:
   global:
     - MPLBACKEND=Agg
     - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
-  matrix:
-    include:
-      - PYTORCH_VER="torch"
-    allow_failures:
-      - PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+matrix:
+  include:
+    env: PYTORCH_VER="torch"
+  allow_failures:
+    env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
 install:
   - sudo apt-get update
