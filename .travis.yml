@@ -6,10 +6,6 @@ python:
   - "3.6"
 
 env:
-  global:
-    - MPLBACKEND=Agg
-    - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
-env:
   - PYTORCH_VER="torch"
   - PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
@@ -18,6 +14,9 @@ matrix:
     - env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
 install:
+  - MPLBACKEND=Agg
+  - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
+
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
