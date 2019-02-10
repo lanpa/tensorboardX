@@ -30,6 +30,14 @@ class PostInstallCommand(install):
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+version = '1.6'
+sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+version_git = version + '+' + sha[:7]
+
+with open('tensorboardX/__init__.py', 'a') as f:
+    f.write('\n__version__ = "{}"\n'.format(version_git))
+
+
 requirements = [
     'numpy',
     'protobuf >= 3.2.0',
@@ -43,7 +51,7 @@ test_requirements = [
 
 setup(
     name='tensorboardX',
-    version='1.6',
+    version=version,
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description=history,
     author='Tzu-Wei Huang',
