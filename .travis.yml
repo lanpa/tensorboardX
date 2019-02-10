@@ -6,10 +6,17 @@ python:
   - "3.6"
 
 env:
-  global:
-    - MPLBACKEND=Agg
-    - CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
+  - PYTORCH_VER="torch"
+  - PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+
+matrix:
+  allow_failures:
+    - env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+
 install:
+  - export MPLBACKEND=Agg
+  - export CODECOV_TOKEN="26239910-fe4e-463d-aa3d-e662e9bf39ef"
+
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
@@ -35,7 +42,7 @@ install:
   - pip install chainer -q
   - pip install torchvision -q
   - pip uninstall torch -y
-  - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+  - pip install $PYTORCH_VER
   - pip install moviepy==0.2.3.2 -q
   - pip install matplotlib -q
   - pip install requests -q
