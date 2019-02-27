@@ -285,7 +285,6 @@ class SummaryWriter(object):
             v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
 
-        # {writer_id : [[timestamp, step, value],...],...}
         self.scalar_dict = {}
 
         # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
