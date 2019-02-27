@@ -29,9 +29,11 @@ from .onnx_graph import gg
 from .pytorch_graph import graph
 from .proto import event_pb2
 from .proto import summary_pb2
-from .proto import graph_pb2
 from .proto.event_pb2 import SessionLog, Event
-from .summary import scalar, histogram, image, audio, text, pr_curve, pr_curve_raw, video, custom_scalars, image_boxes
+from .summary import (
+    scalar, histogram, histogram_raw, image, audio, text,
+    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes
+)
 from .utils import figure_to_image
 
 
@@ -266,16 +268,12 @@ class SummaryWriter(object):
             log_dir = os.path.join(
                 'runs', current_time + '_' + socket.gethostname() + comment)
         self.log_dir = log_dir
+        self.kwargs = kwargs
 
-        if 'purge_step' in kwargs.keys():
-            most_recent_step = kwargs.pop('purge_step')
-            self.file_writer = FileWriter(logdir=log_dir, **kwargs)
-            self.file_writer.add_event(
-                Event(step=most_recent_step, file_version='brain.Event:2'))
-            self.file_writer.add_event(
-                Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
-        else:
-            self.file_writer = FileWriter(logdir=log_dir, **kwargs)
+        # Initialize the file writers, but they can be cleared out on close
+        # and recreated later as needed.
+        self.file_writer = self.all_writers = None
+        self.get_file_writer()
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
         v = 1E-12
@@ -287,8 +285,6 @@ class SummaryWriter(object):
             v *= 1.1
         self.default_bins = neg_buckets[::-1] + [0] + buckets
 
-        self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
-        # {writer_id : [[timestamp, step, value],...],...}
         self.scalar_dict = {}
 
         # TODO (ml7): Remove try-except when PyTorch 1.0 merges PyTorch and Caffe2
@@ -326,6 +322,21 @@ class SummaryWriter(object):
         # TODO (ml7): Remove caffe2_enabled check when PyTorch 1.0 merges PyTorch and Caffe2
         return self.caffe2_enabled and isinstance(item, six.string_types)
 
+    def get_file_writer(self):
+        """Returns the default FileWriter instance. Recreates it if closed."""
+        if self.all_writers is None or self.file_writer is None:
+            if 'purge_step' in self.kwargs.keys():
+                most_recent_step = self.kwargs.pop('purge_step')
+                self.file_writer = FileWriter(logdir=self.log_dir, **self.kwargs)
+                self.file_writer.add_event(
+                    Event(step=most_recent_step, file_version='brain.Event:2'))
+                self.file_writer.add_event(
+                    Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
+            else:
+                self.file_writer = FileWriter(logdir=self.log_dir, **self.kwargs)
+            self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
+        return self.file_writer
+
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
         """Add scalar data to summary.
 
@@ -337,7 +348,7 @@ class SummaryWriter(object):
         """
         if self._check_caffe2(scalar_value):
             scalar_value = workspace.FetchBlob(scalar_value)
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             scalar(tag, scalar_value), global_step, walltime)
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None, walltime=None):
@@ -360,7 +371,7 @@ class SummaryWriter(object):
             # 'run_14h' in TensorBoard's scalar section.
         """
         walltime = time.time() if walltime is None else walltime
-        fw_logdir = self.file_writer.get_logdir()
+        fw_logdir = self.get_file_writer().get_logdir()
         for tag, scalar_value in tag_scalar_dict.items():
             fw_tag = fw_logdir + "/" + main_tag + "/" + tag
             if fw_tag in self.all_writers.keys():
@@ -401,8 +412,38 @@ class SummaryWriter(object):
             values = workspace.FetchBlob(values)
         if isinstance(bins, six.string_types) and bins == 'tensorflow':
             bins = self.default_bins
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             histogram(tag, values, bins, max_bins=max_bins), global_step, walltime)
+
+    def add_histogram_raw(self, tag, min, max, num, sum, sum_squares,
+                          bucket_limits, bucket_counts, global_step=None,
+                          walltime=None):
+        """Adds histogram with raw data.
+
+        Args:
+            tag (string): Data identifier
+            min (float or int): Min value
+            max (float or int): Max value
+            num (int): Number of values
+            sum (float or int): Sum of all values
+            sum_squares (float or int): Sum of squares for all values
+            bucket_limits (torch.Tensor, numpy.array): Upper value per bucket
+            bucket_counts (torch.Tensor, numpy.array): Number of values per bucket
+            global_step (int): Global step value to record
+            walltime (float): Optional override default walltime (time.time()) of event
+            see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/histogram/README.md
+        """
+        self.get_file_writer().add_summary(
+            histogram_raw(tag,
+                          min,
+                          max,
+                          num,
+                          sum,
+                          sum_squares,
+                          bucket_limits,
+                          bucket_counts),
+            global_step,
+            walltime)
 
     def add_image(self, tag, img_tensor, global_step=None, walltime=None, dataformats='CHW'):
         """Add image data to summary.
@@ -422,7 +463,7 @@ class SummaryWriter(object):
         """
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_images(self, tag, img_tensor, global_step=None, walltime=None, dataformats='NCHW'):
@@ -441,7 +482,7 @@ class SummaryWriter(object):
         """
         if self._check_caffe2(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None,
@@ -465,7 +506,7 @@ class SummaryWriter(object):
             img_tensor = workspace.FetchBlob(img_tensor)
         if self._check_caffe2(box_tensor):
             box_tensor = workspace.FetchBlob(box_tensor)
-        self.file_writer.add_summary(image_boxes(
+        self.get_file_writer().add_summary(image_boxes(
             tag, img_tensor, box_tensor, dataformats=dataformats, **kwargs), global_step, walltime)
 
     def add_figure(self, tag, figure, global_step=None, close=True, walltime=None):
@@ -499,7 +540,7 @@ class SummaryWriter(object):
         Shape:
             vid_tensor: :math:`(N, T, C, H, W)`.
         """
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             video(tag, vid_tensor, fps), global_step, walltime)
 
     def add_audio(self, tag, snd_tensor, global_step=None, sample_rate=44100, walltime=None):
@@ -516,7 +557,7 @@ class SummaryWriter(object):
         """
         if self._check_caffe2(snd_tensor):
             snd_tensor = workspace.FetchBlob(snd_tensor)
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             audio(tag, snd_tensor, sample_rate=sample_rate), global_step, walltime)
 
     def add_text(self, tag, text_string, global_step=None, walltime=None):
@@ -532,11 +573,11 @@ class SummaryWriter(object):
             writer.add_text('lstm', 'This is an lstm', 0)
             writer.add_text('rnn', 'This is an rnn', 10)
         """
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             text(tag, text_string), global_step, walltime)
 
     def add_onnx_graph(self, prototxt):
-        self.file_writer.add_onnx_graph(gg(prototxt))
+        self.get_file_writer().add_onnx_graph(gg(prototxt))
 
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
@@ -562,7 +603,7 @@ class SummaryWriter(object):
                 if not hasattr(torch.autograd.Variable, 'grad_fn'):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
-            self.file_writer.add_graph(graph(model, input_to_model, verbose))
+            self.get_file_writer().add_graph(graph(model, input_to_model, verbose))
         else:
             # Caffe2 models do not have the 'forward' method
             if not self.caffe2_enabled:
@@ -589,7 +630,7 @@ class SummaryWriter(object):
                     model, **kwargs)
             event = event_pb2.Event(
                 graph_def=current_graph.SerializeToString())
-            self.file_writer.add_event(event)
+            self.get_file_writer().add_event(event)
 
     @staticmethod
     def _encode(rawstr):
@@ -642,7 +683,7 @@ class SummaryWriter(object):
         # Maybe we should encode the tag so slashes don't trip us up?
         # I don't think this will mess us up, but better safe than sorry.
         subdir = "%s/%s" % (str(global_step).zfill(5), self._encode(tag))
-        save_path = os.path.join(self.file_writer.get_logdir(), subdir)
+        save_path = os.path.join(self.get_file_writer().get_logdir(), subdir)
         try:
             os.makedirs(save_path)
         except OSError:
@@ -659,7 +700,7 @@ class SummaryWriter(object):
         make_mat(mat, save_path)
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img,
-                     self.file_writer.get_logdir(), subdir, global_step, tag)
+                     self.get_file_writer().get_logdir(), subdir, global_step, tag)
 
     def add_pr_curve(self, tag, labels, predictions, global_step=None,
                      num_thresholds=127, weights=None, walltime=None):
@@ -677,7 +718,7 @@ class SummaryWriter(object):
         """
         from .x2num import make_np
         labels, predictions = make_np(labels), make_np(predictions)
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             pr_curve(tag, labels, predictions, num_thresholds, weights),
             global_step, walltime)
 
@@ -706,7 +747,7 @@ class SummaryWriter(object):
             walltime (float): Optional override default walltime (time.time()) of event
             see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/README.md
         """
-        self.file_writer.add_summary(
+        self.get_file_writer().add_summary(
             pr_curve_raw(tag,
                          true_positive_counts,
                          false_positive_counts,
@@ -731,7 +772,7 @@ class SummaryWriter(object):
             writer.add_custom_scalars_multilinechart(['twse/0050', 'twse/2330'])
         """
         layout = {category: {title: ['Multiline', tags]}}
-        self.file_writer.add_summary(custom_scalars(layout))
+        self.get_file_writer().add_summary(custom_scalars(layout))
 
     def add_custom_scalars_marginchart(self, tags, category='default', title='untitled'):
         """Shorthand for creating marginchart. Similar to ``add_custom_scalars()``, but the only necessary argument
@@ -746,7 +787,7 @@ class SummaryWriter(object):
         """
         assert len(tags) == 3
         layout = {category: {title: ['Margin', tags]}}
-        self.file_writer.add_summary(custom_scalars(layout))
+        self.get_file_writer().add_summary(custom_scalars(layout))
 
     def add_custom_scalars(self, layout):
         """Create special chart by collecting charts tags in 'scalars'. Note that this function can only be called once
@@ -767,12 +808,12 @@ class SummaryWriter(object):
 
             writer.add_custom_scalars(layout)
         """
-        self.file_writer.add_summary(custom_scalars(layout))
+        self.get_file_writer().add_summary(custom_scalars(layout))
 
     def close(self):
-        if self.file_writer is None:
+        if self.all_writers is None:
             return  # ignore double close
-        for path, writer in self.all_writers.items():
+        for writer in self.all_writers.values():
             writer.flush()
             writer.close()
         self.file_writer = self.all_writers = None

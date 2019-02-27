@@ -51,3 +51,32 @@ class PyTorchNumpyTest(unittest.TestCase):
         with SummaryWriter() as w:
             w.add_histogram('float histogram', torch.rand((50,)))
             w.add_histogram('int histogram', torch.randint(0, 100, (50,)))
+
+    def test_pytorch_histogram_raw(self):
+        with SummaryWriter() as w:
+            num = 50
+            floats = x2num.make_np(torch.rand((num,)))
+            bins = [0.0, 0.25, 0.5, 0.75, 1.0]
+            counts, limits = np.histogram(floats, bins)
+            sum_sq = floats.dot(floats).item()
+            w.add_histogram_raw('float histogram raw',
+                min=floats.min().item(),
+                max=floats.max().item(),
+                num=num,
+                sum=floats.sum().item(),
+                sum_squares=sum_sq,
+                bucket_limits=limits.tolist(),
+                bucket_counts=counts.tolist())
+
+            ints = x2num.make_np(torch.randint(0, 100, (num,)))
+            bins = [0, 25, 50, 75, 100]
+            counts, limits = np.histogram(ints, bins)
+            sum_sq = ints.dot(ints).item()
+            w.add_histogram_raw('int histogram raw',
+                min=ints.min().item(),
+                max=ints.max().item(),
+                num=num,
+                sum=ints.sum().item(),
+                sum_squares=sum_sq,
+                bucket_limits=limits.tolist(),
+                bucket_counts=counts.tolist())
