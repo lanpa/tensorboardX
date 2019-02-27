@@ -193,7 +193,7 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
             trace, _ = torch.jit.get_trace_graph(model, args)
         except RuntimeError:
             print('Error occurs, No graph saved')
-            _ = model(args)  # don't catch, just print the error message
+            _ = model(*args)  # don't catch, just print the error message
             print("Checking if it's onnx problem...")
             try:
                 import tempfile
