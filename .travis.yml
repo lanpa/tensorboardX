@@ -40,7 +40,7 @@ install:
   - which python
   - pip install future
   - pip install chainer -q
-  - pip install torchvision -q
+  - pip install torchvision==0.2.1 -q
   - pip uninstall torch -y
   - pip install $PYTORCH_VER
   - pip install moviepy==0.2.3.2 -q

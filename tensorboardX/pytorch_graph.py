@@ -48,10 +48,10 @@ class Node_py(Node_base):
                 io_tensorSize_list = []
                 for n in list_of_node:
                     io_uniqueName_list.append(n.uniqueName())
-                    if n.type().kind() in ['DynamicType', 'ListType']:  # segfault
-                        io_tensorSize_list.append(None)
-                    else:
+                    if n.type().kind() == 'CompleteTensorType':
                         io_tensorSize_list.append(n.type().sizes())
+                    else:
+                        io_tensorSize_list.append(None)
 
                 setattr(self, m, io_uniqueName_list)
                 setattr(self, m + 'TensorSize', io_tensorSize_list)
