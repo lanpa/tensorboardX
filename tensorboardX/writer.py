@@ -42,12 +42,6 @@ class SummaryToEventTransformer(object):
     This API basically implements a number of endpoints (add_summary,
     add_session_log, etc). The endpoints all generate an event protobuf, which is
     passed to the contained event_writer.
-    @@__init__
-    @@add_summary
-    @@add_session_log
-    @@add_graph
-    @@add_meta_graph
-    @@add_run_metadata
     """
 
     def __init__(self, event_writer, graph=None, graph_def=None):
@@ -74,32 +68,18 @@ class SummaryToEventTransformer(object):
           graph_def: DEPRECATED: Use the `graph` argument instead.
         """
         self.event_writer = event_writer
-        # For storing used tags for session.run() outputs.
-        self._session_run_tags = {}
-        # TODO(zihaolucky). pass this an empty graph to check whether it's necessary.
-        # currently we don't support graph in MXNet using tensorboard.
 
     def add_summary(self, summary, global_step=None, walltime=None):
         """Adds a `Summary` protocol buffer to the event file.
         This method wraps the provided summary in an `Event` protocol buffer
         and adds it to the event file.
-        You can pass the result of evaluating any summary op, using
-        [`Session.run()`](client.md#Session.run) or
-        [`Tensor.eval()`](framework.md#Tensor.eval), to this
-        function. Alternatively, you can pass a `tf.Summary` protocol
-        buffer that you populate with your own data. The latter is
-        commonly done to report evaluation results in event files.
         Args:
-          summary: A `Summary` protocol buffer, optionally serialized as a string.
+          summary: A `Summary` protocol buffer.
           global_step: Number. Optional global step value to record with the
             summary.
           walltime: float. Optional walltime to override the default (current)
             walltime (from time.time())
         """
-        if isinstance(summary, bytes):
-            summ = summary_pb2.Summary()
-            summ.ParseFromString(summary)
-            summary = summ
         event = event_pb2.Event(summary=summary)
         self._add_event(event, global_step, walltime)
 
@@ -148,15 +128,6 @@ class FileWriter(SummaryToEventTransformer):
     file contents asynchronously. This allows a training program to call methods
     to add data to the file directly from the training loop, without slowing down
     training.
-    @@__init__
-    @@add_summary
-    @@add_session_log
-    @@add_event
-    @@add_graph
-    @@add_run_metadata
-    @@get_logdir
-    @@flush
-    @@close
     """
 
     def __init__(self,
