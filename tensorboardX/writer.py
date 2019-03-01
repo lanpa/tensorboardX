@@ -37,91 +37,7 @@ from .summary import (
 from .utils import figure_to_image
 
 
-class SummaryToEventTransformer(object):
-    """Abstractly implements the SummaryWriter API.
-    This API basically implements a number of endpoints (add_summary,
-    add_session_log, etc). The endpoints all generate an event protobuf, which is
-    passed to the contained event_writer.
-    """
-
-    def __init__(self, event_writer, graph=None, graph_def=None):
-        """Creates a `SummaryWriter` and an event file.
-        On construction the summary writer creates a new event file in `logdir`.
-        This event file will contain `Event` protocol buffers constructed when you
-        call one of the following functions: `add_summary()`, `add_session_log()`,
-        `add_event()`, or `add_graph()`.
-        If you pass a `Graph` to the constructor it is added to
-        the event file. (This is equivalent to calling `add_graph()` later).
-        TensorBoard will pick the graph from the file and display it graphically so
-        you can interactively explore the graph you built. You will usually pass
-        the graph from the session in which you launched it:
-        ```python
-        ...create a graph...
-        # Launch the graph in a session.
-        sess = tf.Session()
-        # Create a summary writer, add the 'graph' to the event file.
-        writer = tf.summary.FileWriter(<some-directory>, sess.graph)
-        ```
-        Args:
-          event_writer: An EventWriter. Implements add_event method.
-          graph: A `Graph` object, such as `sess.graph`.
-          graph_def: DEPRECATED: Use the `graph` argument instead.
-        """
-        self.event_writer = event_writer
-
-    def add_summary(self, summary, global_step=None, walltime=None):
-        """Adds a `Summary` protocol buffer to the event file.
-        This method wraps the provided summary in an `Event` protocol buffer
-        and adds it to the event file.
-        Args:
-          summary: A `Summary` protocol buffer.
-          global_step: Number. Optional global step value to record with the
-            summary.
-          walltime: float. Optional walltime to override the default (current)
-            walltime (from time.time())
-        """
-        event = event_pb2.Event(summary=summary)
-        self._add_event(event, global_step, walltime)
-
-    def add_graph(self, graph_profile, walltime=None):
-        graph = graph_profile[0]
-        stepstats = graph_profile[1]
-        """Adds a `Graph` protocol buffer to the event file.
-        """
-        event = event_pb2.Event(graph_def=graph.SerializeToString())
-        self._add_event(event, None, walltime)
-
-        trm = event_pb2.TaggedRunMetadata(
-            tag='step1', run_metadata=stepstats.SerializeToString())
-        event = event_pb2.Event(tagged_run_metadata=trm)
-        self._add_event(event, None, walltime)
-
-    def add_onnx_graph(self, graph, walltime=None):
-        """Adds a `Graph` protocol buffer to the event file.
-        """
-        event = event_pb2.Event(graph_def=graph.SerializeToString())
-        self._add_event(event, None, walltime)
-
-    def add_session_log(self, session_log, global_step=None, walltime=None):
-        """Adds a `SessionLog` protocol buffer to the event file.
-        This method wraps the provided session in an `Event` protocol buffer
-        and adds it to the event file.
-        Args:
-          session_log: A `SessionLog` protocol buffer.
-          global_step: Number. Optional global step value to record with the
-            summary.
-        """
-        event = event_pb2.Event(session_log=session_log)
-        self._add_event(event, global_step, walltime)
-
-    def _add_event(self, event, step, walltime):
-        event.wall_time = time.time() if walltime is None else walltime
-        if step is not None:
-            event.step = int(step)
-        self.event_writer.add_event(event)
-
-
-class FileWriter(SummaryToEventTransformer):
+class FileWriter(object):
     """Writes `Summary` protocol buffers to event files.
     The `FileWriter` class provides a mechanism to create an event file in a
     given directory and add summaries and events to it. The class updates the
@@ -139,21 +55,6 @@ class FileWriter(SummaryToEventTransformer):
                  graph_def=None):
         """Creates a `FileWriter` and an event file.
         On construction the summary writer creates a new event file in `logdir`.
-        This event file will contain `Event` protocol buffers constructed when you
-        call one of the following functions: `add_summary()`, `add_session_log()`,
-        `add_event()`, or `add_graph()`.
-        If you pass a `Graph` to the constructor it is added to
-        the event file. (This is equivalent to calling `add_graph()` later).
-        TensorBoard will pick the graph from the file and display it graphically so
-        you can interactively explore the graph you built. You will usually pass
-        the graph from the session in which you launched it:
-        ```python
-        ...create a graph...
-        # Launch the graph in a session.
-        sess = tf.Session()
-        # Create a summary writer, add the 'graph' to the event file.
-        writer = tf.summary.FileWriter(<some-directory>, sess.graph)
-        ```
         The other arguments to the constructor control the asynchronous writes to
         the event file:
         *  `flush_secs`: How often, in seconds, to flush the added summaries
@@ -169,20 +70,55 @@ class FileWriter(SummaryToEventTransformer):
           graph_def: DEPRECATED: Use the `graph` argument instead.
         """
         logdir = str(logdir)
-        event_writer = EventFileWriter(
+        self.event_writer = EventFileWriter(
             logdir, max_queue, flush_secs, filename_suffix)
-        super(FileWriter, self).__init__(event_writer, graph, graph_def)
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
         return self.event_writer.get_logdir()
 
-    def add_event(self, event):
+    def add_event(self, event, step=None, walltime=None):
         """Adds an event to the event file.
         Args:
           event: An `Event` protocol buffer.
         """
+        event.wall_time = time.time() if walltime is None else walltime
+        if step is not None:
+            event.step = int(step)
         self.event_writer.add_event(event)
+
+    def add_summary(self, summary, global_step=None, walltime=None):
+        """Adds a `Summary` protocol buffer to the event file.
+        This method wraps the provided summary in an `Event` protocol buffer
+        and adds it to the event file.
+        Args:
+          summary: A `Summary` protocol buffer.
+          global_step: Number. Optional global step value to record with the
+            summary.
+          walltime: float. Optional walltime to override the default (current)
+            walltime (from time.time())
+        """
+        event = event_pb2.Event(summary=summary)
+        self.add_event(event, global_step, walltime)
+
+    def add_graph(self, graph_profile, walltime=None):
+        graph = graph_profile[0]
+        stepstats = graph_profile[1]
+        """Adds a `Graph` protocol buffer to the event file.
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self.add_event(event, None, walltime)
+
+        trm = event_pb2.TaggedRunMetadata(
+            tag='step1', run_metadata=stepstats.SerializeToString())
+        event = event_pb2.Event(tagged_run_metadata=trm)
+        self.add_event(event, None, walltime)
+
+    def add_onnx_graph(self, graph, walltime=None):
+        """Adds a `Graph` protocol buffer to the event file.
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self.add_event(event, None, walltime)
 
     def flush(self):
         """Flushes the event file to disk.
