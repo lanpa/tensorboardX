@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from tensorboardX import SummaryWriter
+import os
 import unittest
 
 # try:
@@ -239,7 +240,9 @@ class Caffe2Test(unittest.TestCase):
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
-        with open('tests/expect/caffe_overfeat.expect') as f:
+        expect_path = os.path.join(os.path.dirname(__file__),
+                                   'expect/caffe_overfeat.expect')
+        with open(expect_path) as f:
             EXPECTED_CNN = f.read()
         sep = "node {"
         expected = "\n".join(sorted(
@@ -297,7 +300,9 @@ class Caffe2Test(unittest.TestCase):
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
-        with open('tests/expect/caffe_mnist.expect') as f:
+        expect_path = os.path.join(os.path.dirname(__file__),
+                                   'expect/caffe_mnist.expect')
+        with open(expect_path) as f:
             EXPECTED_MNIST = f.read()
         sep = "node {"
         expected = "\n".join(sorted(
