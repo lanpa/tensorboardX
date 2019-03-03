@@ -151,7 +151,7 @@ class Graph_py(object):
                                                 all_start_micros=int(time.time() * 1e7),
                                                 all_end_rel_micros=42,
                                                 memory=[AllocatorMemoryUsed(allocator_name="cpu",
-                                                                            total_bytes=np.prod(v.tensorSize) * 4)]))
+                                                                            total_bytes=int(np.prod(v.tensorSize)) * 4)]))
 
         return nodes, node_stats
 
