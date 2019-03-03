@@ -148,11 +148,11 @@ class Graph_py(object):
 
             if v.tensorSize and len(v.tensorSize) > 0:  # assume data is float32, only parameter is counted
                 node_stats.append(
-                  NodeExecStats(node_name=v.uniqueName,
-                                all_start_micros=int(time.time() * 1e7),
-                                all_end_rel_micros=42,
-                                memory=[AllocatorMemoryUsed(allocator_name="cpu",
-                                                            total_bytes=int(np.prod(v.tensorSize)) * 4)]))
+                    NodeExecStats(node_name=v.uniqueName,
+                                  all_start_micros=int(time.time() * 1e7),
+                                  all_end_rel_micros=42,
+                                  memory=[AllocatorMemoryUsed(allocator_name="cpu",
+                                                              total_bytes=int(np.prod(v.tensorSize)) * 4)]))
 
         return nodes, node_stats
 
