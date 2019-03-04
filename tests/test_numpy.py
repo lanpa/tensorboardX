@@ -32,5 +32,5 @@ class NumpyTest(unittest.TestCase):
             # assert x2num.make_np(x, 'VID').shape[3] == 3
 
     def test_numpy_vid_uint8(self):
-        x = np.random.random_integers(0, 255, (16, 3, 30, 28, 28)).astype(np.uint8)
+        x = np.random.randint(0, 256, (16, 3, 30, 28, 28)).astype(np.uint8)
         # x2num.make_np(x, 'VID').shape[3] == 3

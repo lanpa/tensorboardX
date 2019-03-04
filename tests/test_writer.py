@@ -31,6 +31,7 @@ class WriterTest(unittest.TestCase):
             x = np.zeros(sample_rate * 2)
 
             writer.add_audio('myAudio', x, n_iter)
+            writer.add_video('myVideo', np.random.rand(16, 48, 1, 28, 28).astype(np.float32), n_iter)
             writer.add_text('Text', 'text logged at step:' + str(n_iter), n_iter)
             writer.add_text('markdown Text', '''a|b\n-|-\nc|d''', n_iter)
             writer.add_histogram('hist', np.random.rand(100, 100), n_iter)

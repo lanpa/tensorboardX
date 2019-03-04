@@ -24,9 +24,11 @@ class SummaryWriterTest(unittest.TestCase):
 
 
     def test_windowsPath(self):
-        with SummaryWriter("C:\\Downloads") as writer:
+        dummyPath = "C:\\Downloads\\fjoweifj02utj43tj430"
+        with SummaryWriter(dummyPath) as writer:
             writer.add_scalar('test', 1)
-
+        import shutil
+        shutil.rmtree(dummyPath)
 
     def test_pathlib(self):
         import sys
@@ -37,3 +39,5 @@ class SummaryWriterTest(unittest.TestCase):
         p = pathlib.Path('./pathlibtest')
         with SummaryWriter(p) as writer:
             writer.add_scalar('test', 1)
+        import shutil
+        shutil.rmtree(str(p))
