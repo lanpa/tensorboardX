@@ -40,4 +40,4 @@ class SummaryWriterTest(unittest.TestCase):
         with SummaryWriter(p) as writer:
             writer.add_scalar('test', 1)
         import shutil
-        shutil.rmtree(p)
+        shutil.rmtree(str(p))
