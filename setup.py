@@ -51,7 +51,7 @@ test_requirements = [
 
 setup(
     name='tensorboardX',
-    version=version,
+    version=version_git,
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
     long_description=history,
     author='Tzu-Wei Huang',
@@ -84,6 +84,8 @@ setup(
 
 
 # checklist: update History.rst readme.md
+# version=version_git <--- change to sha-less version
+# 
 # bump version number in setup.py
 # commit
 # add tag
