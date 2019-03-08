@@ -21,7 +21,7 @@ def _check_connection(fn):
 
 
 class VisdomWriter:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         try:
             from visdom import Visdom
         except ImportError:
@@ -30,7 +30,7 @@ class VisdomWriter:
 
         self.scalar_dict = {}
         self.server_connected = False
-        self.vis = Visdom()
+        self.vis = Visdom(*args, **kwargs)
         self.windows = {}
 
         self._try_connect()
