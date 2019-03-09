@@ -3,7 +3,7 @@ from tensorboardX import summary
 import numpy as np
 import pytest
 import unittest
-from tensorboardX.utils import make_grid, _prepare_video
+from tensorboardX.utils import make_grid, _prepare_video, convert_to_HWC
 
 class UtilsTest(unittest.TestCase):
     def test_to_HWC(self):
@@ -27,24 +27,3 @@ class UtilsTest(unittest.TestCase):
         V_before = np.reshape(V_before, newshape=(10,-1))
         V_after = np.reshape(V_after, newshape=(10,-1))
         np.testing.assert_array_almost_equal(np.sum(V_before, axis=1), np.sum(V_after, axis=1))
-
-def convert_to_HWC(tensor, input_format):  # tensor: numpy array
-    assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice."
-    assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different"
-    input_format = input_format.upper()
-
-    if len(input_format) == 4:
-        index = [input_format.find(c) for c in 'NCHW']
-        tensor_NCHW = tensor.transpose(index)
-        tensor_CHW = make_grid(tensor_NCHW)
-        return tensor_CHW.transpose(1, 2, 0)
-
-    if len(input_format) == 3:
-        index = [input_format.find(c) for c in 'HWC']
-        return tensor.transpose(index)
-
-    if len(input_format) == 2:
-        index = [input_format.find(c) for c in 'HW']
-        tensor = tensor.transpose(index)
-        tensor = np.stack([tensor, tensor, tensor], 2)
-        return tensor
