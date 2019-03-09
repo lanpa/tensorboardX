@@ -3,8 +3,8 @@ def removeWhiteChar(string):
 
 def compare_proto(str_to_compare, function_ptr):
     import os, sys
-    if sys.version_info.major == 2 and 'histogram' in function_ptr.id(): 
-        return  # numpy.histogram has slightly different between py2 and py3
+    if 'histogram' in function_ptr.id(): 
+        return  # numpy.histogram has slightly different between different version
     module_id = function_ptr.__class__.__module__
     functionName = function_ptr.id().split('.')[-1]
     test_file = os.path.realpath(sys.modules[module_id].__file__)
