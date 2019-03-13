@@ -21,7 +21,7 @@ class TorchVis:
         self.subscribers = {}
         self.register(*args, **init_kwargs)
 
-    def register(self, *args):
+    def register(self, *args, **init_kwargs):
         # Sets tensorboard as the default visualization format if not specified
         formats = ['tensorboard'] if not args else args
         for format in formats:
