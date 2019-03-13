@@ -19,14 +19,14 @@ vis_formats = {'tensorboard': SummaryWriter, 'visdom': VisdomWriter}
 class TorchVis:
     def __init__(self, *args, **init_kwargs):
         self.subscribers = {}
-        self.register(*args)
+        self.register(*args, **init_kwargs)
 
     def register(self, *args):
         # Sets tensorboard as the default visualization format if not specified
         formats = ['tensorboard'] if not args else args
         for format in formats:
             if self.subscribers.get(format) is None and format in vis_formats.keys():
-                self.subscribers[format] = vis_formats[format](**init_kwargs[format])
+                self.subscribers[format] = vis_formats[format](**init_kwargs.get(format, {}))
 
     def unregister(self, *args):
         for format in args:
