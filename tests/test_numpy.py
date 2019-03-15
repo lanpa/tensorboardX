@@ -13,7 +13,7 @@ class NumpyTest(unittest.TestCase):
     def test_scalar(self):
         res = x2num.make_np(1.1)
         assert isinstance(res, np.ndarray) and res.shape == (1,)
-        res = x2num.make_np(1000000000000000000000)
+        res = x2num.make_np(1<<64-1) # uint64_max
         assert isinstance(res, np.ndarray) and res.shape == (1,)
         res = x2num.make_np(np.float16(1.00000087))
         assert isinstance(res, np.ndarray) and res.shape == (1,)

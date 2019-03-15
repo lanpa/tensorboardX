@@ -7,21 +7,28 @@ import numpy as np
 import six
 
 
+def check_nan(array):
+    tmp = np.sum(array)
+    if np.isnan(tmp) or np.isinf(tmp):
+        print('Warning: NaN or Inf found in input tensor.')
+    return array
+
+
 def make_np(x):
     if isinstance(x, list):
-        return np.array(x)
+        return check_nan(np.array(x))
     if isinstance(x, np.ndarray):
-        return x
+        return check_nan(x)
     if isinstance(x, six.string_types):  # Caffe2 will pass name of blob(s) to fetch
-        return prepare_caffe2(x)
+        return check_nan(prepare_caffe2(x))
     if np.isscalar(x):
-        return np.array([x])
+        return check_nan(np.array([x]))
     if 'torch' in str(type(x)):
-        return prepare_pytorch(x)
+        return check_nan(prepare_pytorch(x))
     if 'chainer' in str(type(x)):
-        return prepare_chainer(x)
+        return check_nan(prepare_chainer(x))
     if 'mxnet' in str(type(x)):
-        return prepare_mxnet(x)
+        return check_nan(prepare_mxnet(x))
     raise NotImplementedError(
         'Got {}, but expected numpy array or torch tensor.'.format(type(x)))
 
