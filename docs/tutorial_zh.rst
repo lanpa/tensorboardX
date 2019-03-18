@@ -48,8 +48,8 @@ value 可以是 PyTorch tensor ， numpy或是 float，int 之類的python原生
 
 紀錄聲音
 -------------
-``writer.add_audio('myaudio', audio, iteration, 44100)``
-這功能只支援單聲道。 add_audio 要傳入的聲音資訊是個一維陣列，陣列的每一個元素代表在每一個取樣點的振幅大小。取樣頻率為 44100 kHz 的情況下。一段2秒鐘的聲音應該要有88200個點；注意其中每個元素的值應該都介於正負1之間。
+``writer.add_audio('myaudio', audio, iteration, sample_rate)``
+這功能只支援單聲道。 add_audio 要傳入的聲音資訊是個一維陣列，陣列的每一個元素代表在每一個取樣點的振幅大小。取樣頻率(sample_rate)為 44100 kHz 的情況下。一段2秒鐘的聲音應該要有88200個點；注意其中每個元素的值應該都介於正負1之間。
 
 紀錄文字
 -------------
