@@ -99,11 +99,9 @@ complete example.
 
 Add audio
 ---------
-Currently the sampling rate of the this function is fixed at 44100 kHz, single
-channel. The input of the ``add_audio`` function is a one dimensional array, with
-each element representing the consecutive amplitude samples. For a 2 seconds
-audio, the input ``x`` should have 88200 elements. Each element should lie in
-[−1, 1].
+To log a single channel audio, use ``add_audio(tag, audio, iteration, sample_rate)``, where ``audio`` is an one dimensional array, and each element in the array represents the consecutive amplitude samples.
+For a 2 seconds audio with ``sample_rate`` 44100 Hz, the input ``x`` should have 88200 elements.
+Each element should lie in [−1, 1].
 
 Add embedding
 -------------
