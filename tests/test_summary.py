@@ -62,7 +62,7 @@ class SummaryTest(unittest.TestCase):
         np.random.seed(0)
         compare_proto(summary.video('dummy', np.random.rand(4, 3, 1, 8, 8).astype(np.float32)), self)
         summary.video('dummy', np.random.rand(16, 48, 1, 28, 28).astype(np.float32))
-        #summary.video('dummy', np.random.rand(20, 7, 1, 8, 8).astype(np.float32))
+        summary.video('dummy', np.random.rand(20, 7, 1, 8, 8).astype(np.float32))
     def test_audio(self):
         np.random.seed(0)
         compare_proto(summary.audio('dummy', np.random.rand(42)), self)
