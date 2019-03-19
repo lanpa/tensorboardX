@@ -100,8 +100,24 @@ class S3RecordWriterFactory(object):
         # so we can just skip this check
         pass
 
+    
+class GCSRecordWriterFactory(object):
+    """Factory for event protocol buffer files to GCS."""
 
+    def open(self, path):
+        # Conditional import
+        from tensorflow import gfile
+
+        return gfile.GFile(path, mode="w+")
+
+    def directory_check(self, path):
+        # GCS doesn't need directories created before files are added
+        # so we can just skip this check
+        pass
+
+    
 register_writer_factory("s3", S3RecordWriterFactory())
+register_writer_factory("gs", GCSRecordWriterFactory())
 
 
 class RecordWriter(object):
