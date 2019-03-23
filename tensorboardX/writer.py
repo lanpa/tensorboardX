@@ -495,6 +495,11 @@ class SummaryWriter(object):
             model (torch.nn.Module): model to draw.
             input_to_model (torch.Tensor or list of torch.Tensor): a variable or a tuple of
                 variables to be fed.
+            verbose (bool): Whether to print graph structure in console.
+            omit_useless_nodes (bool): Default to ``true``, which eliminates unused nodes.
+            operator_export_type (string): One of: ``"ONNX"``, ``"RAW"``. This determines
+                the optimization level of the graph. If error happens during exporting
+                the graph, use ``"RAW"`` may help.
 
         """
         if hasattr(model, 'forward'):
