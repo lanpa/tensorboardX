@@ -510,7 +510,7 @@ class SummaryWriter(object):
                 if not hasattr(torch.autograd.Variable, 'grad_fn'):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
-            self.get_file_writer().add_graph(graph(model, input_to_model, verbose))
+            self.get_file_writer().add_graph(graph(model, input_to_model, verbose, **kwargs))
         else:
             # Caffe2 models do not have the 'forward' method
             if not self.caffe2_enabled:

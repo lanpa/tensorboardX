@@ -184,7 +184,7 @@ def parse(graph, args=None, omit_useless_nodes=True):
     return nodes_py.to_proto()
 
 
-def graph(model, args, verbose=False, omit_useless_nodes=True):
+def graph(model, args, verbose=False, **kwargs):
     import torch
 
     def _optimize_trace(trace, operator_export_type):
@@ -249,7 +249,15 @@ def graph(model, args, verbose=False, omit_useless_nodes=True):
                 print("Your model fails onnx too, please report to onnx team")
             return GraphDef(versions=VersionDef(producer=22))
 
-    _optimize_trace(trace, torch.onnx.utils.OperatorExportTypes.ONNX)
+    if 'operator_export_type' not in kwargs:
+        operator_export_type = torch.onnx.utils.OperatorExportTypes.ONNX
+    else:
+        operator_export_type = getattr(torch.onnx.utils.OperatorExportTypes, kwargs['operator_export_type'])
+
+    if 'omit_useless_nodes' not in kwargs:
+        omit_useless_nodes = True
+
+    _optimize_trace(trace, operator_export_type)
 
     graph = trace.graph()
     if verbose:
