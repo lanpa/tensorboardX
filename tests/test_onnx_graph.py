@@ -2,6 +2,7 @@ import unittest
 import torch
 from tensorboardX import SummaryWriter
 
+
 class ONNXGraphTest(unittest.TestCase):
     def test_onnx_graph(self):
         import subprocess
