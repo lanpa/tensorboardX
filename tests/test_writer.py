@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 import unittest
 
-
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
 
 true_positive_counts = [75, 64, 21, 5, 0]
@@ -13,6 +12,7 @@ true_negative_counts = [0, 45, 132, 150, 150]
 false_negative_counts = [0, 11, 54, 70, 75]
 precision = [0.3333333, 0.3786982, 0.5384616, 1.0, 0.0]
 recall = [1.0, 0.8533334, 0.28, 0.0666667, 0.0]
+
 
 class WriterTest(unittest.TestCase):
     def test_writer(self):
@@ -23,11 +23,14 @@ class WriterTest(unittest.TestCase):
             writer.add_scalar('data/scalar_systemtime', 0.1, n_iter)
             writer.add_scalar('data/scalar_customtime', 0.2, n_iter, walltime=n_iter)
             writer.add_scalars('data/scalar_group', {"xsinx": n_iter * np.sin(n_iter),
-                                                    "xcosx": n_iter * np.cos(n_iter),
-                                                    "arctanx": np.arctan(n_iter)}, n_iter)
+                                                     "xcosx": n_iter * np.cos(n_iter),
+                                                     "arctanx": np.arctan(n_iter)}, n_iter)
             x = np.zeros((32, 3, 64, 64))  # output from network
             writer.add_images('Image', x, n_iter)  # Tensor
-            writer.add_image_with_boxes('imagebox', np.zeros((3, 64, 64)), np.array([[10, 10, 40, 40], [40, 40, 60, 60]]), n_iter)
+            writer.add_image_with_boxes('imagebox',
+                                        np.zeros((3, 64, 64)),
+                                        np.array([[10, 10, 40, 40], [40, 40, 60, 60]]),
+                                        n_iter)
             x = np.zeros(sample_rate * 2)
 
             writer.add_audio('myAudio', x, n_iter)

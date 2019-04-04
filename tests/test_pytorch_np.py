@@ -31,7 +31,6 @@ class PyTorchNumpyTest(unittest.TestCase):
         assert(isinstance(x2num.make_np(0), np.ndarray))
         assert(isinstance(x2num.make_np(0.1), np.ndarray))
 
-
     def test_pytorch_write(self):
         with SummaryWriter() as w:
             w.add_scalar('scalar', torch.autograd.Variable(torch.rand(1)), 0)
@@ -49,23 +48,23 @@ class PyTorchNumpyTest(unittest.TestCase):
             counts, limits = np.histogram(floats, bins)
             sum_sq = floats.dot(floats).item()
             w.add_histogram_raw('float histogram raw',
-                min=floats.min().item(),
-                max=floats.max().item(),
-                num=num,
-                sum=floats.sum().item(),
-                sum_squares=sum_sq,
-                bucket_limits=limits.tolist(),
-                bucket_counts=counts.tolist())
+                                min=floats.min().item(),
+                                max=floats.max().item(),
+                                num=num,
+                                sum=floats.sum().item(),
+                                sum_squares=sum_sq,
+                                bucket_limits=limits.tolist(),
+                                bucket_counts=counts.tolist())
 
             ints = x2num.make_np(torch.randint(0, 100, (num,)))
             bins = [0, 25, 50, 75, 100]
             counts, limits = np.histogram(ints, bins)
             sum_sq = ints.dot(ints).item()
             w.add_histogram_raw('int histogram raw',
-                min=ints.min().item(),
-                max=ints.max().item(),
-                num=num,
-                sum=ints.sum().item(),
-                sum_squares=sum_sq,
-                bucket_limits=limits.tolist(),
-                bucket_counts=counts.tolist())
+                                min=ints.min().item(),
+                                max=ints.max().item(),
+                                num=num,
+                                sum=ints.sum().item(),
+                                sum_squares=sum_sq,
+                                bucket_limits=limits.tolist(),
+                                bucket_counts=counts.tolist())

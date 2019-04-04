@@ -6,6 +6,7 @@ import unittest
 np.random.seed(0)
 # compare_proto = write_proto  # massive update expect
 
+
 class SummaryTest(unittest.TestCase):
     def test_uint8_image(self):
         '''
@@ -26,7 +27,7 @@ class SummaryTest(unittest.TestCase):
 
     def test_list_input(self):
         with pytest.raises(Exception) as e_info:
-            summary.histogram('dummy', [1,3,4,5,6], 'tensorflow')
+            summary.histogram('dummy', [1, 3, 4, 5, 6], 'tensorflow')
 
     def test_empty_input(self):
         print('expect error here:')
@@ -35,8 +36,9 @@ class SummaryTest(unittest.TestCase):
 
     def test_image_with_boxes(self):
         compare_proto(summary.image_boxes('dummy',
-                            np.random.rand(3, 32, 32).astype(np.float32),
-                            np.array([[10, 10, 40, 40]])), self)
+                                          np.random.rand(3, 32, 32).astype(np.float32),
+                                          np.array([[10, 10, 40, 40]])),
+                      self)
 
     def test_image_with_one_channel(self):
         np.random.seed(0)
@@ -63,6 +65,7 @@ class SummaryTest(unittest.TestCase):
         compare_proto(summary.video('dummy', np.random.rand(4, 3, 1, 8, 8).astype(np.float32)), self)
         summary.video('dummy', np.random.rand(16, 48, 1, 28, 28).astype(np.float32))
         summary.video('dummy', np.random.rand(20, 7, 1, 8, 8).astype(np.float32))
+
     def test_audio(self):
         np.random.seed(0)
         compare_proto(summary.audio('dummy', np.random.rand(42)), self)

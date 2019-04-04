@@ -17,12 +17,13 @@ from caffe2.proto import caffe2_pb2
 from caffe2.python import workspace
 import tensorboardX.caffe2_graph as tb
 from tensorboardX import x2num
+
+
 class Caffe2Test(unittest.TestCase):
     def test_caffe2_np(self):
         workspace.FeedBlob("testBlob", np.random.randn(1, 3, 64, 64).astype(np.float32))
         assert isinstance(x2num.make_np('testBlob'), np.ndarray)
         # assert isinstance(x2num.make_np('testBlob', 'IMG'), np.ndarray)
-
 
     def test_that_operators_gets_non_colliding_names(self):
         op = caffe2_pb2.OperatorDef()
@@ -233,10 +234,10 @@ class Caffe2Test(unittest.TestCase):
             shapes={},
             show_simplified=False,
         )
-        #self.assertEqual(
-        #    blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
-        #    'conv1/conv1_b_grad',
-        #)
+        # self.assertEqual(
+        #     blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
+        #     'conv1/conv1_b_grad',
+        # )
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
@@ -293,10 +294,10 @@ class Caffe2Test(unittest.TestCase):
             shapes={},
             show_simplified=False,
         )
-        #self.assertEqual(
-        #    blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
-        #    'conv1/conv1_b_grad',
-        #)
+        # self.assertEqual(
+        #     blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
+        #     'conv1/conv1_b_grad',
+        # )
         self.maxDiff = None
         # We can't guarantee the order in which they appear, so we sort
         # both before we compare them
@@ -316,8 +317,6 @@ class Caffe2Test(unittest.TestCase):
             if part.strip()
         ))
         # self.assertMultiLineEqual(actual, expected)
-
-
 
 if __name__ == "__main__":
     unittest.main()
