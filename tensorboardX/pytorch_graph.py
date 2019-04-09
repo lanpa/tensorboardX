@@ -196,42 +196,39 @@ def graph(model, args, verbose=False, **kwargs):
         # into a trace where we previously recorded constants
         # use constant prop to maintain our current level of onnx support
         # without implementing symbolics for all of them
-        try:
-            torch._C._jit_pass_constant_propagation(graph)
-            torch.onnx.utils._split_tensor_list_constants(graph, graph)
-            # run dce to eliminate dead parts of the graph that might have been
-            # left behind by things like symbolic_override
-            torch._C._jit_pass_dce(graph)
-            torch._C._jit_pass_lint(graph)
+        torch._C._jit_pass_constant_propagation(graph)
+        torch.onnx.utils._split_tensor_list_constants(graph, graph)
+        # run dce to eliminate dead parts of the graph that might have been
+        # left behind by things like symbolic_override
+        torch._C._jit_pass_dce(graph)
+        torch._C._jit_pass_lint(graph)
 
-            # torch._C._jit_pass_canonicalize_ops(graph)
-            # torch._C._jit_pass_lint(graph)
+        # torch._C._jit_pass_canonicalize_ops(graph)
+        # torch._C._jit_pass_lint(graph)
 
-            torch._C._jit_pass_peephole(graph, True)
-            torch._C._jit_pass_lint(graph)
+        torch._C._jit_pass_peephole(graph, True)
+        torch._C._jit_pass_lint(graph)
 
-            # onnx only supports tensors, but 1 / 2 = 0.5 and tensor(1) / tensor(2) = 0
-            torch._C._jit_pass_prepare_division_for_onnx(graph)
-            # onnx only supports tensors, so we turn all out number types into tensors
-            torch._C._jit_pass_erase_number_types(graph)
-            # onnx does not support tuples, so try to remove them
-            torch._C._jit_pass_lower_all_tuples(graph)
-            torch._C._jit_pass_peephole(graph, True)
-            torch._C._jit_pass_lint(graph)
+        # onnx only supports tensors, but 1 / 2 = 0.5 and tensor(1) / tensor(2) = 0
+        torch._C._jit_pass_prepare_division_for_onnx(graph)
+        # onnx only supports tensors, so we turn all out number types into tensors
+        torch._C._jit_pass_erase_number_types(graph)
+        # onnx does not support tuples, so try to remove them
+        torch._C._jit_pass_lower_all_tuples(graph)
+        torch._C._jit_pass_peephole(graph, True)
+        torch._C._jit_pass_lint(graph)
 
-            if operator_export_type != torch.onnx.utils.OperatorExportTypes.RAW:
-                graph = torch._C._jit_pass_onnx(graph, operator_export_type)
-                torch._C._jit_pass_lint(graph)
-                # torch._C._jit_pass_onnx_peephole(graph)
-                torch._C._jit_pass_lint(graph)
-            torch._C._jit_pass_dce(graph)
+        if operator_export_type != torch.onnx.utils.OperatorExportTypes.RAW:
+            graph = torch._C._jit_pass_onnx(graph, operator_export_type)
             torch._C._jit_pass_lint(graph)
-            torch._C._jit_pass_fixup_onnx_loops(graph)
+            # torch._C._jit_pass_onnx_peephole(graph)
             torch._C._jit_pass_lint(graph)
-            graph = torch._C._jit_pass_canonicalize(graph)
-            torch._C._jit_pass_lint(graph)
-        except RuntimeError as e:
-            logging.warn(ImportError(e))
+        torch._C._jit_pass_dce(graph)
+        torch._C._jit_pass_lint(graph)
+        torch._C._jit_pass_fixup_onnx_loops(graph)
+        torch._C._jit_pass_lint(graph)
+        graph = torch._C._jit_pass_canonicalize(graph)
+        torch._C._jit_pass_lint(graph)
         return graph
 
     assert LooseVersion(torch.__version__) >= LooseVersion("1.0.0"),\
@@ -259,7 +256,10 @@ def graph(model, args, verbose=False, **kwargs):
     if 'omit_useless_nodes' not in kwargs:
         omit_useless_nodes = True
 
-    _optimize_trace(trace, operator_export_type)
+    try:
+        _optimize_trace(trace, operator_export_type)
+    except RuntimeError as e:
+        logging.warn(ImportError(e))
 
     graph = trace.graph()
     if verbose:

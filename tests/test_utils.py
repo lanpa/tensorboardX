@@ -1,9 +1,9 @@
 from tensorboardX import summary
-
+from tensorboardX.utils import make_grid, _prepare_video, convert_to_HWC
 import numpy as np
 import pytest
 import unittest
-from tensorboardX.utils import make_grid, _prepare_video, convert_to_HWC
+
 
 class UtilsTest(unittest.TestCase):
     def test_to_HWC(self):
@@ -24,6 +24,6 @@ class UtilsTest(unittest.TestCase):
         V_before = np.random.random((4, 10, 3, 20, 20))
         V_after = _prepare_video(np.copy(V_before))
         V_before = np.swapaxes(V_before, 0, 1)
-        V_before = np.reshape(V_before, newshape=(10,-1))
-        V_after = np.reshape(V_after, newshape=(10,-1))
+        V_before = np.reshape(V_before, newshape=(10, -1))
+        V_after = np.reshape(V_after, newshape=(10, -1))
         np.testing.assert_array_almost_equal(np.sum(V_before, axis=1), np.sum(V_after, axis=1))

@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
 from tensorboardX import summary
 from .expect_reader import compare_proto
 import numpy as np
@@ -5,6 +6,7 @@ import pytest
 import unittest
 np.random.seed(0)
 # compare_proto = write_proto  # massive update expect
+
 
 class SummaryTest(unittest.TestCase):
     def test_uint8_image(self):
@@ -25,12 +27,12 @@ class SummaryTest(unittest.TestCase):
         assert scale_factor == 255, 'Values are in [0, 1], scale factor should be 255'
 
     def test_list_input(self):
-        with pytest.raises(Exception) as e_info:
-            summary.histogram('dummy', [1,3,4,5,6], 'tensorflow')
+        with pytest.raises(Exception):
+            summary.histogram('dummy', [1, 3, 4, 5, 6], 'tensorflow')
 
     def test_empty_input(self):
         print('expect error here:')
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(Exception):
             summary.histogram('dummy', np.ndarray(0), 'tensorflow')
 
     def test_image_with_boxes(self):
@@ -63,6 +65,7 @@ class SummaryTest(unittest.TestCase):
         compare_proto(summary.video('dummy', np.random.rand(4, 3, 1, 8, 8).astype(np.float32)), self)
         summary.video('dummy', np.random.rand(16, 48, 1, 28, 28).astype(np.float32))
         summary.video('dummy', np.random.rand(20, 7, 1, 8, 8).astype(np.float32))
+
     def test_audio(self):
         np.random.seed(0)
         compare_proto(summary.audio('dummy', np.random.rand(42)), self)

@@ -9,7 +9,6 @@ class SummaryWriterTest(unittest.TestCase):
             writer.add_scalar('test', 1)
         assert writer.file_writer is None
 
-
     def test_summary_writer_close(self):
         # Opening and closing SummaryWriter a lot should not run into
         # OSError: [Errno 24] Too many open files
@@ -21,7 +20,6 @@ class SummaryWriterTest(unittest.TestCase):
             passed = False
 
         assert passed
-
 
     def test_windowsPath(self):
         dummyPath = "C:\\Downloads\\fjoweifj02utj43tj430"
