@@ -373,8 +373,7 @@ def audio(tag, tensor, sample_rate=44100):
     Wave_write.setsampwidth(2)
     Wave_write.setframerate(sample_rate)
     tensor_enc = b''
-    for v in tensor_list:
-        tensor_enc += struct.pack('<h', v)
+    tensor_enc += struct.pack("<" + "h" * len(tensor_list), *tensor_list)
 
     Wave_write.writeframes(tensor_enc)
     Wave_write.close()
