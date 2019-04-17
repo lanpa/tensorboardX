@@ -1,6 +1,7 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+import logging
 import time
 import warnings
-import itertools
 from distutils.version import LooseVersion
 from collections import OrderedDict
 from .proto.attr_value_pb2 import AttrValue
@@ -162,7 +163,6 @@ def parse(graph, args=None, omit_useless_nodes=True):
     import torch
     n_inputs = len(args)  # not sure...
 
-    scope = {}
     nodes_py = Graph_py()
     for i, node in enumerate(graph.inputs()):
         if omit_useless_nodes:
@@ -204,7 +204,7 @@ def graph(model, args, verbose=False, **kwargs):
         torch._C._jit_pass_lint(graph)
 
         # torch._C._jit_pass_canonicalize_ops(graph)
-        torch._C._jit_pass_lint(graph)
+        # torch._C._jit_pass_lint(graph)
 
         torch._C._jit_pass_peephole(graph, True)
         torch._C._jit_pass_lint(graph)
@@ -239,7 +239,6 @@ def graph(model, args, verbose=False, **kwargs):
             trace, _ = torch.jit.get_trace_graph(model, args)
         except RuntimeError:
             print('Error occurs, No graph saved')
-            _ = model(*args)  # don't catch, just print the error message
             print("Checking if it's onnx problem...")
             try:
                 import tempfile
@@ -257,7 +256,10 @@ def graph(model, args, verbose=False, **kwargs):
     if 'omit_useless_nodes' not in kwargs:
         omit_useless_nodes = True
 
-    _optimize_trace(trace, operator_export_type)
+    try:
+        _optimize_trace(trace, operator_export_type)
+    except RuntimeError as e:
+        logging.warn(ImportError(e))
 
     graph = trace.graph()
     if verbose:
