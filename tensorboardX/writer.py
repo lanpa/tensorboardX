@@ -68,6 +68,7 @@ class DummyFileWriter(object):
     def reopen(self):
         return
 
+
 class FileWriter(object):
     """Writes `Summary` protocol buffers to event files.
     The `FileWriter` class provides a mechanism to create an event file in a
