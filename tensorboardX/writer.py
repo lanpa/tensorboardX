@@ -37,6 +37,37 @@ from .summary import (
 from .utils import figure_to_image
 
 
+class DummyFileWriter(object):
+    """A fake file writer that writes nothing to the disk.
+    """
+    def __init__(self, logdir):
+        self._logdir = logdir
+
+    def get_logdir(self):
+        """Returns the directory where event file will be written."""
+        return self._logdir
+
+    def add_event(self, event, step=None, walltime=None):
+        return
+
+    def add_summary(self, summary, global_step=None, walltime=None):
+        return
+
+    def add_graph(self, graph_profile, walltime=None):
+        return
+
+    def add_onnx_graph(self, graph, walltime=None):
+        return
+
+    def flush(self):
+        return
+
+    def close(self):
+        return
+
+    def reopen(self):
+        return
+
 class FileWriter(object):
     """Writes `Summary` protocol buffers to event files.
     The `FileWriter` class provides a mechanism to create an event file in a
@@ -151,7 +182,7 @@ class SummaryWriter(object):
     training.
     """
 
-    def __init__(self, log_dir=None, comment='', **kwargs):
+    def __init__(self, log_dir=None, comment='', write_to_disk=True, **kwargs):
         """
         Args:
             log_dir (string): save location, default is: runs/**CURRENT_DATETIME_HOSTNAME**, which changes after each
@@ -164,6 +195,8 @@ class SummaryWriter(object):
               Note that the resumed experiment and crashed experiment should have the same ``log_dir``.
             filename_suffix (string):
               Every event file's name is suffixed with suffix. example: ``SummaryWriter(filename_suffix='.123')``
+            write_to_disk (boolean):
+              If pass `False`, SummaryWriter will not write to disk.
             kwargs: extra keyword arguments for FileWriter (e.g. 'flush_secs'
               controls how often to flush pending events). For more arguments
               please refer to docs for 'tf.summary.FileWriter'.
@@ -180,6 +213,7 @@ class SummaryWriter(object):
         # Initialize the file writers, but they can be cleared out on close
         # and recreated later as needed.
         self.file_writer = self.all_writers = None
+        self._write_to_disk = write_to_disk
         self.get_file_writer()
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
@@ -231,6 +265,11 @@ class SummaryWriter(object):
 
     def get_file_writer(self):
         """Returns the default FileWriter instance. Recreates it if closed."""
+        if not self._write_to_disk:
+            self.file_writer = DummyFileWriter(logdir=self.log_dir)
+            self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
+            return self.file_writer
+
         if self.all_writers is None or self.file_writer is None:
             if 'purge_step' in self.kwargs.keys():
                 most_recent_step = self.kwargs.pop('purge_step')
