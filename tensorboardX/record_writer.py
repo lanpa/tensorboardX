@@ -112,13 +112,13 @@ class RecordWriter(object):
         self._writer = None
         self._writer = open_file(path)
 
-    def write(self, event_str):
+    def write(self, data):
         w = self._writer.write
-        header = struct.pack('Q', len(event_str))
+        header = struct.pack('Q', len(data))
         w(header)
         w(struct.pack('I', masked_crc32c(header)))
-        w(event_str)
-        w(struct.pack('I', masked_crc32c(event_str)))
+        w(data)
+        w(struct.pack('I', masked_crc32c(data)))
 
     def flush(self):
         self._writer.flush()
