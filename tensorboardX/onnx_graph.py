@@ -3,11 +3,10 @@ from .proto.node_def_pb2 import NodeDef
 from .proto.versions_pb2 import VersionDef
 from .proto.attr_value_pb2 import AttrValue
 from .proto.tensor_shape_pb2 import TensorShapeProto
-# from .proto.onnx_pb2 import ModelProto
 
 
-def gg(fname):
-    import onnx  # 0.2.1
+def load_onnx_graph(fname):
+    import onnx
     m = onnx.load(fname)
     g = m.graph
     return parse(g)
@@ -46,6 +45,7 @@ def parse(graph):
             input=node.input,
             attr={'parameters': AttrValue(s=attr)},
         ))
+
     # two pass token replacement, appends opname to object id
     mapping = {}
     for node in nodes:
