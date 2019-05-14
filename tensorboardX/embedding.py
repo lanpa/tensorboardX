@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 def make_tsv(metadata, save_path, metadata_header=None):
@@ -9,15 +10,17 @@ def make_tsv(metadata, save_path, metadata_header=None):
             'len of header must be equal to the number of columns in metadata'
         metadata = ['\t'.join(str(e) for e in l)
                     for l in [metadata_header] + metadata]
-    import sys
+
+    named_path = os.path.join(save_path, 'metadata.tsv')
     if sys.version_info[0] == 3:
-        with open(os.path.join(save_path, 'metadata.tsv'), 'w', encoding='utf8') as f:
+        with open(named_path, 'w', encoding='utf8') as f:
             for x in metadata:
                 f.write(x + '\n')
     else:
-        with open(os.path.join(save_path, 'metadata.tsv'), 'wb') as f:
+        with open(named_path, 'wb') as f:
             for x in metadata:
                 f.write((x + '\n').encode('utf-8'))
+    return named_path
 
 
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
@@ -37,12 +40,15 @@ def make_sprite(label_img, save_path):
     arranged_img_HWC = arranged_img_CHW.transpose(1, 2, 0)  # chw -> hwc
     arranged_augment_square_HWC[:arranged_img_HWC.shape[0], :, :] = arranged_img_HWC
     im = Image.fromarray(np.uint8((arranged_augment_square_HWC * 255).clip(0, 255)))
-    im.save(os.path.join(save_path, 'sprite.png'))
+    named_path = os.path.join(save_path, 'sprite.png')
+    im.save(named_path)
+    return named_path
 
 
 def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
     from posixpath import join
-    with open(os.path.join(save_path, 'projector_config.pbtxt'), 'a') as f:
+    named_path = os.path.join(save_path, 'projector_config.pbtxt')
+    with open(named_path, 'a') as f:
         # step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
         f.write('tensor_name: "{}:{}"\n'.format(
@@ -58,10 +64,13 @@ def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
             f.write('single_image_dim: {}\n'.format(label_img.size(2)))
             f.write('}\n')
         f.write('}\n')
+    return named_path
 
 
 def make_mat(matlist, save_path):
-    with open(os.path.join(save_path, 'tensors.tsv'), 'w') as f:
+    named_path = os.path.join(save_path, 'tensors.tsv')
+    with open(named_path, 'w') as f:
         for x in matlist:
             x = [str(i.item()) for i in x]
             f.write('\t'.join(x) + '\n')
+    return named_path

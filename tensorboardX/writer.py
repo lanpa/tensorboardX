@@ -9,6 +9,7 @@ import json
 import os
 import six
 import time
+import boto3
 
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
@@ -22,6 +23,15 @@ from .summary import (
     scalar, histogram, histogram_raw, image, audio, text,
     pr_curve, pr_curve_raw, video, custom_scalars, image_boxes
 )
+
+
+def upload_to_s3(bucket, tmp_path):
+    s3_client = boto3.client('s3')
+    name = tmp_path.replace('/tmp/', '').replace('{}/'.format(bucket), '')
+    try:
+        response = s3_client.upload_file(tmp_path, bucket, name)
+    except Exception as err:
+        print('Could not upload to s3: {}'.format(err))
 
 
 class DummyFileWriter(object):
@@ -768,24 +778,34 @@ class SummaryWriter(object):
         # Maybe we should encode the tag so slashes don't trip us up?
         # I don't think this will mess us up, but better safe than sorry.
         subdir = "%s/%s" % (str(global_step).zfill(5), self._encode(tag))
-        save_path = os.path.join(self._get_file_writer().get_logdir(), subdir)
+        log_dir = self._get_file_writer().get_logdir()
+        save_path = os.path.join(log_dir, subdir)
+        s3_bucket = None
+        if save_path.startswith('s3://'):
+            s3_bucket = save_path.replace('s3://', '').split('/')[0]
+            save_path = save_path.replace('s3://', '/tmp/')
+            log_dir = log_dir.replace('s3://', '/tmp/')
         try:
             os.makedirs(save_path)
         except OSError:
             print(
                 'warning: Embedding dir exists, did you set global_step for add_embedding()?')
+        to_upload = []
         if metadata is not None:
             assert mat.shape[0] == len(
                 metadata), '#labels should equal with #data points'
-            make_tsv(metadata, save_path, metadata_header=metadata_header)
+            named_path = make_tsv(metadata, save_path, metadata_header=metadata_header)
+            upload_to_s3(s3_bucket, named_path)
         if label_img is not None:
             assert mat.shape[0] == label_img.shape[0], '#images should equal with #data points'
-            make_sprite(label_img, save_path)
+            named_path = make_sprite(label_img, save_path)
+            upload_to_s3(s3_bucket, named_path)
         assert mat.ndim == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
-        make_mat(mat, save_path)
-        # new funcion to append to the config file a new embedding
-        append_pbtxt(metadata, label_img,
-                     self._get_file_writer().get_logdir(), subdir, global_step, tag)
+        named_path = make_mat(mat, save_path)
+        upload_to_s3(s3_bucket, named_path)
+        # new function to append to the config file a new embedding
+        named_path = append_pbtxt(metadata, label_img, log_dir, subdir, global_step, tag)
+        upload_to_s3(s3_bucket, named_path)
 
     def add_pr_curve(self, tag, labels, predictions, global_step=None,
                      num_thresholds=127, weights=None, walltime=None):
