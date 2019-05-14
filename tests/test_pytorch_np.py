@@ -53,7 +53,7 @@ class PyTorchNumpyTest(unittest.TestCase):
                                 num=num,
                                 sum=floats.sum().item(),
                                 sum_squares=sum_sq,
-                                bucket_limits=limits.tolist(),
+                                bucket_limits=limits[1:].tolist(),
                                 bucket_counts=counts.tolist())
 
             ints = x2num.make_np(torch.randint(0, 100, (num,)))
@@ -66,5 +66,5 @@ class PyTorchNumpyTest(unittest.TestCase):
                                 num=num,
                                 sum=ints.sum().item(),
                                 sum_squares=sum_sq,
-                                bucket_limits=limits.tolist(),
+                                bucket_limits=limits[1:].tolist(),
                                 bucket_counts=counts.tolist())
