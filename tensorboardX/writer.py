@@ -219,7 +219,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
 
             # create a summary writer with automatically generated folder name.
             writer = SummaryWriter()
@@ -322,7 +322,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             writer = SummaryWriter()
             x = range(100)
             for i in x:
@@ -353,7 +353,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             writer = SummaryWriter()
             r = 5
             for i in range(100):
@@ -410,7 +410,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             import numpy as np
             writer = SummaryWriter()
             for i in range(10):
@@ -443,12 +443,37 @@ class SummaryWriter(object):
             num (int): Number of values
             sum (float or int): Sum of all values
             sum_squares (float or int): Sum of squares for all values
-            bucket_limits (torch.Tensor, numpy.array): Upper value per bucket
+            bucket_limits (torch.Tensor, numpy.array): Upper value per
+              bucket, note that the bucket_limits returned from `np.histogram`
+              has one more element. See the comment in the following example.
             bucket_counts (torch.Tensor, numpy.array): Number of values per bucket
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
-            see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/histogram/README.md
+
+        Examples::
+
+            import numpy as np
+            dummy_data = []
+            for idx, value in enumerate(range(30)):
+                dummy_data += [idx + 0.001] * value
+            values = np.array(dummy_data).astype(float).reshape(-1)
+            counts, limits = np.histogram(values)
+            sum_sq = values.dot(values)
+            with SummaryWriter() as summary_writer:
+                summary_writer.add_histogram_raw(
+                        tag='hist_dummy_data',
+                        min=values.min(),
+                        max=values.max(),
+                        num=len(values),
+                        sum=values.sum(),
+                        sum_squares=sum_sq,
+                        bucket_limits=limits[1:].tolist(),  # <- note here.
+                        bucket_counts=counts.tolist(),
+                        global_step=0)
+
         """
+        if len(bucket_limits) != len(bucket_counts):
+            raise ValueError('len(bucket_limits) != len(bucket_counts), see the document.')
         self._get_file_writer().add_summary(
             histogram_raw(tag,
                           min,
@@ -479,7 +504,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             import numpy as np
             img = np.zeros((3, 100, 100))
             img[0] = np.arange(0, 10000).reshape(100, 100) / 10000
@@ -523,7 +548,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             import numpy as np
 
             img_batch = np.zeros((16, 3, 100, 100))
@@ -784,7 +809,7 @@ class SummaryWriter(object):
 
         Examples::
 
-            from torch.utils.tensorboard import SummaryWriter
+            from tensorboardX import SummaryWriter
             import numpy as np
             labels = np.random.randint(2, size=100)  # binary label
             predictions = np.random.rand(100)
