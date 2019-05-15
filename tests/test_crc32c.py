@@ -1,15 +1,18 @@
 import unittest
-from secrets import token_bytes
-from tensorboardX.crc32c import _crc32c, _crc32c_native
+from tensorboardX.crc32c import _crc32c, _crc32c_native, crc32c
 
 
 class CRC32CTest(unittest.TestCase):
     def test_crc32c(self):
         data = b'abcd'
+        assert crc32c(data) == 0x92c80a31
+
+    def test_crc32c_python(self):
+        data = b'abcd'
         assert _crc32c(data) == 0x92c80a31
 
-    def test_implementations(self):
-        random_data = token_bytes(100)
-        a = _crc32c(random_data)
-        b = _crc32c_native(random_data)
-        assert a == b
+    def test_crc32c_native(self):
+        if _crc32c_native is None:
+            return
+        data = b'abcd'
+        assert _crc32c_native(data) == 0x92c80a31
