@@ -5,15 +5,7 @@ import os
 try:
     if os.environ.get('CRC32C_SW_MODE', None) is None:
         os.environ['CRC32C_SW_MODE'] = 'auto'
-    from crc32c import crc32 as _crc32_ext
-
-
-    def _crc32c_native(data):
-        x = _crc32_ext(data) & 0xffffffff
-        a = (x >> 15) & 0xffffffff
-        b = (x << 17) & 0xffffffff
-        out = ((a | b) + 0xa282ead8) & 0xffffffff
-        return out
+    from crc32c import crc32 as _crc32c_native
 except ImportError:
     _crc32c_native = None
 
