@@ -84,9 +84,8 @@ setup(
 
 
 # checklist: update History.rst readme.md
-# version=version_git <--- change to sha-less version
-# 
-# bump version number in setup.py
+# version=version_git <--- change to sha-less version (in setup.py)
+# __version__ = "1.x" (__init__.py)
 # commit
 # add tag
 # python setup.py sdist bdist_wheel --universal

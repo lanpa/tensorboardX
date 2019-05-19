@@ -1,5 +1,11 @@
 History
 =======
+1.7 (2019-05-19)
+-----------------
+* Able to write to S3
+* Fixed raw histogram issue that nothing is shown in TensorBoard
+* Users can use virious image/video dimension permutation by passing 'dataformat' parameter.
+
 1.6 (2019-01-02)
 -----------------
 * Many graph related bug is fixed in this version.
