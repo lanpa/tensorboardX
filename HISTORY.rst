@@ -64,7 +64,7 @@ History
 * unifies API call and adds docstring. Documentation is available at: http://tensorboard-pytorch.readthedocs.io/
 
 0.6.5 (2017-07-30)
------------------
+------------------
 * add travis test (py2.7, py3.6)
 * add support for python2 (in PyPI)
 
@@ -94,5 +94,6 @@ History
 0.1 (2017-06-13)
 ------------------
 * First commit. Reference:
+
 https://github.com/TeamHG-Memex/tensorboard_logger
 https://github.com/dmlc/tensorboard

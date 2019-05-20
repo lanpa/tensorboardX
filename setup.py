@@ -30,13 +30,14 @@ class PostInstallCommand(install):
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-version = '1.6'
+# comment if preparing PyPI package
+version = '1.7'
 sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 version_git = version + '+' + sha[:7]
 
 with open('tensorboardX/__init__.py', 'a') as f:
     f.write('\n__version__ = "{}"\n'.format(version_git))
-
+# end of comment
 
 requirements = [
     'numpy',
