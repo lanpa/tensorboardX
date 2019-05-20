@@ -1,5 +1,13 @@
 History
 =======
+1.7 (2019-05-19)
+-----------------
+* Able to write to S3
+* Fixed raw histogram issue that nothing is shown in TensorBoard
+* Users can use various image/video dimension permutation by passing 'dataformats' parameter.
+* You can bybass the writer by passing write_to_disk=True to SummaryWriter
+
+
 1.6 (2019-01-02)
 -----------------
 * Many graph related bug is fixed in this version.
