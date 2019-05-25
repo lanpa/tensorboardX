@@ -48,3 +48,8 @@ class WriterTest(unittest.TestCase):
                                     recall, n_iter)
             # export scalar data to JSON for external processing
             writer.export_scalars_to_json("./all_scalars.json")
+            imgs = []
+            for i in range(5):
+                imgs.append(np.ones((3, 100, 110)))
+            with SummaryWriter() as w:
+                w.add_images('img_list', imgs, dataformats='CHW')
