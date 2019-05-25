@@ -534,7 +534,8 @@ class SummaryWriter(object):
 
     def add_images(self, tag, img_tensor, global_step=None, walltime=None, dataformats='NCHW'):
         """Add batched image data to summary.
-
+        Besides pass 4D tensor, you can also pass a list of tensors of the same size.
+        In this case, the ``dataformats`` should be `CHW` or `HWC`.
         Note that this requires the ``pillow`` package.
 
         Args:
@@ -568,6 +569,20 @@ class SummaryWriter(object):
         """
         if self._check_caffe2_blob(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
+        if isinstance(img_tensor, list):  # a list of tensors in CHW or HWC
+            if dataformats.upper() != 'CHW' and dataformats.upper() != 'HWC':
+                print('A list of image is passed, but the dataformat is neither CHW nor HWC.')
+                print('Nothing is written.')
+                return
+            import torch
+            try:
+                img_tensor = torch.stack(img_tensor, 0)
+            except:
+                import numpy as np
+                img_tensor = np.stack(img_tensor, 0)
+
+            dataformats = 'N' + dataformats
+
         self._get_file_writer().add_summary(
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
