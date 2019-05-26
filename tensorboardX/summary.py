@@ -1,47 +1,15 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
-"""## Generation of summaries.
-### Class for writing Summaries
-@@FileWriter
-@@FileWriterCache
-### Summary Ops
-@@tensor_summary
-@@scalar
-@@histogram
-@@audio
-@@image
-@@merge
-@@merge_all
-## Utilities
-@@get_summary_description
-"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import bisect
 import logging
 import numpy as np
 import os
 import re as _re
 
 # pylint: disable=unused-import
-from six import StringIO
 from six.moves import range
+
 from .proto.summary_pb2 import Summary
 from .proto.summary_pb2 import HistogramProto
 from .proto.summary_pb2 import SummaryMetadata
@@ -201,7 +169,7 @@ def make_histogram(values, bins, max_bins=None):
     end = int(end) + 1
     del cum_counts
 
-    # Tensorboard only includes the right bin limits. To still have the leftmost limit
+    # TensorBoard only includes the right bin limits. To still have the leftmost limit
     # included, we include an empty bin left.
     # If start == 0, we need to add an empty one left, otherwise we can just include the bin left to the
     # first nonzero-count bin:
@@ -320,7 +288,7 @@ def video(tag, tensor, fps=4):
 
 def make_video(tensor, fps):
     try:
-        import moviepy
+        import moviepy  # noqa: F401
     except ImportError:
         print('add_video needs package moviepy')
         return
@@ -336,10 +304,9 @@ def make_video(tensor, fps):
 
     # encode sequence of images into gif string
     clip = mpy.ImageSequenceClip(list(tensor), fps=fps)
-    with tempfile.NamedTemporaryFile() as f:
-        filename = f.name + '.gif'
 
-    try:
+    filename = tempfile.NamedTemporaryFile(suffix='.gif', delete=False).name
+    try:  # older version of moviepy does not support progress_bar argument.
         clip.write_gif(filename, verbose=False, progress_bar=False)
     except TypeError:
         clip.write_gif(filename, verbose=False)
@@ -350,7 +317,7 @@ def make_video(tensor, fps):
     try:
         os.remove(filename)
     except OSError:
-        pass
+        logging.warning('The temporary file used by moviepy cannot be deleted.')
 
     return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 

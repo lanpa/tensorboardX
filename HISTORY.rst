@@ -1,5 +1,13 @@
 History
 =======
+1.7 (2019-05-19)
+-----------------
+* Able to write to S3
+* Fixed raw histogram issue that nothing is shown in TensorBoard
+* Users can use various image/video dimension permutation by passing 'dataformats' parameter.
+* You can bybass the writer by passing write_to_disk=True to SummaryWriter
+
+
 1.6 (2019-01-02)
 -----------------
 * Many graph related bug is fixed in this version.
@@ -56,7 +64,7 @@ History
 * unifies API call and adds docstring. Documentation is available at: http://tensorboard-pytorch.readthedocs.io/
 
 0.6.5 (2017-07-30)
------------------
+------------------
 * add travis test (py2.7, py3.6)
 * add support for python2 (in PyPI)
 
@@ -86,5 +94,6 @@ History
 0.1 (2017-06-13)
 ------------------
 * First commit. Reference:
+
 https://github.com/TeamHG-Memex/tensorboard_logger
 https://github.com/dmlc/tensorboard

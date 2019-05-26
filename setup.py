@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-
+import os
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
@@ -30,13 +30,18 @@ class PostInstallCommand(install):
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-version = '1.6'
-sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-version_git = version + '+' + sha[:7]
+# comment if preparing PyPI package
+version = '1.7'
+
+if os.path.exists('.git'):
+    sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    version_git = version + '+' + sha[:7]
+else:
+    version_git = version
 
 with open('tensorboardX/__init__.py', 'a') as f:
     f.write('\n__version__ = "{}"\n'.format(version_git))
-
+# end of comment
 
 requirements = [
     'numpy',
@@ -84,9 +89,8 @@ setup(
 
 
 # checklist: update History.rst readme.md
-# version=version_git <--- change to sha-less version
-# 
-# bump version number in setup.py
+# version=version_git <--- change to sha-less version (in setup.py)
+# __version__ = "1.x" (__init__.py)
 # commit
 # add tag
 # python setup.py sdist bdist_wheel --universal
