@@ -22,6 +22,7 @@ import json
 import os
 import six
 import time
+import logging
 
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
@@ -433,15 +434,17 @@ class SummaryWriter(object):
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_image_with_boxes(self, tag, img_tensor, box_tensor, global_step=None,
-                             walltime=None, dataformats='CHW', **kwargs):
+                             walltime=None, dataformats='CHW', labels=None, **kwargs):
         """Add image and draw bounding boxes on the image.
 
         Args:
             tag (string): Data identifier
             img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
             box_tensor (torch.Tensor, numpy.array, or string/blobname): Box data (for detected objects)
+              box should be represented as [x1, y1, x2, y2].
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
+            labels (list of string): The strings to be show on each bounding box.
         Shape:
             img_tensor: Default is :math:`(3, H, W)`. It can be specified with ``dataformat`` agrument.
             e.g. CHW or HWC
@@ -453,8 +456,14 @@ class SummaryWriter(object):
             img_tensor = workspace.FetchBlob(img_tensor)
         if self._check_caffe2(box_tensor):
             box_tensor = workspace.FetchBlob(box_tensor)
+        if labels is not None:
+            if isinstance(labels, str):
+                labels = [labels]
+            if len(labels) != box_tensor.shape[0]:
+                logging.warning('Number of labels do not equal to number of box, skip the labels.')
+                labels = None
         self.get_file_writer().add_summary(image_boxes(
-            tag, img_tensor, box_tensor, dataformats=dataformats, **kwargs), global_step, walltime)
+            tag, img_tensor, box_tensor, dataformats=dataformats, labels=labels, **kwargs), global_step, walltime)
 
     def add_figure(self, tag, figure, global_step=None, close=True, walltime=None):
         """Render matplotlib figure into an image and add it to summary.
