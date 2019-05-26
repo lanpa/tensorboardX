@@ -33,7 +33,10 @@ for n_iter in range(100):
     if n_iter % 10 == 0:
         x = vutils.make_grid(x, normalize=True, scale_each=True)
         writer.add_image('Image', x, n_iter)  # Tensor
-        writer.add_image_with_boxes('imagebox', x, torch.Tensor([[10, 10, 40, 40], [40, 40, 60, 60]]), n_iter)
+        writer.add_image_with_boxes('imagebox_label', torch.ones(3, 240, 240) * 0.5,
+             torch.Tensor([[10, 10, 100, 100], [101, 101, 200, 200]]),
+             n_iter, 
+             labels=['abcde' + str(n_iter), 'fgh' + str(n_iter)])
         x = torch.zeros(sample_rate * 2)
         for i in range(x.size(0)):
             # sound amplitude should in [-1, 1]
