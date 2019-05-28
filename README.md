@@ -25,6 +25,8 @@ or build from source:
 
 `git clone https://github.com/lanpa/tensorboardX && cd tensorboardX && python setup.py install`
 
+You can optionally install [`crc32c`](https://github.com/ICRAR/crc32c) to speed up saving a large amount of data.
+
 
 ## Example
 

@@ -1,5 +1,13 @@
 # https://www.ietf.org/rfc/rfc3309.txt
 import array
+import os
+
+try:
+    if os.environ.get('CRC32C_SW_MODE', None) is None:
+        os.environ['CRC32C_SW_MODE'] = 'auto'
+    from crc32c import crc32 as _crc32c_native
+except ImportError:
+    _crc32c_native = None
 
 
 CRC_TABLE = (
@@ -69,7 +77,6 @@ CRC_TABLE = (
     0xbe2da0a5, 0x4c4623a6, 0x5f16d052, 0xad7d5351,
 )
 
-
 CRC_INIT = 0
 
 _MASK = 0xFFFFFFFF
@@ -112,7 +119,7 @@ def crc_finalize(crc):
     return crc & _MASK
 
 
-def crc32c(data):
+def _crc32c(data):
     """Compute CRC-32C checksum of the data.
 
     Args:
@@ -122,3 +129,6 @@ def crc32c(data):
       32-bit CRC-32C checksum of data as long.
     """
     return crc_finalize(crc_update(CRC_INIT, data))
+
+
+crc32c = _crc32c if _crc32c_native is None else _crc32c_native

@@ -51,7 +51,8 @@ requirements = [
 
 test_requirements = [
     'pytest',
-    'matplotlib'
+    'matplotlib',
+    'crc32c',
 ]
 
 setup(
