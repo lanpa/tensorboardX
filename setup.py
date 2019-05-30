@@ -52,7 +52,7 @@ requirements = [
 test_requirements = [
     'pytest',
     'matplotlib',
-    'tb-nightly',
+    'crc32c',
 ]
 
 setup(
