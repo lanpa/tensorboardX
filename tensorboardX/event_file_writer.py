@@ -44,6 +44,7 @@ class EventsWriter(object):
         # Initialize an event instance.
         self._event = event_pb2.Event()
         self._event.wall_time = time.time()
+        self._event.file_version = 'brain.Event:2'
         self._lock = threading.Lock()
         self.write_event(self._event)
 
