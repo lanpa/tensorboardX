@@ -51,6 +51,7 @@ install:
   - pip install boto3
   - pip install moto
   - pip install visdom
+  - pip install tb-nightly
   - pip install crc32c
   - conda install ffmpeg
   - conda list
