@@ -232,98 +232,27 @@ def graph(model, args, verbose=False, **kwargs):
       args (tuple): input tensor[s] for the model.
       verbose (bool): Whether to print out verbose information while
         processing.
-      operator_export_type (str): One of 'ONNX', 'ONNX_ATEN', or 'RAW'.
-        Defaults to 'ONNX' format  because it outputs the most visually
-        understandable format.
-      omit_useless_nodes (boolean): Whether to remove nodes from the graph.
     """
     import torch
 
-    def _optimize_trace(trace, operator_export_type):
-        trace.set_graph(_optimize_graph(trace.graph(), operator_export_type))
-
-    def _optimize_graph(graph, operator_export_type):
-        # torch._C._jit_pass_remove_inplace_ops(graph)
-        # we record now record some ops like ones/zeros
-        # into a trace where we previously recorded constants
-        # use constant prop to maintain our current level of onnx support
-        # without implementing symbolics for all of them
-        torch._C._jit_pass_constant_propagation(graph)
-        torch.onnx.utils._split_tensor_list_constants(graph, graph)
-        # run dce to eliminate dead parts of the graph that might have been
-        # left behind by things like symbolic_override
-        torch._C._jit_pass_dce(graph)
-        torch._C._jit_pass_lint(graph)
-
-        # torch._C._jit_pass_canonicalize_ops(graph)
-        # torch._C._jit_pass_lint(graph)
-
-        torch._C._jit_pass_peephole(graph, True)
-        torch._C._jit_pass_lint(graph)
-
-        # onnx only supports tensors, but 1 / 2 = 0.5 and tensor(1) / tensor(2) = 0
-        torch._C._jit_pass_prepare_division_for_onnx(graph)
-        # onnx only supports tensors, so we turn all out number types into tensors
-        torch._C._jit_pass_erase_number_types(graph)
-        # onnx does not support tuples, so try to remove them
-        torch._C._jit_pass_lower_all_tuples(graph)
-        torch._C._jit_pass_peephole(graph, True)
-        torch._C._jit_pass_lint(graph)
-
-        if operator_export_type != torch.onnx.utils.OperatorExportTypes.RAW:
-            graph = torch._C._jit_pass_onnx(graph, operator_export_type)
-            torch._C._jit_pass_lint(graph)
-            # torch._C._jit_pass_onnx_peephole(graph)
-            torch._C._jit_pass_lint(graph)
-        torch._C._jit_pass_dce(graph)
-        torch._C._jit_pass_lint(graph)
-        torch._C._jit_pass_fixup_onnx_loops(graph)
-        torch._C._jit_pass_lint(graph)
-        graph = torch._C._jit_pass_canonicalize(graph)
-        torch._C._jit_pass_lint(graph)
-        return graph
-
-    with torch.onnx.set_training(model, False):
+    with torch.onnx.set_training(model, False):  # TODO: move outside of torch.onnx
         try:
-            trace, _ = torch.jit.get_trace_graph(model, args)
-        except RuntimeError:
+            trace = torch.jit.trace(model, args)
+            graph = trace.graph
+
+        except RuntimeError as e:
+            print(e)
             print('Error occurs, No graph saved')
-            print("Checking if it's onnx problem...")
-            try:
-                import tempfile
-                torch.onnx.export(
-                    model, args, tempfile.TemporaryFile(), verbose=True)
-            except RuntimeError:
-                print("Your model cannot be exported by onnx, please report to onnx team")
+
             # Create an object matching
             # https://github.com/tensorflow/tensorboard/blob/master/tensorboard/compat/proto/graph.proto
             # The producer version has been reverse engineered from standard
             # TensorBoard logged data.
             return GraphDef(versions=VersionDef(producer=22))
 
-    if 'operator_export_type' not in kwargs:
-        operator_export_type = torch.onnx.utils.OperatorExportTypes.ONNX
-    else:
-        operator_export_type = getattr(torch.onnx.utils.OperatorExportTypes, kwargs['operator_export_type'])
-
-    if 'omit_useless_nodes' not in kwargs:
-        omit_useless_nodes = True
-
-    try:
-        # An optimized graph helps debug at a higher level. Users can focus
-        # on connections between big modules such as Linear instead of W, x,
-        # bias, matmul, etc. Honestly, most users don't care about those
-        # detailed nodes information.
-        _optimize_trace(trace, operator_export_type)
-    except RuntimeError as e:
-        # Optimize trace might fail (due to bad scopes in some cases we've seen)
-        # and we don't want graph visualization to fail in this case. In this
-        # case we'll log the warning and display the non-optimized graph.
-        logging.warn(ImportError(e))
-    graph = trace.graph()
     if verbose:
         print(graph)
-    list_of_nodes, node_stats = parse(graph, args, omit_useless_nodes)
+    list_of_nodes, node_stats = parse(graph, args)
     # We are hardcoding that this was run on CPU even though it might have actually
     # run on GPU. Note this is what is shown in TensorBoard and has no bearing
     # on actual execution.
