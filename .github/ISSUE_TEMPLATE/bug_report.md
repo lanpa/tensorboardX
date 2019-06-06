@@ -25,6 +25,8 @@ If applicable, add screenshots to help explain your problem.
 **Environment**
 What is the result of 
 `pip list|grep -E "torch|proto|tensor"`
+If the version is too old, please try to update first.
+
 
 **Additional context**
 Add any other context about the problem here.
