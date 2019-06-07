@@ -8,12 +8,6 @@ def removeWhiteChar(string):
 
 
 def compare_proto(str_to_compare, function_ptr):
-    if 'histogram' in function_ptr.id():
-        return  # numpy.histogram has slightly different between different version
-
-    if 'pr_curve' in function_ptr.id():
-        return  # pr_curve depends on numpy.histogram
-
     module_id = function_ptr.__class__.__module__
     functionName = function_ptr.id().split('.')[-1]
     test_file = os.path.realpath(sys.modules[module_id].__file__)
