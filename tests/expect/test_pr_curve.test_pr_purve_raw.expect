@@ -30,15 +30,15 @@ value {
     float_val: 54.0
     float_val: 70.0
     float_val: 75.0
-    float_val: 0.3333333134651184
-    float_val: 0.3786981999874115
-    float_val: 0.5384616255760193
+    float_val: 0.3333333
+    float_val: 0.3786982
+    float_val: 0.5384616
     float_val: 1.0
     float_val: 0.0
     float_val: 1.0
-    float_val: 0.8533334136009216
-    float_val: 0.2800000011920929
-    float_val: 0.06666669994592667
+    float_val: 0.8533334
+    float_val: 0.28
+    float_val: 0.0666667
     float_val: 0.0
   }
   metadata {
