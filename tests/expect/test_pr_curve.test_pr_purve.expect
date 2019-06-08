@@ -10,11 +10,11 @@ value {
         size: 1
       }
     }
-    float_val: 56.0
-    float_val: 44.0
+    float_val: 57.0
+    float_val: 43.0
     float_val: 0.0
     float_val: 0.0
-    float_val: 0.5600000023841858
+    float_val: 0.57
     float_val: 1.0
   }
   metadata {
