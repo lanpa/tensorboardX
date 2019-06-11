@@ -54,6 +54,7 @@ install:
   - pip install visdom
   - pip install tb-nightly
   - pip install crc32c
+  - pip install protobuf==3.8.0
   - conda install ffmpeg
   - conda list
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
