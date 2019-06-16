@@ -78,3 +78,24 @@ class SummaryTest(unittest.TestCase):
 
     def test_histogram_doane(self):
         compare_proto(summary.histogram('dummy', tensor_N(shape=(1024,)), bins='doane', max_bins=5), self)
+
+    def test_mesh(self):
+        vertices_tensor = np.array([[
+            [1, 1, 1],
+            [-1, -1, 1],
+            [1, -1, -1],
+            [-1, 1, -1],
+        ]], dtype=float)
+        colors_tensor = np.array([[
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255],
+            [255, 0, 255],
+        ]], dtype=int)
+        faces_tensor = np.array([[
+            [0, 2, 3],
+            [0, 3, 1],
+            [0, 1, 2],
+            [1, 3, 2],
+        ]], dtype=int)
+        compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
