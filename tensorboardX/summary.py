@@ -17,6 +17,7 @@ from .proto.tensor_pb2 import TensorProto
 from .proto.tensor_shape_pb2 import TensorShapeProto
 from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
 from .proto.plugin_text_pb2 import TextPluginData
+from .proto.plugin_mesh_pb2 import MeshPluginData
 from .proto import layout_pb2
 from .x2num import make_np
 from .utils import _prepare_video, convert_to_HWC
@@ -457,3 +458,51 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
     precision = tp / np.maximum(_MINIMUM_COUNT, tp + fp)
     recall = tp / np.maximum(_MINIMUM_COUNT, tp + fn)
     return np.stack((tp, fp, tn, fn, precision, recall))
+
+
+def _get_tensor_summary(tag, tensor, content_type, json_config):
+    mesh_plugin_data = MeshPluginData(
+        version=0,
+        name=tag,
+        content_type=content_type,
+        json_config=json_config,
+        shape=tensor.shape,
+    )
+    content = mesh_plugin_data.SerializeToString()
+    smd = SummaryMetadata(
+        plugin_data=[SummaryMetadata.PluginData(
+            plugin_name='mesh',
+            content=content)])
+
+    tensor = TensorProto(dtype='DT_FLOAT',
+                         float_val=tensor.reshape(-1).tolist(),
+                         tensor_shape=TensorShapeProto(dim=[
+                             TensorShapeProto.Dim(size=tensor.shape[0]),
+                             TensorShapeProto.Dim(size=tensor.shape[1]),
+                             TensorShapeProto.Dim(size=tensor.shape[2]),
+                         ]))
+    tensor_summary = Summary.Value(
+        tag='{}_{}'.format(tag, content_type),
+        tensor=tensor,
+        metadata=smd,
+    )
+    return tensor_summary
+
+
+def mesh(tag, vertices, colors, faces, config_dict=None):
+
+    import json
+    summaries = []
+    tensors = [
+        (make_np(vertices), 1),
+        (make_np(faces), 2),
+        (make_np(colors), 3)
+    ]
+
+    for tensor, content_type in tensors:
+        if tensor is None:
+            continue
+        summaries.append(
+            _get_tensor_summary(tag, tensor, content_type, json.dumps(config_dict, sort_keys=True)))
+
+    return Summary(value=summaries)
