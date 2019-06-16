@@ -84,3 +84,24 @@ class SummaryTest(unittest.TestCase):
                     'USA': {'dow': ['Margin', ['dow/aaa', 'dow/bbb', 'dow/ccc']],
                             'nasdaq': ['Margin', ['nasdaq/aaa', 'nasdaq/bbb', 'nasdaq/ccc']]}}
         summary.custom_scalars(layout)  # smoke test only.
+
+    def test_mesh(self):
+        vertices_tensor = np.array([[
+            [1, 1, 1],
+            [-1, -1, 1],
+            [1, -1, -1],
+            [-1, 1, -1],
+        ]], dtype=float)
+        colors_tensor = np.array([[
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255],
+            [255, 0, 255],
+        ]], dtype=int)
+        faces_tensor = np.array([[
+            [0, 2, 3],
+            [0, 3, 1],
+            [0, 1, 2],
+            [1, 3, 2],
+        ]], dtype=int)
+        compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
