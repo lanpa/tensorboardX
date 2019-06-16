@@ -83,4 +83,4 @@ class SummaryTest(unittest.TestCase):
         layout = {'Taiwan': {'twse': ['Multiline', ['twse/0050', 'twse/2330']]},
                     'USA': {'dow': ['Margin', ['dow/aaa', 'dow/bbb', 'dow/ccc']],
                             'nasdaq': ['Margin', ['nasdaq/aaa', 'nasdaq/bbb', 'nasdaq/ccc']]}}
-        compare_proto(summary.custom_scalars(layout), self)
+        summary.custom_scalars(layout)  # smoke test only.
