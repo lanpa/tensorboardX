@@ -79,6 +79,12 @@ class SummaryTest(unittest.TestCase):
     def test_histogram_doane(self):
         compare_proto(summary.histogram('dummy', tensor_N(shape=(1024,)), bins='doane', max_bins=5), self)
 
+    def test_custom_scalars(self):
+        layout = {'Taiwan': {'twse': ['Multiline', ['twse/0050', 'twse/2330']]},
+                    'USA': {'dow': ['Margin', ['dow/aaa', 'dow/bbb', 'dow/ccc']],
+                            'nasdaq': ['Margin', ['nasdaq/aaa', 'nasdaq/bbb', 'nasdaq/ccc']]}}
+        summary.custom_scalars(layout)  # smoke test only.
+
     def test_mesh(self):
         vertices_tensor = np.array([[
             [1, 1, 1],
