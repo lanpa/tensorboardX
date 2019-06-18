@@ -1,9 +1,11 @@
 from tensorboardX import SummaryWriter
+from tensorboard.compat.tensorflow_stub.pywrap_tensorflow import PyRecordReader_New
+from tensorboardX.proto import event_pb2
 
 import numpy as np
 import pytest
 import unittest
-
+import time
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
 
 true_positive_counts = [75, 64, 21, 5, 0]
@@ -15,6 +17,60 @@ recall = [1.0, 0.8533334, 0.28, 0.0666667, 0.0]
 
 
 class WriterTest(unittest.TestCase):
+    def test_flush(self):
+        N_TEST = 5
+        w = SummaryWriter(flush_secs=1)
+        f = w.file_writer.event_writer._ev_writer._file_name
+        for i in range(N_TEST):
+            w.add_scalar('a', i)
+            time.sleep(2)
+        r = PyRecordReader_New(f)
+        r.GetNext()  # meta data, so skip
+        for _ in range(N_TEST):  # all of the data should be flushed
+            r.GetNext()
+
+    def test_flush_timer_is_long_so_data_is_not_there(self):
+        with self.assertRaises(BaseException):
+            N_TEST = 5
+            w = SummaryWriter(flush_secs=20)
+            f = w.file_writer.event_writer._ev_writer._file_name
+            for i in range(N_TEST):
+                w.add_scalar('a', i)
+                time.sleep(2)
+            r = PyRecordReader_New(f)
+            r.GetNext()  # meta data, so skip
+            for _ in range(N_TEST):  # missing data
+                r.GetNext()
+
+    def test_flush_after_close(self):
+        N_TEST = 5
+        w = SummaryWriter(flush_secs=20)
+        f = w.file_writer.event_writer._ev_writer._file_name
+        for i in range(N_TEST):
+            w.add_scalar('a', i)
+            time.sleep(2)
+        w.close()
+        r = PyRecordReader_New(f)
+        r.GetNext()  # meta data, so skip
+        for _ in range(N_TEST):  # all of the data should be flushed
+            r.GetNext()
+
+    def test_flush(self):
+        N_TEST = 5
+        w = SummaryWriter(flush_secs=20)
+        f = w.file_writer.event_writer._ev_writer._file_name
+        for i in range(N_TEST):
+            w.add_scalar('a', i)
+            time.sleep(2)
+        w.flush()
+        r = PyRecordReader_New(f)
+        r.GetNext()  # meta data, so skip
+        for _ in range(N_TEST):  # all of the data should be flushed
+            r.GetNext()
+
+    def test_auto_close(self):
+        pass
+
     def test_writer(self):
         with SummaryWriter() as writer:
             sample_rate = 44100

@@ -243,9 +243,9 @@ class SummaryWriter(object):
                 'runs', current_time + '_' + socket.gethostname() + comment)
         self.logdir = logdir
         self.purge_step = purge_step
-        self.max_queue = max_queue
-        self.flush_secs = flush_secs
-        self.filename_suffix = filename_suffix
+        self._max_queue = max_queue
+        self._flush_secs = flush_secs
+        self._filename_suffix = filename_suffix
         self._write_to_disk = write_to_disk
         self.kwargs = kwargs
 
@@ -302,13 +302,21 @@ class SummaryWriter(object):
         if self.all_writers is None or self.file_writer is None:
             if 'purge_step' in self.kwargs.keys():
                 most_recent_step = self.kwargs.pop('purge_step')
-                self.file_writer = FileWriter(logdir=self.logdir, **self.kwargs)
+                self.file_writer = FileWriter(logdir=self.logdir,
+                                              max_queue=self._max_queue,
+                                              flush_secs=self._flush_secs,
+                                              filename_suffix=self._filename_suffix,
+                                              **self.kwargs)
                 self.file_writer.add_event(
                     Event(step=most_recent_step, file_version='brain.Event:2'))
                 self.file_writer.add_event(
                     Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
             else:
-                self.file_writer = FileWriter(logdir=self.logdir, **self.kwargs)
+                self.file_writer = FileWriter(logdir=self.logdir,
+                                              max_queue=self._max_queue,
+                                              flush_secs=self._flush_secs,
+                                              filename_suffix=self._filename_suffix,
+                                              **self.kwargs)
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
@@ -997,6 +1005,12 @@ class SummaryWriter(object):
             writer.flush()
             writer.close()
         self.file_writer = self.all_writers = None
+
+    def flush(self):
+        if self.all_writers is None:
+            return  # ignore double close
+        for writer in self.all_writers.values():
+            writer.flush()
 
     def __enter__(self):
         return self
