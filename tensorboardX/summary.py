@@ -376,7 +376,7 @@ def custom_scalars(layout):
         categories.append(layout_pb2.Category(title=k, chart=charts))
 
     layout = layout_pb2.Layout(category=categories)
-    PluginData = [SummaryMetadata.PluginData(plugin_name='custom_scalars')]
+    PluginData = SummaryMetadata.PluginData(plugin_name='custom_scalars')
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_STRING',
                          string_val=[layout.SerializeToString()],
@@ -386,8 +386,8 @@ def custom_scalars(layout):
 
 def text(tag, text):
     import json
-    PluginData = [SummaryMetadata.PluginData(
-        plugin_name='text', content=TextPluginData(version=0).SerializeToString())]
+    PluginData = SummaryMetadata.PluginData(
+        plugin_name='text', content=TextPluginData(version=0).SerializeToString())
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_STRING',
                          string_val=[text.encode(encoding='utf_8')],
@@ -401,8 +401,8 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, num_thresholds=127, wei
     data = np.stack((tp, fp, tn, fn, precision, recall))
     pr_curve_plugin_data = PrCurvePluginData(
         version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(
-        plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    PluginData = SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
@@ -418,8 +418,8 @@ def pr_curve(tag, labels, predictions, num_thresholds=127, weights=None):
                          num_thresholds=num_thresholds, weights=weights)
     pr_curve_plugin_data = PrCurvePluginData(
         version=0, num_thresholds=num_thresholds).SerializeToString()
-    PluginData = [SummaryMetadata.PluginData(
-        plugin_name='pr_curves', content=pr_curve_plugin_data)]
+    PluginData = SummaryMetadata.PluginData(
+        plugin_name='pr_curves', content=pr_curve_plugin_data)
     smd = SummaryMetadata(plugin_data=PluginData)
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=data.reshape(-1).tolist(),
@@ -470,9 +470,9 @@ def _get_tensor_summary(tag, tensor, content_type, json_config):
     )
     content = mesh_plugin_data.SerializeToString()
     smd = SummaryMetadata(
-        plugin_data=[SummaryMetadata.PluginData(
+        plugin_data=SummaryMetadata.PluginData(
             plugin_name='mesh',
-            content=content)])
+            content=content))
 
     tensor = TensorProto(dtype='DT_FLOAT',
                          float_val=tensor.reshape(-1).tolist(),

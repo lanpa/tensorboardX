@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='tensorboardX',
   syntax='proto3',
   serialized_options=_b('\n\030org.tensorflow.frameworkB\rSummaryProtosP\001\370\001\001'),
-  serialized_pb=_b('\n tensorboardX/proto/summary.proto\x12\x0ctensorboardX\x1a\x1ftensorboardX/proto/tensor.proto\"\'\n\x12SummaryDescription\x12\x11\n\ttype_hint\x18\x01 \x01(\t\"\x87\x01\n\x0eHistogramProto\x12\x0b\n\x03min\x18\x01 \x01(\x01\x12\x0b\n\x03max\x18\x02 \x01(\x01\x12\x0b\n\x03num\x18\x03 \x01(\x01\x12\x0b\n\x03sum\x18\x04 \x01(\x01\x12\x13\n\x0bsum_squares\x18\x05 \x01(\x01\x12\x18\n\x0c\x62ucket_limit\x18\x06 \x03(\x01\x42\x02\x10\x01\x12\x12\n\x06\x62ucket\x18\x07 \x03(\x01\x42\x02\x10\x01\"\x84\x01\n\x0fSummaryMetadata\x12=\n\x0bplugin_data\x18\x01 \x03(\x0b\x32(.tensorboardX.SummaryMetadata.PluginData\x1a\x32\n\nPluginData\x12\x13\n\x0bplugin_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"\xea\x04\n\x07Summary\x12*\n\x05value\x18\x01 \x03(\x0b\x32\x1b.tensorboardX.Summary.Value\x1aX\n\x05Image\x12\x0e\n\x06height\x18\x01 \x01(\x05\x12\r\n\x05width\x18\x02 \x01(\x05\x12\x12\n\ncolorspace\x18\x03 \x01(\x05\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a\xd9\x02\n\x05Value\x12\x11\n\tnode_name\x18\x07 \x01(\t\x12\x0b\n\x03tag\x18\x01 \x01(\t\x12/\n\x08metadata\x18\t \x01(\x0b\x32\x1d.tensorboardX.SummaryMetadata\x12\x16\n\x0csimple_value\x18\x02 \x01(\x02H\x00\x12&\n\x1cobsolete_old_style_histogram\x18\x03 \x01(\x0cH\x00\x12,\n\x05image\x18\x04 \x01(\x0b\x32\x1b.tensorboardX.Summary.ImageH\x00\x12-\n\x05histo\x18\x05 \x01(\x0b\x32\x1c.tensorboardX.HistogramProtoH\x00\x12,\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x1b.tensorboardX.Summary.AudioH\x00\x12+\n\x06tensor\x18\x08 \x01(\x0b\x32\x19.tensorboardX.TensorProtoH\x00\x42\x07\n\x05valueB.\n\x18org.tensorflow.frameworkB\rSummaryProtosP\x01\xf8\x01\x01\x62\x06proto3')
+  serialized_pb=_b('\n tensorboardX/proto/summary.proto\x12\x0ctensorboardX\x1a\x1ftensorboardX/proto/tensor.proto\"\'\n\x12SummaryDescription\x12\x11\n\ttype_hint\x18\x01 \x01(\t\"\x87\x01\n\x0eHistogramProto\x12\x0b\n\x03min\x18\x01 \x01(\x01\x12\x0b\n\x03max\x18\x02 \x01(\x01\x12\x0b\n\x03num\x18\x03 \x01(\x01\x12\x0b\n\x03sum\x18\x04 \x01(\x01\x12\x13\n\x0bsum_squares\x18\x05 \x01(\x01\x12\x18\n\x0c\x62ucket_limit\x18\x06 \x03(\x01\x42\x02\x10\x01\x12\x12\n\x06\x62ucket\x18\x07 \x03(\x01\x42\x02\x10\x01\"\xb7\x01\n\x0fSummaryMetadata\x12=\n\x0bplugin_data\x18\x01 \x01(\x0b\x32(.tensorboardX.SummaryMetadata.PluginData\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x1b\n\x13summary_description\x18\x03 \x01(\t\x1a\x32\n\nPluginData\x12\x13\n\x0bplugin_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\"\xea\x04\n\x07Summary\x12*\n\x05value\x18\x01 \x03(\x0b\x32\x1b.tensorboardX.Summary.Value\x1aX\n\x05Image\x12\x0e\n\x06height\x18\x01 \x01(\x05\x12\r\n\x05width\x18\x02 \x01(\x05\x12\x12\n\ncolorspace\x18\x03 \x01(\x05\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a\xd9\x02\n\x05Value\x12\x11\n\tnode_name\x18\x07 \x01(\t\x12\x0b\n\x03tag\x18\x01 \x01(\t\x12/\n\x08metadata\x18\t \x01(\x0b\x32\x1d.tensorboardX.SummaryMetadata\x12\x16\n\x0csimple_value\x18\x02 \x01(\x02H\x00\x12&\n\x1cobsolete_old_style_histogram\x18\x03 \x01(\x0cH\x00\x12,\n\x05image\x18\x04 \x01(\x0b\x32\x1b.tensorboardX.Summary.ImageH\x00\x12-\n\x05histo\x18\x05 \x01(\x0b\x32\x1c.tensorboardX.HistogramProtoH\x00\x12,\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x1b.tensorboardX.Summary.AudioH\x00\x12+\n\x06tensor\x18\x08 \x01(\x0b\x32\x19.tensorboardX.TensorProtoH\x00\x42\x07\n\x05valueB.\n\x18org.tensorflow.frameworkB\rSummaryProtosP\x01\xf8\x01\x01\x62\x06proto3')
   ,
   dependencies=[tensorboardX_dot_proto_dot_tensor__pb2.DESCRIPTOR,])
 
@@ -147,8 +147,8 @@ _SUMMARYMETADATA_PLUGINDATA = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='content', full_name='tensorboardX.SummaryMetadata.PluginData.content', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -164,8 +164,8 @@ _SUMMARYMETADATA_PLUGINDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=345,
-  serialized_end=395,
+  serialized_start=396,
+  serialized_end=446,
 )
 
 _SUMMARYMETADATA = _descriptor.Descriptor(
@@ -177,8 +177,22 @@ _SUMMARYMETADATA = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='plugin_data', full_name='tensorboardX.SummaryMetadata.plugin_data', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='display_name', full_name='tensorboardX.SummaryMetadata.display_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='summary_description', full_name='tensorboardX.SummaryMetadata.summary_description', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -195,7 +209,7 @@ _SUMMARYMETADATA = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=263,
-  serialized_end=395,
+  serialized_end=446,
 )
 
 
@@ -246,8 +260,8 @@ _SUMMARY_IMAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=453,
-  serialized_end=541,
+  serialized_start=504,
+  serialized_end=592,
 )
 
 _SUMMARY_AUDIO = _descriptor.Descriptor(
@@ -304,8 +318,8 @@ _SUMMARY_AUDIO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=543,
-  serialized_end=668,
+  serialized_start=594,
+  serialized_end=719,
 )
 
 _SUMMARY_VALUE = _descriptor.Descriptor(
@@ -393,8 +407,8 @@ _SUMMARY_VALUE = _descriptor.Descriptor(
       name='value', full_name='tensorboardX.Summary.Value.value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=671,
-  serialized_end=1016,
+  serialized_start=722,
+  serialized_end=1067,
 )
 
 _SUMMARY = _descriptor.Descriptor(
@@ -423,8 +437,8 @@ _SUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=398,
-  serialized_end=1016,
+  serialized_start=449,
+  serialized_end=1067,
 )
 
 _SUMMARYMETADATA_PLUGINDATA.containing_type = _SUMMARYMETADATA
