@@ -25,11 +25,6 @@ from .utils import _prepare_video, convert_to_HWC
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
 
-def _calc_scale_factor(tensor):
-    converted = tensor.numpy() if not isinstance(tensor, np.ndarray) else tensor
-    return 1 if converted.dtype == np.uint8 else 255
-
-
 def _clean_tag(name):
     # In the past, the first argument to summary ops was a tag, which allowed
     # arbitrary characters. Now we are changing the first argument to be the node
@@ -190,7 +185,7 @@ def make_histogram(values, bins, max_bins=None):
                           bucket=counts.tolist())
 
 
-def image(tag, tensor, rescale=1, dataformats='NCHW'):
+def image(tag, tensor, rescale=1, dataformats='CHW'):
     """Outputs a `Summary` protocol buffer with images.
     The summary has up to `max_images` summary values containing images. The
     images are built from `tensor` which must be 3-D with shape `[height, width,
@@ -198,11 +193,7 @@ def image(tag, tensor, rescale=1, dataformats='NCHW'):
     *  1: `tensor` is interpreted as Grayscale.
     *  3: `tensor` is interpreted as RGB.
     *  4: `tensor` is interpreted as RGBA.
-    The `name` in the outputted Summary.Value protobufs is generated based on the
-    name, with a suffix depending on the max_outputs setting:
-    *  If `max_outputs` is 1, the summary value tag is '*name*/image'.
-    *  If `max_outputs` is greater than 1, the summary value tags are
-       generated sequentially as '*name*/image/0', '*name*/image/1', etc.
+
     Args:
       tag: A name for the generated node. Will also serve as a series name in
         TensorBoard.
@@ -219,9 +210,9 @@ def image(tag, tensor, rescale=1, dataformats='NCHW'):
     tensor = make_np(tensor)
     tensor = convert_to_HWC(tensor, dataformats)
     # Do not assume that user passes in values in [0, 255], use data type to detect
-    scale_factor = _calc_scale_factor(tensor)
-    tensor = tensor.astype(np.float32)
-    tensor = (tensor * scale_factor).astype(np.uint8)
+    if tensor.dtype != np.uint8:
+        tensor = (tensor * 255.0).astype(np.uint8)
+
     image = make_image(tensor, rescale=rescale)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
@@ -231,9 +222,11 @@ def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW', l
     tensor_image = make_np(tensor_image)
     tensor_image = convert_to_HWC(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
-    tensor_image = tensor_image.astype(
-        np.float32) * _calc_scale_factor(tensor_image)
-    image = make_image(tensor_image.astype(np.uint8),
+
+    if tensor_image.dtype != np.uint8:
+        tensor_image = (tensor_image * 255.0).astype(np.uint8)
+
+    image = make_image(tensor_image,
                        rescale=rescale,
                        rois=tensor_boxes, labels=labels)
     return Summary(value=[Summary.Value(tag=tag, image=image)])
@@ -280,9 +273,9 @@ def video(tag, tensor, fps=4):
     tensor = make_np(tensor)
     tensor = _prepare_video(tensor)
     # If user passes in uint8, then we don't need to rescale by 255
-    scale_factor = _calc_scale_factor(tensor)
-    tensor = tensor.astype(np.float32)
-    tensor = (tensor * scale_factor).astype(np.uint8)
+    if tensor.dtype != np.uint8:
+        tensor = (tensor * 255.0).astype(np.uint8)
+
     video = make_video(tensor, fps)
     return Summary(value=[Summary.Value(tag=tag, image=video)])
 

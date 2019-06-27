@@ -502,12 +502,16 @@ class SummaryWriter(object):
 
         Args:
             tag (string): Data identifier
-            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
+            img_tensor (torch.Tensor, numpy.array, or string/blobname): An `uint8` or `float`
+                Tensor of shape `[channel, height, width]` where `channel` is 1, 3, or 4.
+                The elements in img_tensor can either have values in [0, 1] (float32) or [0, 255] (uint8).
+                Users are responsible to scale the data in the correct range/type.
             global_step (int): Global step value to record
-            walltime (float): Optional override default walltime (time.time()) of event
+            walltime (float): Optional override default walltime (time.time()) of event.
+            dataformats (string): This parameter specifies the meaning of each dimension of the input tensor.
         Shape:
             img_tensor: Default is :math:`(3, H, W)`. You can use ``torchvision.utils.make_grid()`` to
-            convert a batch of tensor into 3xHxW format or call ``add_images`` and let us do the job.
+            convert a batch of tensor into 3xHxW format or use ``add_images()`` and let us do the job.
             Tensor with :math:`(1, H, W)`, :math:`(H, W)`, :math:`(H, W, 3)` is also suitible as long as
             corresponding ``dataformats`` argument is passed. e.g. CHW, HWC, HW.
 
@@ -542,14 +546,16 @@ class SummaryWriter(object):
             image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
 
     def add_images(self, tag, img_tensor, global_step=None, walltime=None, dataformats='NCHW'):
-        """Add batched image data to summary.
-        Besides pass 4D tensor, you can also pass a list of tensors of the same size.
+        """Add batched (4D) image data to summary.
+        Besides passing 4D (NCHW) tensor, you can also pass a list of tensors of the same size.
         In this case, the ``dataformats`` should be `CHW` or `HWC`.
         Note that this requires the ``pillow`` package.
 
         Args:
             tag (string): Data identifier
             img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
+                The elements in img_tensor can either have values in [0, 1] (float32) or [0, 255] (uint8).
+                Users are responsible to scale the data in the correct range/type.
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
