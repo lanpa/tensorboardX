@@ -17,8 +17,7 @@ class SummaryTest(unittest.TestCase):
         Tests that uint8 image (pixel values in [0, 255]) is not changed
         '''
         test_image = tensor_N(shape=(3, 32, 32), dtype=np.uint8)
-        scale_factor = summary._calc_scale_factor(test_image)
-        assert scale_factor == 1, 'Values are already in [0, 255], scale factor should be 1'
+        compare_proto(summary.image('dummy', test_image), self)
 
     def test_float32_image(self):
         '''
@@ -26,8 +25,7 @@ class SummaryTest(unittest.TestCase):
         to [0, 255]
         '''
         test_image = tensor_N(shape=(3, 32, 32))
-        scale_factor = summary._calc_scale_factor(test_image)
-        assert scale_factor == 255, 'Values are in [0, 1], scale factor should be 255'
+        compare_proto(summary.image('dummy', test_image), self)
 
     def test_list_input(self):
         with pytest.raises(Exception):
@@ -46,11 +44,17 @@ class SummaryTest(unittest.TestCase):
     def test_image_with_one_channel(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(1, 8, 8)), dataformats='CHW'), self)
 
+    def test_image_with_four_channel(self):
+        compare_proto(summary.image('dummy', tensor_N(shape=(4, 8, 8)), dataformats='CHW'), self)
+
     def test_image_with_one_channel_batched(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(2, 1, 8, 8)), dataformats='NCHW'), self)
 
     def test_image_with_3_channel_batched(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(2, 3, 8, 8)), dataformats='NCHW'), self)
+
+    def test_image_with_four_channel_batched(self):
+        compare_proto(summary.image('dummy', tensor_N(shape=(2, 4, 8, 8)), dataformats='NCHW'), self)
 
     def test_image_without_channel(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(8, 8)), dataformats='HW'), self)
