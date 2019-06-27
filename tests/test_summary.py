@@ -27,6 +27,14 @@ class SummaryTest(unittest.TestCase):
         test_image = tensor_N(shape=(3, 32, 32))
         compare_proto(summary.image('dummy', test_image), self)
 
+    def test_float_1_converts_to_uint8_255(self):
+        green_uint8 = np.array([[[0, 255, 0]]], dtype='uint8') 
+        green_float32 = np.array([[[0, 1, 0]]], dtype='float32') 
+
+        a = summary.image(tensor=green_uint8, tag='')
+        b = summary.image(tensor=green_float32, tag='')
+        self.assertEqual(a, b)
+
     def test_list_input(self):
         with pytest.raises(Exception):
             summary.histogram('dummy', [1, 3, 4, 5, 6], 'tensorflow')
