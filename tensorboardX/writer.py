@@ -969,9 +969,10 @@ class SummaryWriter(object):
               seconds after epoch of event
 
         Shape:
-            vertices: :math:`(B, N, 3)`. (batch, number_of_vertices, channels)
+            vertices: :math:`(B, N, 3)`. (batch, number_of_vertices, channels). If you see nothing on
+              tensorboard, try normalizing the values to [-1, 1].
 
-            colors: :math:`(B, N, 3)`. The values should lie in [0, 255] for type `uint8` or [0, 1] for type `float`.
+            colors: :math:`(B, N, 3)`. The values should lie in [0, 255].
 
             faces: :math:`(B, N, 3)`. The values should lie in [0, number_of_vertices] for type `uint8`.
 

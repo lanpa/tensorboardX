@@ -487,15 +487,15 @@ def mesh(tag, vertices, colors, faces, config_dict=None):
     import json
     summaries = []
     tensors = [
-        (make_np(vertices), 1),
-        (make_np(faces), 2),
-        (make_np(colors), 3)
+        (vertices, 1),
+        (faces, 2),
+        (colors, 3)
     ]
 
     for tensor, content_type in tensors:
         if tensor is None:
             continue
         summaries.append(
-            _get_tensor_summary(tag, tensor, content_type, json.dumps(config_dict, sort_keys=True)))
+            _get_tensor_summary(tag, make_np(tensor), content_type, json.dumps(config_dict, sort_keys=True)))
 
     return Summary(value=summaries)
