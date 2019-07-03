@@ -17,6 +17,7 @@ from caffe2.proto import caffe2_pb2
 from caffe2.python import workspace
 import tensorboardX.caffe2_graph as tb
 from tensorboardX import x2num
+from .expect_reader import compare_proto, write_proto
 
 
 class Caffe2Test(unittest.TestCase):
@@ -224,9 +225,7 @@ class Caffe2Test(unittest.TestCase):
             pred = model.Softmax(fc, "pred")
             xent = model.LabelCrossEntropy([pred, "label"], "xent")
             loss = model.AveragedLoss(xent, "loss")
-        model.net.RunAllOnMKL()
-        model.param_init_net.RunAllOnMKL()
-        model.AddGradientOperators([loss], skip=1)
+
         blob_name_tracker = {}
         graph = tb.model_to_graph_def(
             model,
@@ -234,29 +233,8 @@ class Caffe2Test(unittest.TestCase):
             shapes={},
             show_simplified=False,
         )
-        # self.assertEqual(
-        #     blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
-        #     'conv1/conv1_b_grad',
-        # )
-        self.maxDiff = None
-        # We can't guarantee the order in which they appear, so we sort
-        # both before we compare them
-        expect_path = os.path.join(os.path.dirname(__file__),
-                                   'expect/caffe_overfeat.expect')
-        with open(expect_path) as f:
-            EXPECTED_CNN = f.read()
-        sep = "node {"
-        expected = "\n".join(sorted(
-            sep + "\n  " + part.strip()
-            for part in EXPECTED_CNN.strip().split(sep)
-            if part.strip()
-        ))
-        actual = "\n".join(sorted(
-            sep + "\n  " + part.strip()
-            for part in str(graph).strip().split(sep)
-            if part.strip()
-        ))
-#            self.assertMultiLineEqual(actual, expected)
+
+        compare_proto(graph, self)
 
     # cnn.CNNModelHelper is deprecated, so we also test with
     # model_helper.ModelHelper. The model used in this test is taken from the
@@ -294,29 +272,9 @@ class Caffe2Test(unittest.TestCase):
             shapes={},
             show_simplified=False,
         )
-        # self.assertEqual(
-        #     blob_name_tracker['GRADIENTS/conv1/conv1_b_grad'],
-        #     'conv1/conv1_b_grad',
-        # )
-        self.maxDiff = None
-        # We can't guarantee the order in which they appear, so we sort
-        # both before we compare them
-        expect_path = os.path.join(os.path.dirname(__file__),
-                                   'expect/caffe_mnist.expect')
-        with open(expect_path) as f:
-            EXPECTED_MNIST = f.read()
-        sep = "node {"
-        expected = "\n".join(sorted(
-            sep + "\n  " + part.strip()
-            for part in EXPECTED_MNIST.strip().split(sep)
-            if part.strip()
-        ))
-        actual = "\n".join(sorted(
-            sep + "\n  " + part.strip()
-            for part in str(graph).strip().split(sep)
-            if part.strip()
-        ))
-        # self.assertMultiLineEqual(actual, expected)
+
+        compare_proto(graph, self)
+
 
 if __name__ == "__main__":
     unittest.main()
