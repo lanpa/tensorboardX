@@ -1,5 +1,12 @@
 History
 =======
+1.8 (2019-07-05)
+-----------------
+* Draw label text on image with bounding box provided.
+* crc32c speed up (optional by installing crc32c manually)
+* Rewrite add_graph. onnx backend is replaced by JIT to support more advanced structure.
+* Now you can add_mesh() to visualize colorful point cloud or meshes.
+
 1.7 (2019-05-19)
 -----------------
 * Able to write to S3
