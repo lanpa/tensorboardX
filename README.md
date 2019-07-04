@@ -8,7 +8,7 @@
 
 Write TensorBoard events with simple function call.
 
-* Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`
+* Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`, `mesh`
   and `video` summaries.
 
 * requirement for `demo_graph.py` is tensorboardX>=1.6 and pytorch>=1.1
@@ -17,7 +17,7 @@ Write TensorBoard events with simple function call.
 
 ## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 1.0.0 / torchvision 0.2.2 / tensorboard 1.13.0
+Tested on anaconda2 / anaconda3, with PyTorch 1.1.0 / torchvision 0.3 / tensorboard 1.13.0
 
 `pip install tensorboardX`
 

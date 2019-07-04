@@ -31,16 +31,16 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 # comment if preparing PyPI package
-version = '1.7'
+# version = '1.8'
 
-if os.path.exists('.git'):
-    sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-    version_git = version + '+' + sha[:7]
-else:
-    version_git = version
+# if os.path.exists('.git'):
+#     sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+#     version_git = version + '+' + sha[:7]
+# else:
+#     version_git = version
 
-with open('tensorboardX/__init__.py', 'a') as f:
-    f.write('\n__version__ = "{}"\n'.format(version_git))
+# with open('tensorboardX/__init__.py', 'a') as f:
+#     f.write('\n__version__ = "{}"\n'.format(version_git))
 # end of comment
 
 requirements = [
