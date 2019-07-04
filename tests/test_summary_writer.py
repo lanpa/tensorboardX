@@ -9,6 +9,10 @@ class SummaryWriterTest(unittest.TestCase):
             writer.add_scalar('test', 1)
         assert writer.file_writer is None
 
+    def test_summary_writer_backcomapt(self):
+        with SummaryWriter(log_dir='/tmp/tbxtest') as writer:
+            writer.add_scalar('test', 1)
+
     def test_summary_writer_close(self):
         # Opening and closing SummaryWriter a lot should not run into
         # OSError: [Errno 24] Too many open files
