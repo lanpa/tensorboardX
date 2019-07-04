@@ -190,7 +190,7 @@ class SummaryWriter(object):
     """
 
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
-                 flush_secs=120, filename_suffix='', write_to_disk=True, **kwargs):
+                 flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None, **kwargs):
         """Creates a `SummaryWriter` that will write out events and summaries
         to the event file.
 
@@ -235,6 +235,8 @@ class SummaryWriter(object):
             # folder location: runs/May04_22-14-54_s-MacBook-Pro.localLR_0.1_BATCH_16/
 
         """
+        if log_dir is not None and logdir is None:
+            logdir = log_dir
         if not logdir:
             import socket
             from datetime import datetime
