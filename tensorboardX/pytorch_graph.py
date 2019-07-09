@@ -243,12 +243,11 @@ def graph(model, args, verbose=False, **kwargs):
         except RuntimeError as e:
             print(e)
             print('Error occurs, No graph saved')
-
+            raise e
             # Create an object matching
             # https://github.com/tensorflow/tensorboard/blob/master/tensorboard/compat/proto/graph.proto
             # The producer version has been reverse engineered from standard
             # TensorBoard logged data.
-            return GraphDef(versions=VersionDef(producer=22))
 
     if verbose:
         print(graph)
