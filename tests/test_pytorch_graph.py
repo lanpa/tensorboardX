@@ -21,7 +21,7 @@ class PytorchGraphTest(unittest.TestCase):
 
     def test_wrong_input_size(self):
         print('expect error here:')
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             dummy_input = torch.rand(1, 9)
             model = torch.nn.Linear(3, 5)
             with SummaryWriter(comment='expect_error') as w:

@@ -15,7 +15,13 @@ methods_IO = ['node', 'offset', 'uniqueName']  # 'unique' <int> , 'type' <Tensor
 
 
 class NodeBase(object):
-    def __init__(self, uniqueName=None, inputs=None, scope=None, tensor_size=None, op_type='UnSpecified', attributes=''):
+    def __init__(self,
+                 uniqueName=None,
+                 inputs=None,
+                 scope=None,
+                 tensor_size=None,
+                 op_type='UnSpecified',
+                 attributes=''):
         self.uniqueName = uniqueName
         self.inputs = inputs
         self.tensor_size = tensor_size
@@ -121,11 +127,11 @@ class GraphPy(object):
             for node_output, outputSize in zip(x.outputs, x.outputstensor_size):
                 self.scope_name_appeared.append(x.scopeName)
                 self.nodes_io[node_output] = NodeBase(node_output,
-                                                       x.inputs,
-                                                       x.scopeName,
-                                                       outputSize,
-                                                       op_type=x.kind,
-                                                       attributes=x.attributes)
+                                                      x.inputs,
+                                                      x.scopeName,
+                                                      outputSize,
+                                                      op_type=x.kind,
+                                                      attributes=x.attributes)
 
     def printall(self):
         print('all nodes')
@@ -151,11 +157,13 @@ class GraphPy(object):
                 self.unique_name_to_scoped_name[key] = node.input_or_output + '/' + node.uniqueName
             if hasattr(node, 'scope'):
                 if node.scope == '' and self.shallowest_scope_name:
-                    self.unique_name_to_scoped_name[node.uniqueName] = self.shallowest_scope_name + '/' + node.uniqueName
+                    self.unique_name_to_scoped_name[node.uniqueName] = \
+                        self.shallowest_scope_name + '/' + node.uniqueName
 
         # replace name
         for key, node in self.nodes_io.items():
-            self.nodes_io[key].inputs = [self.unique_name_to_scoped_name[node_input_id] for node_input_id in node.inputs]
+            self.nodes_io[key].inputs = \
+                [self.unique_name_to_scoped_name[node_input_id] for node_input_id in node.inputs]
             if node.uniqueName in self.unique_name_to_scoped_name:
                 self.nodes_io[key].uniqueName = self.unique_name_to_scoped_name[node.uniqueName]
 
@@ -243,12 +251,11 @@ def graph(model, args, verbose=False, **kwargs):
         except RuntimeError as e:
             print(e)
             print('Error occurs, No graph saved')
-
+            raise e
             # Create an object matching
             # https://github.com/tensorflow/tensorboard/blob/master/tensorboard/compat/proto/graph.proto
             # The producer version has been reverse engineered from standard
             # TensorBoard logged data.
-            return GraphDef(versions=VersionDef(producer=22))
 
     if verbose:
         print(graph)
