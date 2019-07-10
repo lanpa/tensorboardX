@@ -43,7 +43,7 @@ if not preparing_PyPI_package:
 
 requirements = [
     'numpy',
-    'protobuf >= 3.2.0',
+    'protobuf >= 3.6.1',
     'six',
 ]
 
