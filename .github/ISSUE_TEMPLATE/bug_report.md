@@ -28,5 +28,8 @@ What is the result of
 If the version is too old, please try to update first.
 
 
+**Python environment**
+Which version of python are you using? Did you use Andconda or Virtualenv?
+
 **Additional context**
 Add any other context about the problem here.
