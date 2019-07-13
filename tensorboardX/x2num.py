@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import logging
 import numpy as np
 import six
 
@@ -10,7 +11,7 @@ import six
 def check_nan(array):
     tmp = np.sum(array)
     if np.isnan(tmp) or np.isinf(tmp):
-        print('Warning: NaN or Inf found in input tensor.')
+        logging.warning('NaN or Inf found in input tensor.')
     return array
 
 
