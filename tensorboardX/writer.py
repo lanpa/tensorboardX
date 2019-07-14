@@ -21,7 +21,7 @@ from .proto.event_pb2 import SessionLog, Event
 from .utils import figure_to_image
 from .summary import (
     scalar, histogram, histogram_raw, image, audio, text,
-    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh
+    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh, hparams
 )
 
 
@@ -321,6 +321,14 @@ class SummaryWriter(object):
                                               **self.kwargs)
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
+
+    def add_hparams(self, hparam_dict=None, metric_dict=None):
+        exp, ssi, sei = hparams(hparam_dict, metric_dict)
+        self.file_writer.add_summary(exp)
+        self.file_writer.add_summary(ssi)
+        self.file_writer.add_summary(sei)
+        for k, v in metric_dict.items():
+            self.add_scalar(k, v)
 
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
         """Add scalar data to summary.
