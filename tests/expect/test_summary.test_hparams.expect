@@ -3,7 +3,7 @@
   metadata {
     plugin_data {
       plugin_name: "hparams"
-      content: "\022\'\"\004\n\002lr\"\007\n\005bsize*\014\n\n\022\010accuracy*\010\n\006\022\004loss"
+      content: "\022\024\"\004\n\002lr*\014\n\n\022\010accuracy"
     }
   }
 }
@@ -12,7 +12,7 @@
   metadata {
     plugin_data {
       plugin_name: "hparams"
-      content: "\032%\n\017\n\002lr\022\t\021\232\231\231\231\231\231\271?\n\022\n\005bsize\022\t\021\000\000\000\000\000\000\020@"
+      content: "\032\021\n\017\n\002lr\022\t\021\232\231\231\231\231\231\271?"
     }
   }
 }

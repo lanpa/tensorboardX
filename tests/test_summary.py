@@ -118,12 +118,13 @@ class SummaryTest(unittest.TestCase):
         ]], dtype=int)
         compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
 
+    # It's hard to get dictionary sorted with same result in various envs. So only use one.
     def test_hparams(self):
-        from collections import OrderedDict
+        hp = {'lr': 0.1}
+        mt = {'accuracy': 0.1}
+        compare_proto(summary.hparams(hp, mt), self)
 
+    def test_hparams_smoke(self):
         hp = {'lr': 0.1, 'bsize': 4}
         mt = {'accuracy': 0.1, 'loss': 10}
-        hp = OrderedDict(sorted(hp.items(), key=lambda t: t[0]))
-        mt = OrderedDict(sorted(mt.items(), key=lambda t: t[0]))
-
-        compare_proto(summary.hparams(hp, mt), self)
+        summary.hparams(hp, mt)
