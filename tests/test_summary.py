@@ -117,3 +117,6 @@ class SummaryTest(unittest.TestCase):
             [1, 3, 2],
         ]], dtype=int)
         compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
+
+    def test_hparams(self):
+        compare_proto(summary.hparams({'lr': 0.1, 'bsize': 4}, {'accuracy': 0.1, 'loss': 10}), self)

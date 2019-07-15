@@ -323,6 +323,29 @@ class SummaryWriter(object):
         return self.file_writer
 
     def add_hparams(self, hparam_dict=None, metric_dict=None):
+        """Add a set of hyperparameters to be compared in tensorboard.
+
+        Note that for each new set of experiment result, you have to initialize a
+        SummaryWriter and call add_hparams() on that writer. This is different than
+        the ordinary tensobroardX usage.
+
+        Args:
+            hparam_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the hyper parameter and it's corresponding value.
+            metric_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the metric and it's corresponding value.
+
+        Examples::
+
+            from tensorboardX import SummaryWriter
+            for i in range(5):
+                with SummaryWriter() as w_hparam:
+                    w_hparam.add_hparams({'lr': 0.1*i, 'bsize': i},
+                            {'accuracy': 10*i, 'loss': 10*i})
+
+        """
+        if type(hparam_dict) is not dict or type(metric_dict) is not dict:
+            raise TypeError('hparam_dict and metric_dict should be dictionary.')
         exp, ssi, sei = hparams(hparam_dict, metric_dict)
         self.file_writer.add_summary(exp)
         self.file_writer.add_summary(ssi)
