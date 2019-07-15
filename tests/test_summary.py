@@ -119,4 +119,11 @@ class SummaryTest(unittest.TestCase):
         compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
 
     def test_hparams(self):
-        compare_proto(summary.hparams({'lr': 0.1, 'bsize': 4}, {'accuracy': 0.1, 'loss': 10}), self)
+        from collections import OrderedDict
+
+        hp = {'lr': 0.1, 'bsize': 4}
+        mt = {'accuracy': 0.1, 'loss': 10}
+        hp = OrderedDict(sorted(hp.items(), key=lambda t: t[0]))
+        mt = OrderedDict(sorted(mt.items(), key=lambda t: t[0]))
+
+        compare_proto(summary.hparams(hp, mt), self)
