@@ -76,9 +76,8 @@ def hparams(hparam_dict=None, metric_dict=None):
     EXPERIMENT_TAG = '_hparams_/experiment'
     SESSION_START_INFO_TAG = '_hparams_/session_start_info'
     SESSION_END_INFO_TAG = '_hparams_/session_end_info'
-    # info form dict...
 
-
+    # TODO: expose other parameters in the future.
     # hp = HParamInfo(name='lr',display_name='learning rate', type=DataType.DATA_TYPE_FLOAT64, domain_interval=Interval(min_value=10, max_value=100))  # noqa E501
     # mt = MetricInfo(name=MetricName(tag='accuracy'), display_name='accuracy', description='', dataset_type=DatasetType.DATASET_VALIDATION)  # noqa E501
     # exp = Experiment(name='123', description='456', time_created_secs=100.0, hparam_infos=[hp], metric_infos=[mt], user='tw')  # noqa E501
@@ -86,9 +85,6 @@ def hparams(hparam_dict=None, metric_dict=None):
     hps = [HParamInfo(name=k) for k in hparam_dict.keys()]
     mts = [MetricInfo(name=MetricName(tag=k)) for k in metric_dict.keys()]
 
-    # hp = HParamInfo(name='lr')
-    # mt = MetricInfo(name=MetricName(tag='accuracy'))
-    # exp = Experiment(hparam_infos=[hp], metric_infos=[mt])
     exp = Experiment(hparam_infos=hps, metric_infos=mts)
 
     content = HParamsPluginData(experiment=exp, version=PLUGIN_DATA_VERSION)
@@ -99,7 +95,7 @@ def hparams(hparam_dict=None, metric_dict=None):
     ssi = SessionStartInfo()
     for k, v in hparam_dict.items():
         ssi.hparams[k].number_value = v
-    # ssi.hparams['lr'].number_value = 0.01
+
     content = HParamsPluginData(session_start_info=ssi, version=PLUGIN_DATA_VERSION)
     smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name=PLUGIN_NAME,
                                                                  content=content.SerializeToString()))
