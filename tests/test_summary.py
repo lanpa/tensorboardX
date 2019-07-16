@@ -117,3 +117,14 @@ class SummaryTest(unittest.TestCase):
             [1, 3, 2],
         ]], dtype=int)
         compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
+
+    # It's hard to get dictionary sorted with same result in various envs. So only use one.
+    def test_hparams(self):
+        hp = {'lr': 0.1}
+        mt = {'accuracy': 0.1}
+        compare_proto(summary.hparams(hp, mt), self)
+
+    def test_hparams_smoke(self):
+        hp = {'lr': 0.1, 'bsize': 4}
+        mt = {'accuracy': 0.1, 'loss': 10}
+        summary.hparams(hp, mt)

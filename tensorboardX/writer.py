@@ -21,7 +21,7 @@ from .proto.event_pb2 import SessionLog, Event
 from .utils import figure_to_image
 from .summary import (
     scalar, histogram, histogram_raw, image, audio, text,
-    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh
+    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh, hparams
 )
 
 
@@ -321,6 +321,39 @@ class SummaryWriter(object):
                                               **self.kwargs)
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
+
+    def add_hparams(self, hparam_dict=None, metric_dict=None):
+        """Add a set of hyperparameters to be compared in tensorboard.
+
+        Args:
+            hparam_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the hyper parameter and it's corresponding value.
+            metric_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the metric and it's corresponding value.
+
+        Examples::
+
+            from tensorboardX import SummaryWriter
+            with SummaryWriter() as w:
+                for i in range(5):
+                    w.add_hparams({'lr': 0.1*i, 'bsize': i},
+                                  {'accuracy': 10*i, 'loss': 10*i})
+
+        Expected result:
+
+        .. image:: _static/img/tensorboard/add_hparam.png
+           :scale: 50 %
+        """
+        if type(hparam_dict) is not dict or type(metric_dict) is not dict:
+            raise TypeError('hparam_dict and metric_dict should be dictionary.')
+        exp, ssi, sei = hparams(hparam_dict, metric_dict)
+
+        with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), str(time.time()))) as w_hp:
+            w_hp.file_writer.add_summary(exp)
+            w_hp.file_writer.add_summary(ssi)
+            w_hp.file_writer.add_summary(sei)
+            for k, v in metric_dict.items():
+                w_hp.add_scalar(k, v)
 
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
         """Add scalar data to summary.
