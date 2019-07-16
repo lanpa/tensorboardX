@@ -325,10 +325,6 @@ class SummaryWriter(object):
     def add_hparams(self, hparam_dict=None, metric_dict=None):
         """Add a set of hyperparameters to be compared in tensorboard.
 
-        Note that for each new set of experiment result, you have to initialize a
-        SummaryWriter and call add_hparams() on that writer. This is different than
-        the ordinary tensobroardX usage.
-
         Args:
             hparam_dict (dictionary): Each key-value pair in the dictionary is the
               name of the hyper parameter and it's corresponding value.
@@ -338,20 +334,26 @@ class SummaryWriter(object):
         Examples::
 
             from tensorboardX import SummaryWriter
-            for i in range(5):
-                with SummaryWriter() as w_hparam:
-                    w_hparam.add_hparams({'lr': 0.1*i, 'bsize': i},
-                            {'accuracy': 10*i, 'loss': 10*i})
+            with SummaryWriter() as w:
+                for i in range(5):
+                    w.add_hparams({'lr': 0.1*i, 'bsize': i},
+                                  {'accuracy': 10*i, 'loss': 10*i})
 
+        Expected result:
+
+        .. image:: _static/img/tensorboard/add_hparam.png
+           :scale: 50 %
         """
         if type(hparam_dict) is not dict or type(metric_dict) is not dict:
             raise TypeError('hparam_dict and metric_dict should be dictionary.')
         exp, ssi, sei = hparams(hparam_dict, metric_dict)
-        self.file_writer.add_summary(exp)
-        self.file_writer.add_summary(ssi)
-        self.file_writer.add_summary(sei)
-        for k, v in metric_dict.items():
-            self.add_scalar(k, v)
+
+        with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), str(time.time()))) as w_hp:
+            w_hp.file_writer.add_summary(exp)
+            w_hp.file_writer.add_summary(ssi)
+            w_hp.file_writer.add_summary(sei)
+            for k, v in metric_dict.items():
+                w_hp.add_scalar(k, v)
 
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
         """Add scalar data to summary.
