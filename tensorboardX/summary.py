@@ -94,7 +94,17 @@ def hparams(hparam_dict=None, metric_dict=None):
 
     ssi = SessionStartInfo()
     for k, v in hparam_dict.items():
-        ssi.hparams[k].number_value = v
+        if isinstance(v, str):
+            ssi.hparams[k].string_value = v
+            continue
+
+        if isinstance(v, bool):
+            ssi.hparams[k].bool_value = v
+            continue
+
+        if not isinstance(v, int) or not isinstance(v, float):
+            v = make_np(v)
+            ssi.hparams[k].number_value = v
 
     content = HParamsPluginData(session_start_info=ssi, version=PLUGIN_DATA_VERSION)
     smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name=PLUGIN_NAME,
