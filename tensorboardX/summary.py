@@ -69,6 +69,7 @@ def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', 
 def hparams(hparam_dict=None, metric_dict=None):
     from tensorboardX.proto.plugin_hparams_pb2 import HParamsPluginData, SessionEndInfo, SessionStartInfo
     from tensorboardX.proto.api_pb2 import Experiment, HParamInfo, MetricInfo, MetricName, Status
+    from six import string_types
 
     PLUGIN_NAME = 'hparams'
     PLUGIN_DATA_VERSION = 0
@@ -94,7 +95,7 @@ def hparams(hparam_dict=None, metric_dict=None):
 
     ssi = SessionStartInfo()
     for k, v in hparam_dict.items():
-        if isinstance(v, str):
+        if isinstance(v, string_types):
             ssi.hparams[k].string_value = v
             continue
 
