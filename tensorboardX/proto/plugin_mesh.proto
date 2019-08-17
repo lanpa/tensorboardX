@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package tensorboard.mesh;
+package tensorboardX.mesh;
 
 // A MeshPluginData encapsulates information on which plugins are able to make
 // use of a certain summary value.
