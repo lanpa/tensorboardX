@@ -42,3 +42,24 @@ class EmbeddingTest(unittest.TestCase):
                         label_img=all_images,
                         metadata_header=['digit', 'dataset'],
                         global_step=2)
+
+    def test_embedding_square(self):
+        w = SummaryWriter(comment='sq')
+        all_features = torch.rand(228,256)
+        all_images = torch.rand(228, 3, 32, 32)
+        for i in range(all_images.shape[0]):
+            all_images[i] *= (float(i)+60)/(all_images.shape[0]+60)
+        w.add_embedding(all_features,
+                        label_img=all_images,
+                        global_step=2)
+
+    def test_embedding_fail(self):
+        with self.assertRaises(AssertionError):
+            w = SummaryWriter(comment='shouldfail')
+            all_features = torch.rand(228,256)
+            all_images = torch.rand(228, 3, 16, 32)
+            for i in range(all_images.shape[0]):
+                all_images[i] *= (float(i)+60)/(all_images.shape[0]+60)
+            w.add_embedding(all_features,
+                            label_img=all_images,
+                            global_step=2)
