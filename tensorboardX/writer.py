@@ -809,7 +809,7 @@ class SummaryWriter(object):
         Args:
             mat (torch.Tensor or numpy.array): A matrix which each row is the feature vector of the data point
             metadata (list): A list of labels, each element will be convert to string
-            label_img (torch.Tensor): Images correspond to each data point. Each image should be square.
+            label_img (torch.Tensor or numpy.array): Images correspond to each data point. Each image should be square.
             global_step (int): Global step value to record
             tag (string): Name for the embedding
         Shape:
