@@ -815,7 +815,7 @@ class SummaryWriter(object):
         Shape:
             mat: :math:`(N, D)`, where N is number of data and D is feature dimension
 
-            label_img: :math:`(N, C, H, W)`
+            label_img: :math:`(N, C, H, W)`, where `Height` should be equal to `Width`.
 
         Examples::
 
@@ -829,7 +829,7 @@ class SummaryWriter(object):
             for i, v in enumerate(meta):
                 meta[i] = v+str(i)
 
-            label_img = torch.rand(100, 3, 10, 32)
+            label_img = torch.rand(100, 3, 32, 32)
             for i in range(100):
                 label_img[i]*=i/100.0
 
@@ -857,6 +857,7 @@ class SummaryWriter(object):
             make_tsv(metadata, save_path, metadata_header=metadata_header)
         if label_img is not None:
             assert mat.shape[0] == label_img.shape[0], '#images should equal with #data points'
+            assert label_img.shape[2] == label_img.shape[3], 'Image should be square, see tensorflow/tensorboard#670'
             make_sprite(label_img, save_path)
         assert mat.ndim == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
         make_mat(mat, save_path)

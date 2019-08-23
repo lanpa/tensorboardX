@@ -128,3 +128,6 @@ class SummaryTest(unittest.TestCase):
         hp = {'lr': 0.1, 'bsize': 4}
         mt = {'accuracy': 0.1, 'loss': 10}
         summary.hparams(hp, mt)
+        
+        hp = {'string': "1b", 'use magic': True}
+        summary.hparams(hp, mt)
