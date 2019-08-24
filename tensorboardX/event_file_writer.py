@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import atexit
 import os
 import socket
 import threading
@@ -111,6 +112,7 @@ class EventFileWriter(object):
                                           flush_secs)
 
         self._worker.start()
+        atexit.register(self.close)
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
@@ -154,10 +156,14 @@ class EventFileWriter(object):
         need the summary writer anymore.
         """
         if not self._closed:
-            self.flush()
             self._worker.stop()
+            self._worker.join()
+            self.flush()
             self._ev_writer.close()
             self._closed = True
+
+    def __del__(self):
+        self.close()
 
 
 class _EventLoggerThread(threading.Thread):
@@ -173,6 +179,15 @@ class _EventLoggerThread(threading.Thread):
             pending file to disk.
         """
         threading.Thread.__init__(self)
+        # NOTE: although this thread writes to disk, it is a daemon thread
+        # so that the python interpretor does not wait until the thread
+        # completes to begin tearing down the environment at the end of a
+        # script. Instead, an `atexit` function ensures clean termination
+        # of this thread before the rest of the environment is torn down.
+        # If this thread were not a daemon, the user would have to manually
+        # call close() on the summary writer that spawns this thread in order
+        # to terminate it and allow the main process to exit at the end of
+        # a script.
         self.daemon = True
         self._queue = queue
         self._record_writer = record_writer
@@ -184,7 +199,6 @@ class _EventLoggerThread(threading.Thread):
 
     def stop(self):
         self._queue.put(self._shutdown_signal)
-        self.join()
 
     def run(self):
         # Here wait on the queue until an data appears, or till the next
