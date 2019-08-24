@@ -18,11 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import atexit
 import os
 import socket
 import threading
 import time
+import weakref
 
 import six
 
@@ -110,9 +110,23 @@ class EventFileWriter(object):
         self._closed = False
         self._worker = _EventLoggerThread(self._event_queue, self._ev_writer,
                                           flush_secs)
-
+        # Make sure that at exit, the thread is shut down cleanly and events
+        # are flushed to disk. A weak reference is used to not block garbage
+        # collection of this object and the thread.
+        def thread_finalizer(ref):
+            obj = ref()
+            if obj is not None:
+                # If the `EventFileWriter` object instance is deleted, then
+                # `obj` is `None`; do nothing. This means `__del__` has
+                # already been called and has already called `_close(obj)`.
+                # This can happen when this thread finalizer is called at
+                # exit after the thread has already been terminated earlier
+                # in the code.
+                EventFileWriter._close(obj)
+        self._thread_finalizer = weakref.finalize(self._worker,
+                                                  thread_finalizer,
+                                                  weakref.ref(self))
         self._worker.start()
-        atexit.register(self.close)
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
@@ -155,12 +169,21 @@ class EventFileWriter(object):
         write/flush worker and closes the file. Call this method when you do not
         need the summary writer anymore.
         """
-        if not self._closed:
-            self._worker.stop()
-            self._worker.join()
-            self.flush()
-            self._ev_writer.close()
-            self._closed = True
+        EventFileWriter._close(self)
+
+    @staticmethod
+    def _close(obj):
+        """This method is static so that a `weakref.finalizer` could run it
+        without storing a reference to the object that produces the `close()`
+        method, thus allowing this object to be garbage collected before the
+        interpreter begins exit procedures.
+        """
+        if not obj._closed:
+            obj._worker.stop()
+            obj._worker.join()
+            obj.flush()
+            obj._ev_writer.close()
+            obj._closed = True
 
     def __del__(self):
         self.close()
@@ -182,12 +205,12 @@ class _EventLoggerThread(threading.Thread):
         # NOTE: although this thread writes to disk, it is a daemon thread
         # so that the python interpretor does not wait until the thread
         # completes to begin tearing down the environment at the end of a
-        # script. Instead, an `atexit` function ensures clean termination
-        # of this thread before the rest of the environment is torn down.
-        # If this thread were not a daemon, the user would have to manually
-        # call close() on the summary writer that spawns this thread in order
-        # to terminate it and allow the main process to exit at the end of
-        # a script.
+        # script. Instead, a weakref finalizer ensures clean termination
+        # of this thread at exit before the rest of the environment is torn
+        # down. If this thread were not a daemon, the user would have to
+        # manuallycall close() on the summary writer that spawns this thread 
+        # in orderto terminate it and allow the main process to exit at the 
+        # end of a script.
         self.daemon = True
         self._queue = queue
         self._record_writer = record_writer
