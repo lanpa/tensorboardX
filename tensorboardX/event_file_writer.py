@@ -214,8 +214,8 @@ class _EventLoggerThread(threading.Thread):
         # script. Instead, a weakref finalizer ensures clean termination
         # of this thread at exit before the rest of the environment is torn
         # down. If this thread were not a daemon, the user would have to
-        # manuallycall close() on the summary writer that spawns this thread 
-        # in orderto terminate it and allow the main process to exit at the 
+        # manually call close() on the summary writer that spawns this thread 
+        # in order to terminate it and allow the main process to exit at the 
         # end of a script.
         self.daemon = True
         self._queue = queue
