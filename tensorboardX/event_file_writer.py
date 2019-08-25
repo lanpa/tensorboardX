@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import atexit
 import os
 import socket
 import threading
@@ -123,9 +124,14 @@ class EventFileWriter(object):
                 # exit after the thread has already been terminated earlier
                 # in the code.
                 EventFileWriter._close(obj)
-        self._thread_finalizer = weakref.finalize(self._worker,
-                                                  thread_finalizer,
-                                                  weakref.ref(self))
+        if hasattr(weakref, 'finalize'):
+            # Python 3
+            self._thread_finalizer = weakref.finalize(self._worker,
+                                                      thread_finalizer,
+                                                      weakref.ref(self))
+        else:
+            # Python 2
+            atexit.register(thread_finalizer, weakref.ref(self))
         self._worker.start()
 
     def get_logdir(self):
