@@ -322,7 +322,7 @@ class SummaryWriter(object):
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
-    def add_hparams(self, hparam_dict=None, metric_dict=None, name=str(time.time()))):
+    def add_hparams(self, hparam_dict=None, metric_dict=None, name=str(time.time())), global_step = None)):
         """Add a set of hyperparameters to be compared in tensorboard.
 
         Args:
@@ -357,7 +357,7 @@ class SummaryWriter(object):
             w_hp.file_writer.add_summary(ssi)
             w_hp.file_writer.add_summary(sei)
             for k, v in metric_dict.items():
-                w_hp.add_scalar(k, v)
+                w_hp.add_scalar(k, v, global_step)
 
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
         """Add scalar data to summary.
