@@ -13,7 +13,7 @@ methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
               'kind', 'outputs', 'outputsSize', 'scopeName']
 methods_IO = ['node', 'offset', 'debugName']  # 'unique' <int> , 'type' <Tensor<class 'torch._C.Type'>>
 
-backward_mode = False
+backward_compat_mode = False
 
 class NodeBase(object):
     def __init__(self,
@@ -45,14 +45,14 @@ class NodePy(NodeBase):
         super(NodePy, self).__init__(node_cpp)
         valid_methods = valid_methods[:]
         self.inputs = []
-        global backward_mode
+        global backward_compat_mode
         for m in valid_methods:
             if m == 'inputs' or m == 'outputs':
                 list_of_node = list(getattr(node_cpp, m)())
                 io_unique_names = []
                 io_tensor_sizes = []
                 for n in list_of_node:
-                    if backward_mode:
+                    if backward_compat_mode:
                         io_unique_names.append(n.uniqueName())
                     else:
                         io_unique_names.append(n.debugName())
@@ -66,7 +66,7 @@ class NodePy(NodeBase):
                 setattr(self, m + 'tensor_size', io_tensor_sizes)
 
             else:
-                if m == 'debugName' and backward_mode:
+                if m == 'debugName' and backward_compat_mode:
                     setattr(self, m, getattr(node_cpp, 'uniqueName')())
                 else:
                     setattr(self, m, getattr(node_cpp, m)())
@@ -219,12 +219,12 @@ def parse(graph, args=None, omit_useless_nodes=True):
 
     nodes_py = GraphPy()
     for i, node in enumerate(graph.inputs()):
-        global backward_mode
-        if not backward_mode:
+        global backward_compat_mode
+        if not backward_compat_mode:
             try:
                 node.debugName()
             except:
-                backward_mode = True
+                backward_compat_mode = True
         if omit_useless_nodes:
             if len(node.uses()) == 0:  # number of user of the node (= number of outputs/ fanout)
                 continue
