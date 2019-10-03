@@ -652,7 +652,7 @@ class SummaryWriter(object):
             walltime (float): Optional override default walltime (time.time()) of event
             labels (list of string): The strings to be show on each bounding box.
         Shape:
-            img_tensor: Default is :math:`(3, H, W)`. It can be specified with ``dataformat`` agrument.
+            img_tensor: Default is :math:`(3, H, W)`. It can be specified with ``dataformats`` argument.
             e.g. CHW or HWC
 
             box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of
