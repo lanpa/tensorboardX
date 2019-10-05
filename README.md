@@ -11,7 +11,7 @@ Write TensorBoard events with simple function call.
 * Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`, `mesh`, `hyper-parameters`
   and `video` summaries.
 
-* requirement for `demo_graph.py` is tensorboardX>=1.6 and pytorch>=1.1
+* requirement for `demo_graph.py` is tensorboardX>=1.9 and pytorch>=1.2
 
 * [FAQ](https://github.com/lanpa/tensorboardX/wiki)
 

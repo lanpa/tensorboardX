@@ -1,5 +1,11 @@
 History
 =======
+1.9 (2019-10-04)
+-----------------
+* Use new JIT backend for pytorch. This works better with pytorch 1.2 and 1.3
+* Supports hparams plugin
+* add_embedding now supports numpy array input
+
 1.8 (2019-07-05)
 -----------------
 * Draw label text on image with bounding box provided.
