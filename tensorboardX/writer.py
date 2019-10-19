@@ -14,6 +14,7 @@ import logging
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
 from .onnx_graph import load_onnx_graph
+from .openvino_graph import load_openvino_graph
 from .pytorch_graph import graph
 from .proto import event_pb2
 from .proto import summary_pb2
@@ -146,6 +147,17 @@ class FileWriter(object):
         self.add_event(event, None, walltime)
 
     def add_onnx_graph(self, graph, walltime=None):
+        """Adds a `Graph` protocol buffer to the event file.
+
+        Args:
+          graph: A `Graph` protocol buffer.
+          walltime: float. Optional walltime to override the default (current)
+            _get_file_writerfrom time.time())
+        """
+        event = event_pb2.Event(graph_def=graph.SerializeToString())
+        self.add_event(event, None, walltime)
+
+    def add_openvino_graph(self, graph, walltime=None):
         """Adds a `Graph` protocol buffer to the event file.
 
         Args:
@@ -741,6 +753,9 @@ class SummaryWriter(object):
 
     def add_onnx_graph(self, prototxt):
         self._get_file_writer().add_onnx_graph(load_onnx_graph(prototxt))
+
+    def add_openvino_graph(self, xmlname):
+        self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
 
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
