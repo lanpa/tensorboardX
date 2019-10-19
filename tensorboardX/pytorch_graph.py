@@ -314,9 +314,11 @@ def graph(model, args, verbose=False, **kwargs):
 
         try:
             with torch.autograd.profiler.profile(record_shapes=True) as prof:
-                if isinstance(args, tuple) or isinstance(args, list):
+                if len(args) == 1 and isinstance(args, tuple) or isinstance(args, list):
                     args = args[0]
-                result = model(args)
+                    result = model(args)
+                else:
+                    result = model(*args)
 
         except RuntimeError as e:
             print('profiler execution failed')
