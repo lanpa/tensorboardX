@@ -11,7 +11,7 @@ from .proto_graph import node_proto
 
 methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
               'kind', 'outputs', 'outputsSize', 'scopeName']
-methods_IO = [] 
+methods_IO = []
 backward_compat_mode = False
 
 class NodeBase(object):
@@ -122,6 +122,7 @@ class GraphPy(object):
         self.unique_name_to_scoped_name = {}
         self.shallowest_scope_name = 'default'
         self.scope_name_appeared = []
+        self.profile_result = None
 
     def append(self, x):
         if isinstance(x, NodePyIO):
@@ -181,12 +182,37 @@ class GraphPy(object):
         import numpy as np
         nodes = []
         node_stats = []
+
+        if self.profile_result is not None:
+            profile_result = self.profile_result.function_events
+
+        _time_used_for_op = {}
+
+        # We assume that the model is executed sequentially. So get the timing from
+        # the first matched item. If it is matched, remove that item with `pop()`
+        def find_time_for(node_name):
+            for i, n in enumerate(profile_result):
+                if n.key == node_name:
+                    profile_result.pop(i)
+                    time_we_want = n.cpu_time_total
+                    return int(time_we_want)
+
         for v in self.nodes_io.values():
             nodes.append(node_proto(v.debugName,
                                     input=v.inputs,
                                     outputsize=v.tensor_size,
                                     op=v.kind,
                                     attributes=v.attributes))
+
+            # For timing information, we are only interested in aten operators now.
+            # prim:: and Parameter
+            if 'aten' in v.kind and self.profile_result is not None:
+                opname = v.kind.split('::')[1]
+                exe_time = find_time_for(opname)
+                node_stats.append(
+                        NodeExecStats(node_name=v.debugName,
+                                    all_start_micros=int(time.time() * 1e7),
+                                    all_end_rel_micros=exe_time))
 
             if v.tensor_size and len(v.tensor_size) > 0:  # assume data is float32, only parameter is counted
                 node_stats.append(
@@ -195,12 +221,11 @@ class GraphPy(object):
                                   all_end_rel_micros=42,
                                   memory=[AllocatorMemoryUsed(allocator_name="cpu",
                                                               total_bytes=int(np.prod(v.tensor_size)) * 4)]))
-
         return nodes, node_stats
 
 
 # one argument: 'hasAttribute', 'hasAttributes',
-def parse(graph, args=None, omit_useless_nodes=True):
+def parse(graph, args=None, profile_result=None):
     """This method parses an optimized PyTorch model graph and produces
     a list of nodes and node stats for eventual conversion to TensorBoard
     protobuf format.
@@ -208,7 +233,6 @@ def parse(graph, args=None, omit_useless_nodes=True):
     Args:
       graph (PyTorch module): The model to be parsed.
       args (tuple): input tensor[s] for the model.
-      omit_useless_nodes (boolean): Whether to remove nodes from the graph.
     """
     import torch
     n_inputs = len(args)  # not sure...
@@ -222,6 +246,7 @@ def parse(graph, args=None, omit_useless_nodes=True):
             backward_compat_mode = True
 
     nodes_py = GraphPy()
+    nodes_py.profile_result = profile_result
 
     for node in graph.inputs():
         if node.debugName() == 'self':
@@ -287,9 +312,21 @@ def graph(model, args, verbose=False, **kwargs):
             # The producer version has been reverse engineered from standard
             # TensorBoard logged data.
 
+        try:
+            with torch.autograd.profiler.profile(record_shapes=True) as prof:
+                if len(args) == 1 and isinstance(args, tuple) or isinstance(args, list):
+                    args = args[0]
+                    result = model(args)
+                else:
+                    result = model(*args)
+
+        except RuntimeError as e:
+            print('profiler execution failed')
+            prof = None
+
     if verbose:
         print(graph)
-    list_of_nodes, node_stats = parse(graph, args)
+    list_of_nodes, node_stats = parse(graph, args, prof)
     # We are hardcoding that this was run on CPU even though it might have actually
     # run on GPU. Note this is what is shown in TensorBoard and has no bearing
     # on actual execution.
