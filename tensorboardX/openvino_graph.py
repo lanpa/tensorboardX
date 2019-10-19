@@ -15,12 +15,10 @@ def load_openvino_graph(fname):
     edges = root.find('edges')
     layers_dict = {}
     for layer in layers:
-        print(layer.keys(), layer.attrib)
         nodeid = layer.attrib['id']
         name = layer.attrib['name']
         layers_dict[nodeid] = name
     for edge in edges:
-        print(edge.attrib)
         nodeinput = edge.attrib['from-layer']
         nodeself = edge.attrib['to-layer']
         attr = []
@@ -33,13 +31,8 @@ def load_openvino_graph(fname):
             input=[str(layers_dict[nodeinput])],
             attr={'parameters': AttrValue(s=attr)},
         ))
-    print(GraphDef(node=nodes, versions=VersionDef(producer=22)))
     return GraphDef(node=nodes, versions=VersionDef(producer=22))
 
-    print(root, root.keys(), root.find('layers'))
-    for child in root:
-        print(child.tag, child.attrib)
-    return
     g = m.graph
     return parse(g)
 
@@ -84,6 +77,3 @@ def parse(graph):
         mapping[node.name] = node.op + '_' + node.name
 
     return GraphDef(node=nodes, versions=VersionDef(producer=22))
-
-# if __name__ == '__main__':
-load_openvino_graph('test.xml')

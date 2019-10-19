@@ -754,8 +754,8 @@ class SummaryWriter(object):
     def add_onnx_graph(self, prototxt):
         self._get_file_writer().add_onnx_graph(load_onnx_graph(prototxt))
 
-    def add_openvino_graph(self, prototxt):
-        self._get_file_writer().add_openvino_graph(load_openvino_graph('testgraph.xml'))
+    def add_openvino_graph(self, xmlname):
+        self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
 
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
         # prohibit second call?
