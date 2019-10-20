@@ -355,9 +355,12 @@ def make_video(tensor, fps):
     clip = mpy.ImageSequenceClip(list(tensor), fps=fps)
 
     filename = tempfile.NamedTemporaryFile(suffix='.gif', delete=False).name
-    try:  # older version of moviepy does not support progress_bar argument.
-        clip.write_gif(filename, verbose=False, progress_bar=False)
+
+    # moviepy >= 1.0.0 use logger=None to suppress output.
+    try:
+        clip.write_gif(filename, verbose=False, logger=None)
     except TypeError:
+        logging.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
         clip.write_gif(filename, verbose=False)
 
     with open(filename, 'rb') as f:
