@@ -824,13 +824,18 @@ class SummaryWriter(object):
         Args:
             mat (torch.Tensor or numpy.array): A matrix which each row is the feature vector of the data point
             metadata (list): A list of labels, each element will be convert to string
-            label_img (torch.Tensor or numpy.array): Images correspond to each data point. Each image should be square.
+            label_img (torch.Tensor or numpy.array): Images correspond to each data point. Each image should
+                be square. The amount and size of the images are limited by the Tensorboard frontend,
+                see limits below.
             global_step (int): Global step value to record
             tag (string): Name for the embedding
         Shape:
             mat: :math:`(N, D)`, where N is number of data and D is feature dimension
 
             label_img: :math:`(N, C, H, W)`, where `Height` should be equal to `Width`.
+            Also, :math:`\sqrt{N}*W` must be less than or equal to 8192, so that the generated sprite
+            image can be loaded by the Tensorboard frontend
+            (see `tensorboardX#516 <https://github.com/lanpa/tensorboardX/issues/516>`_ for more).
 
         Examples::
 
