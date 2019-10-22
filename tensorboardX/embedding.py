@@ -1,5 +1,8 @@
 import os
 
+# Maximum sprite size allowed by TB frontend,
+# see https://github.com/lanpa/tensorboardX/issues/516
+TB_MAX_SPRITE_SIZE = 8192
 
 def make_tsv(metadata, save_path, metadata_header=None):
     if not metadata_header:
@@ -44,7 +47,9 @@ def make_sprite(label_img, save_path):
     arranged_img_CHW = make_grid(make_np(label_img), ncols=number_of_images_per_row)
     arranged_img_HWC = arranged_img_CHW.transpose(1, 2, 0)  # chw -> hwc
 
-    arranged_augment_square_HWC = np.ndarray((arranged_img_CHW.shape[2], arranged_img_CHW.shape[2], 3))
+    sprite_size = arranged_img_CHW.shape[2]
+    assert sprite_size <= TB_MAX_SPRITE_SIZE, 'Sprite too large, see label_img shape limits'
+    arranged_augment_square_HWC = np.ndarray((sprite_size, sprite_size, 3))
     arranged_augment_square_HWC[:arranged_img_HWC.shape[0], :, :] = arranged_img_HWC
     im = Image.fromarray(np.uint8((arranged_augment_square_HWC * 255).clip(0, 255)))
     im.save(os.path.join(save_path, 'sprite.png'))
