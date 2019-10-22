@@ -751,10 +751,20 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(
             text(tag, text_string), global_step, walltime)
 
-    def add_onnx_graph(self, prototxt):
-        self._get_file_writer().add_onnx_graph(load_onnx_graph(prototxt))
+    def add_onnx_graph(self, onnx_model_file):
+        """Add onnx graph to TensorBoard.
+
+        Args:
+            onnx_model_file (string): The path to the onnx model.
+        """
+        self._get_file_writer().add_onnx_graph(load_onnx_graph(onnx_model_file))
 
     def add_openvino_graph(self, xmlname):
+        """Add openvino graph to TensorBoard.
+
+        Args:
+            xmlname (string): The path to the openvino model. (the xml file)
+        """
         self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
 
     def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
@@ -1060,6 +1070,9 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(mesh(tag, vertices, colors, faces, config_dict), global_step, walltime)
 
     def close(self):
+        """Close the current SummaryWriter. This call flushes the unfinished write operation.
+        Use context manager (with statement) whenever it's possible.
+        """
         if self.all_writers is None:
             return  # ignore double close
         for writer in self.all_writers.values():
@@ -1068,6 +1081,9 @@ class SummaryWriter(object):
         self.file_writer = self.all_writers = None
 
     def flush(self):
+        """Force the data in memory to be flushed to disk. Use this call if tensorboard does not update reqularly.
+        Another way is to set the `flush_secs` when creating the SummaryWriter.
+        """
         if self.all_writers is None:
             return  # ignore double close
         for writer in self.all_writers.values():
