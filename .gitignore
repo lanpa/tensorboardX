@@ -8,3 +8,4 @@ dist
 *.egg-info
 runs/*
 *.pyc
+mnist
