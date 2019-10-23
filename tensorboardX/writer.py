@@ -322,7 +322,7 @@ class SummaryWriter(object):
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
-    def add_hparams(self, hparam_dict=None, metric_dict=None, name=str(time.time())), global_step = None)):
+    def add_hparams(self, hparam_dict=None, metric_dict=None, name=None, global_step = None)):
         """Add a set of hyperparameters to be compared in tensorboard.
 
         Args:
@@ -334,6 +334,7 @@ class SummaryWriter(object):
               you added by `add_scalar` will be displayed in hparam plugin. In most
               cases, this is unwanted.
             name (string): Personnalised name of the hparam session
+            global_step (int): Current time step
 
         Examples::
 
@@ -352,6 +353,9 @@ class SummaryWriter(object):
             raise TypeError('hparam_dict and metric_dict should be dictionary.')
         exp, ssi, sei = hparams(hparam_dict, metric_dict)
 
+        if not name:
+            name = str(time.time()))
+            
         with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name) as w_hp:
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)
