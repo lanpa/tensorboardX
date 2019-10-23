@@ -11,19 +11,20 @@ Write TensorBoard events with simple function call.
 * Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`, `mesh`, `hyper-parameters`
   and `video` summaries.
 
-* requirement for `demo_graph.py` is tensorboardX>=1.9 and pytorch>=1.2
+* requirement for `demo_graph.py` is tensorboardX>=1.9 and pytorch>=1.3
 
 * [FAQ](https://github.com/lanpa/tensorboardX/wiki)
 
 ## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 1.1.0 / torchvision 0.3 / tensorboard 1.13.0
+Tested on anaconda2 / anaconda3, with PyTorch 1.3.0 / torchvision 0.4.1 / tensorboard 1.13.0
 
 `pip install tensorboardX`
 
 or build from source:
 
-`git clone https://github.com/lanpa/tensorboardX && cd tensorboardX && python setup.py install`
+`pip install 'git+https://github.com/lanpa/tensorboardX'`
+
 
 You can optionally install [`crc32c`](https://github.com/ICRAR/crc32c) to speed up saving a large amount of data.
 
