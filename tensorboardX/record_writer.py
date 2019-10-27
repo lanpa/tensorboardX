@@ -13,6 +13,11 @@ try:
     S3_ENABLED = True
 except ImportError:
     S3_ENABLED = False
+try:
+    from google.cloud import storage
+    GCS_ENABLED = True
+except ImportError:
+    GCS_ENABLED = False
 
 from .crc32c import crc32c
 
@@ -102,6 +107,63 @@ class S3RecordWriterFactory(object):
 
 
 register_writer_factory("s3", S3RecordWriterFactory())
+
+
+class GCSRecordWriter(object):
+    """Writes tensorboard protocol buffer files to Google Cloud Storage."""
+
+    def __init__(self, path):
+        if not GCS_ENABLED:
+            raise ImportError("google cloud must be installed for GCS support.")
+
+        self.path = path
+        self.buffer = io.BytesIO()
+
+        from google.cloud import storage
+        client = storage.Client()
+
+        bucket_name, filepath = self.bucket_and_path()
+        bucket = storage.Bucket(client, bucket_name)
+        self.blob = storage.Blob(filepath, bucket)
+
+    def __del__(self):
+        self.close()
+
+    def bucket_and_path(self):
+        path = self.path
+        if path.startswith("gs://"):
+            path = path[len("gs://"):]
+        bp = path.split("/")
+        bucket = bp[0]
+        path = path[1 + len(bucket):]
+        return bucket, path
+
+    def write(self, val):
+        self.buffer.write(val)
+
+    def flush(self):
+        upload_buffer = copy.copy(self.buffer)
+        upload_buffer.seek(0)
+
+        self.blob.upload_from_string(upload_buffer.getvalue())
+
+    def close(self):
+        self.flush()
+
+
+class GCSRecordWriterFactory(object):
+    """Factory for event protocol buffer files to GCS."""
+
+    def open(self, path):
+        return GCSRecordWriter(path)
+
+    def directory_check(self, path):
+        # Google Cloud Storage doesn't need directories created before files
+        # are added so we can just skip this check
+        pass
+
+
+register_writer_factory("gs", GCSRecordWriterFactory())
 
 
 class RecordWriter(object):
