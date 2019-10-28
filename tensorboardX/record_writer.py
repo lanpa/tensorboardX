@@ -27,7 +27,8 @@ _VALID_OP_NAME_PART = re.compile('[A-Za-z0-9_.\\-/]+')
 
 # Registry of writer factories by prefix backends.
 #
-# Currently supports "s3://" URLs for S3 based on boto and falls
+# Currently supports "s3://" URLs for S3 based on boto,
+# "gs://" URLs for Google Cloud Storage and falls
 # back to local filesystem.
 REGISTERED_FACTORIES = {}
 
@@ -114,7 +115,8 @@ class GCSRecordWriter(object):
 
     def __init__(self, path):
         if not GCS_ENABLED:
-            raise ImportError("google cloud must be installed for GCS support.")
+            raise ImportError("google cloud must be installed for "
+                              "Google Cloud Storage support.")
 
         self.path = path
         self.buffer = io.BytesIO()
@@ -152,7 +154,7 @@ class GCSRecordWriter(object):
 
 
 class GCSRecordWriterFactory(object):
-    """Factory for event protocol buffer files to GCS."""
+    """Factory for event protocol buffer files to Google Cloud Storage."""
 
     def open(self, path):
         return GCSRecordWriter(path)
