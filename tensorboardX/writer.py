@@ -142,7 +142,7 @@ class FileWriter(object):
         self.add_event(event, None, walltime)
 
         trm = event_pb2.TaggedRunMetadata(
-            tag='step1', run_metadata=stepstats.SerializeToString())
+            tag='profiler', run_metadata=stepstats.SerializeToString())
         event = event_pb2.Event(tagged_run_metadata=trm)
         self.add_event(event, None, walltime)
 
@@ -767,7 +767,7 @@ class SummaryWriter(object):
         """
         self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
 
-    def add_graph(self, model, input_to_model=None, verbose=False, **kwargs):
+    def add_graph(self, model, input_to_model=None, verbose=False, profile_with_cuda=False, **kwargs):
         # prohibit second call?
         # no, let tensorboard handle it and show its warning message.
         """Add graph data to summary.
@@ -796,7 +796,7 @@ class SummaryWriter(object):
                 if not hasattr(torch.autograd.Variable, 'grad_fn'):
                     print('add_graph() only supports PyTorch v0.2.')
                     return
-            self._get_file_writer().add_graph(graph(model, input_to_model, verbose, **kwargs))
+            self._get_file_writer().add_graph(graph(model, input_to_model, verbose, profile_with_cuda, **kwargs))
         else:
             # Caffe2 models do not have the 'forward' method
             from caffe2.proto import caffe2_pb2
