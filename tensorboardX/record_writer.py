@@ -115,8 +115,8 @@ class GCSRecordWriter(object):
 
     def __init__(self, path):
         if not GCS_ENABLED:
-            raise ImportError("google cloud must be installed for "
-                              "Google Cloud Storage support.")
+            raise ImportError("`google-cloud-storage` must be installed in order to use "
+                              "the 'gs://' protocol")
 
         self.path = path
         self.buffer = io.BytesIO()
