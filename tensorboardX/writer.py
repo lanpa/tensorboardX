@@ -356,7 +356,7 @@ class SummaryWriter(object):
         if not name:
             name = str(time.time()))
             
-        with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name) as w_hp:
+        with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)
             w_hp.file_writer.add_summary(sei)
