@@ -118,9 +118,19 @@ class SummaryTest(unittest.TestCase):
         ]], dtype=int)
         compare_proto(summary.mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor), self)
 
-    # It's hard to get dictionary sorted with same result in various envs. So only use one.
+    # It's hard to get dictionary sorted with same result in various envs. So only use one key per dict.
     def test_hparams(self):
         hp = {'lr': 0.1}
+        mt = {'accuracy': 0.1}
+        compare_proto(summary.hparams(hp, mt), self)
+
+    def test_hparams_bool(self):
+        hp = {'bool_var': True}
+        mt = {'accuracy': 0.1}
+        compare_proto(summary.hparams(hp, mt), self)
+
+    def test_hparams_string(self):
+        hp = {'string_var': "hi"}
         mt = {'accuracy': 0.1}
         compare_proto(summary.hparams(hp, mt), self)
 
