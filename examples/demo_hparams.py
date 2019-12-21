@@ -5,7 +5,8 @@ import random
 
 hparam = {'lr': [0.1, 0.01, 0.001],
           'bsize': [1, 2, 4],
-          'n_hidden': [100, 200]}
+          'n_hidden': [100, 200],
+          'bn': [True, False]}
 
 metrics = {'accuracy', 'loss'}
 
@@ -17,8 +18,9 @@ with SummaryWriter() as w:
     for lr in hparam['lr']:
         for bsize in hparam['bsize']:
             for n_hidden in hparam['n_hidden']:
-                accu, loss = train(lr, bsize, n_hidden)
+                for bn in hparam['bn']:
+                    accu, loss = train(lr, bsize, n_hidden)
                 
-                w.add_hparams({'lr': lr, 'bsize': bsize, 'n_hidden': n_hidden},
+                    w.add_hparams({'lr': lr, 'bsize': bsize, 'n_hidden': n_hidden, 'bn': bn},
                                     {'accuracy': accu, 'loss': loss})
 
