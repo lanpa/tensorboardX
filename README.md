@@ -31,7 +31,8 @@ You can optionally install [`crc32c`](https://github.com/ICRAR/crc32c) to speed 
 
 ## Example
 
-* Run the demo script: `python examples/demo.py`
+* Clone the files in https://github.com/lanpa/tensorboardX/tree/master/examples
+* Run the demo script: e.g. `python examples/demo.py`
 * Use TensorBoard with `tensorboard --logdir runs`  (needs to install TensorFlow)
 
 ```python
