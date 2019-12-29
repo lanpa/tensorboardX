@@ -1,5 +1,6 @@
 import unittest
 import torch
+import boto3
 from tensorboardX import SummaryWriter
 from moto import mock_s3
 
@@ -66,7 +67,9 @@ class EmbeddingTest(unittest.TestCase):
                             global_step=2)
     @mock_s3
     def test_embedding_s3_mock(self):
-        w = SummaryWriter()
+        client = boto3.client('s3', region_name='us-east-1')
+        client.create_bucket(Bucket='this')
+        w = SummaryWriter("s3://this/is/apen")
         all_features = torch.Tensor([[1, 2, 3], [5, 4, 1], [3, 7, 7]])
         all_labels = torch.Tensor([33, 44, 55])
         all_images = torch.zeros(3, 3, 5, 5)
