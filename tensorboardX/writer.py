@@ -867,6 +867,10 @@ class SummaryWriter(object):
             writer.add_embedding(torch.randn(100, 5), label_img=label_img)
             writer.add_embedding(torch.randn(100, 5), metadata=meta)
         """
+
+        # programmer's note: This function has nothing to do with event files.
+        # The hard-coded projector_config.pbtxt is the only source for TensorBoard's
+        # current implementation. (as of Dec. 2019)
         from .x2num import make_np
         mat = make_np(mat)
         if global_step is None:
