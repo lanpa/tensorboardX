@@ -6,7 +6,9 @@ import sys
 TB_MAX_SPRITE_SIZE = 8192
 
 def maybe_upload_file(local_path):
-    '''Upload a file to remote cloud storage.'''
+    '''Upload a file to remote cloud storage
+    if the path starts with gs:// or s3://
+    '''
     if local_path.startswith(('s3://', 'gs://')):
         prefix = local_path.split(':')[0]
         remote_bucket_path = local_path[len("s3://"):]  # same length

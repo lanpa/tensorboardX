@@ -60,6 +60,9 @@ num_epochs = 20
 embedding_log = 5
 writer = SummaryWriter(comment='mnist_embedding_training')
 
+#writer = SummaryWriter("gs://your-bucket/embedding-test")
+#writer = SummaryWriter("s3://your-bucket/embedding-test")
+
 # TRAIN
 for epoch in range(num_epochs):
     for j, sample in enumerate(gen):
