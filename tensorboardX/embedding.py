@@ -5,6 +5,7 @@ import sys
 # see https://github.com/lanpa/tensorboardX/issues/516
 TB_MAX_SPRITE_SIZE = 8192
 
+
 def maybe_upload_file(local_path):
     '''Upload a file to remote cloud storage
     if the path starts with gs:// or s3://
@@ -30,7 +31,6 @@ def maybe_upload_file(local_path):
             Hbucket = storage.Bucket(client, bucket)
             blob = storage.Blob(path, Hbucket)
             blob.upload_from_filename(local_path)
-
 
 
 def make_tsv(metadata, save_path, metadata_header=None):

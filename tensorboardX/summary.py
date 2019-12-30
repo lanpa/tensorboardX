@@ -83,7 +83,6 @@ def hparams(hparam_dict=None, metric_dict=None):
     # mt = MetricInfo(name=MetricName(tag='accuracy'), display_name='accuracy', description='', dataset_type=DatasetType.DATASET_VALIDATION)  # noqa E501
     # exp = Experiment(name='123', description='456', time_created_secs=100.0, hparam_infos=[hp], metric_infos=[mt], user='tw')  # noqa E501
 
-
     hps = []
 
     ssi = SessionStartInfo()
@@ -118,7 +117,6 @@ def hparams(hparam_dict=None, metric_dict=None):
     smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name=PLUGIN_NAME,
                                                                  content=content.SerializeToString()))
     exp = Summary(value=[Summary.Value(tag=EXPERIMENT_TAG, metadata=smd)])
-
 
     sei = SessionEndInfo(status=Status.STATUS_SUCCESS)
     content = HParamsPluginData(session_end_info=sei, version=PLUGIN_DATA_VERSION)
