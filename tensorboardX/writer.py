@@ -334,7 +334,7 @@ class SummaryWriter(object):
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
-    def add_hparams(self, hparam_dict=None, metric_dict=None, name=None, global_step = None):
+    def add_hparams(self, hparam_dict=None, metric_dict=None, name=None, global_step=None):
         """Add a set of hyperparameters to be compared in tensorboard.
 
         Args:
@@ -367,7 +367,7 @@ class SummaryWriter(object):
 
         if not name:
             name = str(time.time())
-            
+
         with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)

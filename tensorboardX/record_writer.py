@@ -122,9 +122,7 @@ class GCSRecordWriter(object):
         self.path = path
         self.buffer = io.BytesIO()
 
-        from google.cloud import storage
         client = storage.Client()
-
         bucket_name, filepath = self.bucket_and_path()
         bucket = storage.Bucket(client, bucket_name)
         self.blob = storage.Blob(filepath, bucket)

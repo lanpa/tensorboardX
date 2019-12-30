@@ -14,6 +14,7 @@ methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
 methods_IO = []
 backward_compat_mode = False
 
+
 class NodeBase(object):
     def __init__(self,
                  debugName=None,
@@ -74,7 +75,7 @@ class NodePy(NodeBase):
 class NodePyIO(NodePy):
     def __init__(self, node_cpp, input_or_output=None, debugName=''):
         super(NodePyIO, self).__init__(node_cpp, methods_IO)
-        self.tensor_size = [] # tensor_size
+        self.tensor_size = []  # tensor_size
         # Kind attribute string is purely descriptive and will be shown
         # in detailed information for the node in TensorBoard's graph plugin.
         #
@@ -221,9 +222,9 @@ class GraphPy(object):
                         should_show_warning = True
 
                     node_stats.append(
-                            NodeExecStats(node_name=v.debugName,
-                                        all_start_micros=int(time.time() * 1e7),
-                                        all_end_rel_micros=total_time))
+                        NodeExecStats(node_name=v.debugName,
+                                      all_start_micros=int(time.time() * 1e7),
+                                      all_end_rel_micros=total_time))
 
             if v.tensor_size and len(v.tensor_size) > 0:  # assume data is float32, only parameter is counted
                 node_stats.append(
@@ -256,7 +257,7 @@ def parse(graph, args=None, profile_result=None):
     if not backward_compat_mode:
         try:
             inputnodes[0].debugName()
-        except:
+        except AttributeError:
             backward_compat_mode = True
 
     nodes_py = GraphPy()
@@ -267,23 +268,22 @@ def parse(graph, args=None, profile_result=None):
             continue
         nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName()))
 
-
     for node in graph.nodes():
         # These nodes refers to parameters such as kernel size, stride, etc.
         # The graph will be very tedious if we include all of them. So skip.
         # p.s. Those Constant will be composed by 'prim::listConstruct' and then
         # send to common OPs such as Maxpool, Conv, Linear.
         # We can let user pass verbosity value to dicide how detailed the graph is.
-        if node.kind()=='prim::Constant':
+        if node.kind() == 'prim::Constant':
             continue
 
         # By observation, prim::GetAttr are parameter related. ClassType is used to decorate its scope.
-        if node.kind()=='prim::GetAttr':
+        if node.kind() == 'prim::GetAttr':
             assert node.scopeName() == ''
 
             # Since `populate_namespace_from_OP_to_IO` is already available, we just ignore this.
             # TODO: When it comes to shared parameter, will it still work?
-            if " : ClassType" in  node.__repr__():
+            if " : ClassType" in node.__repr__():
                 continue
 
             nodes_py.append(NodePyIO(node, debugName=list(node.outputs())[0].debugName()))
@@ -295,6 +295,7 @@ def parse(graph, args=None, profile_result=None):
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
 
+
 def recursive_to_cuda(x):
     """
     Recursively convert tensors in a tuple or list to GPU tensor.
@@ -305,6 +306,7 @@ def recursive_to_cuda(x):
         return x.cuda()
     else:
         return [recursive_to_cuda(_x) for _x in x]
+
 
 def graph(model, args, verbose=False, use_cuda=False, **kwargs):
     """
@@ -339,7 +341,7 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
         try:
             if use_cuda:
                 model.cuda()
-                args = recursive_to_cuda(args) 
+                args = recursive_to_cuda(args)
             with torch.autograd.profiler.profile(record_shapes=True, use_cuda=use_cuda) as prof:
                 result = model(*args)
 
