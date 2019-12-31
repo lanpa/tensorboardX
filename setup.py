@@ -31,7 +31,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = False
-version_git = version = '1.9'
+version_git = version = '2.0'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -88,10 +88,11 @@ setup(
 
 
 # checklist: update History.rst readme.md
-# change preparing_PyPI_package to True, and version_git
+# change preparing_PyPI_package to True, and update version_git to new version
 # remove __version__ = "1.old" in __init__.py, update the version number
 # python setup.py sdist bdist_wheel --universal
 # check the generated tar.gz file
+# git add [files]
 # git commit -m 'prepare for release'
 # add tag
 # twine upload dist/*

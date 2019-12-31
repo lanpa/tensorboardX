@@ -1,5 +1,13 @@
 History
 =======
+2.0 (2019-12-31)
+-----------------
+* Now you can tag Hparams trials with custom name instead of the default epoch time
+* Fixed a bug that add_hparams are rendered incorrectly with non-string values
+* Supports logging to Amazon S3 or Google Cloud Storage
+* Bug fixes and error message for add_embedding function
+* Draw openvino format with add_openvino_graph
+
 1.9 (2019-10-04)
 -----------------
 * Use new JIT backend for pytorch. This works better with pytorch 1.2 and 1.3
