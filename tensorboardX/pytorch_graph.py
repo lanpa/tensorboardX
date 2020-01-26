@@ -14,6 +14,8 @@ methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
 methods_IO = []
 backward_compat_mode = False
 
+GETATTR_KIND = 'prim::GetAttr'
+CLASSTYPE_KIND = 'ClassType'
 
 class NodeBase(object):
     def __init__(self,
@@ -147,11 +149,26 @@ class GraphPy(object):
             print(self.nodes_io[key])
 
     def find_common_root(self):
+        """
+        Find the shallowest scope name among the appeared nodes.
+        """
         for fullscope in self.scope_name_appeared:
             if fullscope:
                 self.shallowest_scope_name = fullscope.split('/')[0]
 
     def populate_namespace_from_OP_to_IO(self):
+        for node in self.nodes_op:
+            for node_output, outputSize in zip(node.outputs, node.outputstensor_size):
+                self.scope_name_appeared.append(node.scopeName)
+                self.nodes_io[node_output] = NodeBase(node_output,
+                                                      node.inputs,
+                                                      node.scopeName,
+                                                      outputSize,
+                                                      op_type=node.kind,
+                                                      attributes=node.attributes)
+
+        self.find_common_root()
+
         for node in self.nodes_op:
             for input_node_id in node.inputs:
                 self.unique_name_to_scoped_name[input_node_id] = node.scopeName + '/' + input_node_id
@@ -161,7 +178,8 @@ class GraphPy(object):
                 self.unique_name_to_scoped_name[key] = node.scope + '/' + node.debugName
             if hasattr(node, 'input_or_output'):
                 self.unique_name_to_scoped_name[key] = node.input_or_output + '/' + node.debugName
-            if hasattr(node, 'scope'):
+            if hasattr(node, 'scope') and node.scope is not None:
+                self.unique_name_to_scoped_name[key] = node.scope + '/' + node.debugName
                 if node.scope == '' and self.shallowest_scope_name:
                     self.unique_name_to_scoped_name[node.debugName] = \
                         self.shallowest_scope_name + '/' + node.debugName
@@ -240,13 +258,14 @@ class GraphPy(object):
 
 
 # one argument: 'hasAttribute', 'hasAttributes',
-def parse(graph, args=None, profile_result=None):
+def parse(graph, trace, args=None, profile_result=None):
     """This method parses an optimized PyTorch model graph and produces
     a list of nodes and node stats for eventual conversion to TensorBoard
     protobuf format.
 
     Args:
-      graph (PyTorch module): The model to be parsed.
+      graph (PyTorch module): The model graph to be parsed.
+      trace (PyTorch JIT TracedModule): The model trace to be parsed.
       args (tuple): input tensor[s] for the model.
     """
     import torch
@@ -264,10 +283,11 @@ def parse(graph, args=None, profile_result=None):
     nodes_py.profile_result = profile_result
 
     for node in graph.inputs():
-        if node.debugName() == 'self':
+        if node.type().kind() == CLASSTYPE_KIND:
             continue
         nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName()))
 
+    attr_to_scope = dict()
     for node in graph.nodes():
         # These nodes refers to parameters such as kernel size, stride, etc.
         # The graph will be very tedious if we include all of them. So skip.
@@ -276,22 +296,56 @@ def parse(graph, args=None, profile_result=None):
         # We can let user pass verbosity value to dicide how detailed the graph is.
         if node.kind() == 'prim::Constant':
             continue
-
-        # By observation, prim::GetAttr are parameter related. ClassType is used to decorate its scope.
-        if node.kind() == 'prim::GetAttr':
-            assert node.scopeName() == ''
-
-            # Since `populate_namespace_from_OP_to_IO` is already available, we just ignore this.
-            # TODO: When it comes to shared parameter, will it still work?
-            if " : ClassType" in node.__repr__():
+        if node.kind() == GETATTR_KIND:
+            attr_name = node.s('name')
+            parent = node.input().node()
+            if parent.kind() == GETATTR_KIND:  # If the parent node is not the top-level "self" node
+                parent_attr_name = parent.s('name')
+                parent_scope = attr_to_scope[parent_attr_name]
+                attr_scope = parent_scope.split('/')[-1]
+                attr_to_scope[attr_name] = '{}/{}.{}'.format(parent_scope, attr_scope, attr_name)
+            else:
+                attr_to_scope[attr_name] = '__module.{}'.format(attr_name)
+            # We don't need classtype nodes; scope will provide this information
+            if node.output().type().kind() == CLASSTYPE_KIND:
                 continue
+            node_py = NodePyOP(node)
+            node_py.scopeName = attr_to_scope[attr_name]
+            nodes_py.append(node_py)
+        else:
+            nodes_py.append(NodePyOP(node))
 
-            nodes_py.append(NodePyIO(node, debugName=list(node.outputs())[0].debugName()))
-            continue
+    for i, node in enumerate(graph.outputs()):  # Create sink nodes for output ops
+        node_py = NodePyIO(node, 'output')
+        node_py.debugName = "output.{}".format(i + 1)
+        node_py.inputs = [node.debugName()]
+        nodes_py.append(node_py)
 
-        nodes_py.append(NodePyOP(node))
+    def parse_traced_name(module):
+        if isinstance(module, torch.jit.TracedModule):
+            module_name = module._name
+        else:
+            module_name = getattr(module, 'original_name', "Module")
+        return module_name
 
-    nodes_py.find_common_root()
+    alias_to_name = dict()
+    base_name = parse_traced_name(trace)
+    for name, module in trace.named_modules(prefix='__module'):
+        mod_name = parse_traced_name(module)
+        attr_name = name.split('.')[-1]
+        alias_to_name[name] = '{}[{}]'.format(mod_name, attr_name)
+    for node in nodes_py.nodes_op:
+        module_aliases = node.scopeName.split('/')
+        replacements = [
+            alias_to_name[alias]
+            if alias in alias_to_name
+            else alias.split('.')[-1]
+            for alias in module_aliases
+        ]
+        node.scopeName = base_name
+        if any(replacements):
+            node.scopeName += '/' + '/'.join(replacements)
+
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
 
@@ -328,7 +382,7 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
                 graph = trace.forward_impl.graph
             else:
                 graph = trace.graph
-
+            torch._C._jit_pass_inline(graph)
         except RuntimeError as e:
             print(e)
             print('Error occurs, No graph saved')
@@ -351,7 +405,7 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
 
     if verbose:
         print(graph)
-    list_of_nodes, node_stats = parse(graph, args, prof)
+    list_of_nodes, node_stats = parse(graph, trace, args, prof)
     # We are hardcoding that this was run on CPU even though it might have actually
     # run on GPU. Note this is what is shown in TensorBoard and has no bearing
     # on actual execution.
