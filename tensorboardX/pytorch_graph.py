@@ -68,9 +68,9 @@ class NodePy(NodeBase):
 
 
 class NodePyIO(NodePy):
-    def __init__(self, node_cpp, input_or_output=None, debugName=''):
+    def __init__(self, node_cpp, input_or_output=None, debugName='', tensor_size=[]):
         super(NodePyIO, self).__init__(node_cpp, methods_IO)
-        self.tensor_size = []  # tensor_size
+        self.tensor_size = tensor_size
         # Kind attribute string is purely descriptive and will be shown
         # in detailed information for the node in TensorBoard's graph plugin.
         #
@@ -272,8 +272,12 @@ def parse(graph, trace, args=None, profile_result=None):
     for node in graph.inputs():
         if node.type().kind() == CLASSTYPE_KIND:
             continue
-        nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName()))
-
+        try:
+            tensor_size = node.type().sizes()
+        except RuntimeError:
+            # RuntimeError: r INTERNAL ASSERT FAILED at ../aten/src/ATen/core/jit_type.h:131, please report a bug to PyTorch.
+            tensor_size = []
+        nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName(), tensor_size=tensor_size))
     attr_to_scope = dict()
     for node in graph.nodes():
         # These nodes refers to parameters such as kernel size, stride, etc.
