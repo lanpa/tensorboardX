@@ -87,6 +87,9 @@ def hparams(hparam_dict=None, metric_dict=None):
 
     ssi = SessionStartInfo()
     for k, v in hparam_dict.items():
+        if not v:
+            continue
+
         if isinstance(v, string_types):
             ssi.hparams[k].string_value = v
             hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_STRING))
