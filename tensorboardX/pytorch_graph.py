@@ -12,8 +12,10 @@ from .proto_graph import node_proto
 methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
               'kind', 'outputs', 'outputsSize', 'scopeName']
 methods_IO = []
-backward_compat_mode = False
 
+GETATTR_KIND = 'prim::GetAttr'
+CLASSTYPE_KIND = 'ClassType'
+CONST_KIND = 'prim::Constant'
 
 class NodeBase(object):
     def __init__(self,
@@ -45,19 +47,15 @@ class NodePy(NodeBase):
         super(NodePy, self).__init__(node_cpp)
         valid_methods = valid_methods[:]
         self.inputs = []
-        global backward_compat_mode
         for m in valid_methods:
             if m == 'inputs' or m == 'outputs':
                 list_of_node = list(getattr(node_cpp, m)())
                 io_unique_names = []
                 io_tensor_sizes = []
                 for n in list_of_node:
-                    if backward_compat_mode:
-                        io_unique_names.append(n.uniqueName())
-                    else:
-                        io_unique_names.append(n.debugName())
+                    io_unique_names.append(n.debugName())
 
-                    if n.type().kind() == 'CompleteTensorType':
+                    if n.isCompleteTensor():
                         io_tensor_sizes.append(n.type().sizes())
                     else:
                         io_tensor_sizes.append(None)
@@ -66,16 +64,13 @@ class NodePy(NodeBase):
                 setattr(self, m + 'tensor_size', io_tensor_sizes)
 
             else:
-                if m == 'debugName' and backward_compat_mode:
-                    setattr(self, m, getattr(node_cpp, 'uniqueName')())
-                else:
-                    setattr(self, m, getattr(node_cpp, m)())
+                setattr(self, m, getattr(node_cpp, m)())
 
 
 class NodePyIO(NodePy):
-    def __init__(self, node_cpp, input_or_output=None, debugName=''):
+    def __init__(self, node_cpp, input_or_output=None, debugName='', tensor_size=[]):
         super(NodePyIO, self).__init__(node_cpp, methods_IO)
-        self.tensor_size = []  # tensor_size
+        self.tensor_size = tensor_size
         # Kind attribute string is purely descriptive and will be shown
         # in detailed information for the node in TensorBoard's graph plugin.
         #
@@ -147,11 +142,26 @@ class GraphPy(object):
             print(self.nodes_io[key])
 
     def find_common_root(self):
+        """
+        Find the shallowest scope name among the appeared nodes.
+        """
         for fullscope in self.scope_name_appeared:
             if fullscope:
                 self.shallowest_scope_name = fullscope.split('/')[0]
 
     def populate_namespace_from_OP_to_IO(self):
+        for node in self.nodes_op:
+            for node_output, outputSize in zip(node.outputs, node.outputstensor_size):
+                self.scope_name_appeared.append(node.scopeName)
+                self.nodes_io[node_output] = NodeBase(node_output,
+                                                      node.inputs,
+                                                      node.scopeName,
+                                                      outputSize,
+                                                      op_type=node.kind,
+                                                      attributes=node.attributes)
+
+        self.find_common_root()
+
         for node in self.nodes_op:
             for input_node_id in node.inputs:
                 self.unique_name_to_scoped_name[input_node_id] = node.scopeName + '/' + input_node_id
@@ -161,7 +171,8 @@ class GraphPy(object):
                 self.unique_name_to_scoped_name[key] = node.scope + '/' + node.debugName
             if hasattr(node, 'input_or_output'):
                 self.unique_name_to_scoped_name[key] = node.input_or_output + '/' + node.debugName
-            if hasattr(node, 'scope'):
+            if hasattr(node, 'scope') and node.scope is not None:
+                self.unique_name_to_scoped_name[key] = node.scope + '/' + node.debugName
                 if node.scope == '' and self.shallowest_scope_name:
                     self.unique_name_to_scoped_name[node.debugName] = \
                         self.shallowest_scope_name + '/' + node.debugName
@@ -240,58 +251,99 @@ class GraphPy(object):
 
 
 # one argument: 'hasAttribute', 'hasAttributes',
-def parse(graph, args=None, profile_result=None):
+def parse(graph, trace, args=None, profile_result=None):
     """This method parses an optimized PyTorch model graph and produces
     a list of nodes and node stats for eventual conversion to TensorBoard
     protobuf format.
 
     Args:
-      graph (PyTorch module): The model to be parsed.
+      graph (PyTorch module): The model graph to be parsed.
+      trace (PyTorch JIT TracedModule): The model trace to be parsed.
       args (tuple): input tensor[s] for the model.
     """
     import torch
     n_inputs = len(args)  # not sure...
 
     inputnodes = list(graph.inputs())
-    global backward_compat_mode
-    if not backward_compat_mode:
-        try:
-            inputnodes[0].debugName()
-        except AttributeError:
-            backward_compat_mode = True
 
     nodes_py = GraphPy()
     nodes_py.profile_result = profile_result
 
     for node in graph.inputs():
-        if node.debugName() == 'self':
+        if node.type().kind() == CLASSTYPE_KIND:
             continue
-        nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName()))
-
+        try:
+            tensor_size = node.type().sizes()
+        except RuntimeError:
+            # RuntimeError: r INTERNAL ASSERT FAILED at ../aten/src/ATen/core/jit_type.h:131, please report a bug to PyTorch.
+            tensor_size = []
+        nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName(), tensor_size=tensor_size))
+    attr_to_scope = dict()
     for node in graph.nodes():
         # These nodes refers to parameters such as kernel size, stride, etc.
         # The graph will be very tedious if we include all of them. So skip.
         # p.s. Those Constant will be composed by 'prim::listConstruct' and then
         # send to common OPs such as Maxpool, Conv, Linear.
         # We can let user pass verbosity value to dicide how detailed the graph is.
-        if node.kind() == 'prim::Constant':
+        if node.kind() == CONST_KIND:
             continue
-
-        # By observation, prim::GetAttr are parameter related. ClassType is used to decorate its scope.
-        if node.kind() == 'prim::GetAttr':
-            assert node.scopeName() == ''
-
-            # Since `populate_namespace_from_OP_to_IO` is already available, we just ignore this.
-            # TODO: When it comes to shared parameter, will it still work?
-            if " : ClassType" in node.__repr__():
+        if node.kind() == GETATTR_KIND:
+            attr_name = node.s('name')
+            parent = node.input().node()
+            if parent.kind() == GETATTR_KIND:  # If the parent node is not the top-level "self" node
+                parent_attr_name = parent.s('name')
+                parent_scope = attr_to_scope[parent_attr_name]
+                attr_scope = parent_scope.split('/')[-1]
+                attr_to_scope[attr_name] = '{}/{}.{}'.format(parent_scope, attr_scope, attr_name)
+            else:
+                attr_to_scope[attr_name] = '__module.{}'.format(attr_name)
+            # We don't need classtype nodes; scope will provide this information
+            if node.output().type().kind() == CLASSTYPE_KIND:
                 continue
+            node_py = NodePyOP(node)
+            node_py.scopeName = attr_to_scope[attr_name]
+            nodes_py.append(node_py)
+        else:
+            nodes_py.append(NodePyOP(node))
+    for i, node in enumerate(graph.outputs()):  # Create sink nodes for output ops
+        if node.isCompleteTensor():
+            node_py = NodePyIO(node, 'output')
+            node_py.debugName = "output.{}.alias".format(node.debugName())
+            node_py.inputs = [node.debugName()]
+            nodes_py.append(node_py)
+        else:  # tuple output (prim::TupleConstruct)
+            graph_outputs = list(node.node().inputs())
+            for go in graph_outputs:
+                node_py = NodePyIO(go, 'output')
+                node_py.debugName = "output.{}.alias".format(go.debugName())
+                node_py.inputs = [go.debugName()]
+                nodes_py.append(node_py)
 
-            nodes_py.append(NodePyIO(node, debugName=list(node.outputs())[0].debugName()))
-            continue
+    def parse_traced_name(module):
+        if isinstance(module, torch.jit.TracedModule):
+            module_name = module._name
+        else:
+            module_name = getattr(module, 'original_name', "Module")
+        return module_name
 
-        nodes_py.append(NodePyOP(node))
+    alias_to_name = dict()
+    base_name = parse_traced_name(trace)
+    for name, module in trace.named_modules(prefix='__module'):
+        mod_name = parse_traced_name(module)
+        attr_name = name.split('.')[-1]
+        alias_to_name[name] = '{}[{}]'.format(mod_name, attr_name)
+    for node in nodes_py.nodes_op:
+        module_aliases = node.scopeName.split('/')
+        replacements = [
+            alias_to_name[alias]
+            if alias in alias_to_name
+            else alias.split('.')[-1]
+            for alias in module_aliases
+        ]
+        node.scopeName = base_name
+        if any(replacements):
+            node.scopeName += '/' + '/'.join(replacements)
 
-    nodes_py.find_common_root()
     nodes_py.populate_namespace_from_OP_to_IO()
     return nodes_py.to_proto()
 
@@ -320,6 +372,8 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
         processing.
     """
     import torch
+    from packaging import version
+    assert version.parse(torch.__version__) >= version.parse("1.4.0"), "add_graph needs torch>=1.4.0"
 
     with torch.onnx.set_training(model, False):  # TODO: move outside of torch.onnx
         try:
@@ -328,7 +382,7 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
                 graph = trace.forward_impl.graph
             else:
                 graph = trace.graph
-
+            torch._C._jit_pass_inline(graph)
         except RuntimeError as e:
             print(e)
             print('Error occurs, No graph saved')
@@ -351,7 +405,7 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
 
     if verbose:
         print(graph)
-    list_of_nodes, node_stats = parse(graph, args, prof)
+    list_of_nodes, node_stats = parse(graph, trace, args, prof)
     # We are hardcoding that this was run on CPU even though it might have actually
     # run on GPU. Note this is what is shown in TensorBoard and has no bearing
     # on actual execution.

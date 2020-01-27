@@ -41,10 +41,11 @@ install:
   - which python
   - pip install future
   - pip install chainer==6.5.0 -q
-  - pip install torchvision==0.2.1 -q
+  - pip install torchvision==0.5.0 -q
   - pip uninstall torch -y
   - pip install $PYTORCH_VER
   - pip install moviepy==0.2.3.2 -q
+  - pip install pillow==6.2.2 -q
   - pip install matplotlib -q
   - pip install requests -q
   - pip install codecov
