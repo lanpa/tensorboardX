@@ -15,6 +15,7 @@ methods_IO = []
 
 GETATTR_KIND = 'prim::GetAttr'
 CLASSTYPE_KIND = 'ClassType'
+CONST_KIND = 'prim::Constant'
 
 class NodeBase(object):
     def __init__(self,
@@ -280,7 +281,7 @@ def parse(graph, trace, args=None, profile_result=None):
         # p.s. Those Constant will be composed by 'prim::listConstruct' and then
         # send to common OPs such as Maxpool, Conv, Linear.
         # We can let user pass verbosity value to dicide how detailed the graph is.
-        if node.kind() == 'prim::Constant':
+        if node.kind() == CONST_KIND:
             continue
         if node.kind() == GETATTR_KIND:
             attr_name = node.s('name')
@@ -300,12 +301,19 @@ def parse(graph, trace, args=None, profile_result=None):
             nodes_py.append(node_py)
         else:
             nodes_py.append(NodePyOP(node))
-
     for i, node in enumerate(graph.outputs()):  # Create sink nodes for output ops
-        node_py = NodePyIO(node, 'output')
-        node_py.debugName = "output.{}".format(i + 1)
-        node_py.inputs = [node.debugName()]
-        nodes_py.append(node_py)
+        if node.isCompleteTensor():
+            node_py = NodePyIO(node, 'output')
+            node_py.debugName = "output.{}.alias".format(node.debugName())
+            node_py.inputs = [node.debugName()]
+            nodes_py.append(node_py)
+        else:  # tuple output (prim::TupleConstruct)
+            graph_outputs = list(node.node().inputs())
+            for go in graph_outputs:
+                node_py = NodePyIO(go, 'output')
+                node_py.debugName = "output.{}.alias".format(go.debugName())
+                node_py.inputs = [go.debugName()]
+                nodes_py.append(node_py)
 
     def parse_traced_name(module):
         if isinstance(module, torch.jit.TracedModule):
