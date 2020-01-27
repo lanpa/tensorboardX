@@ -12,7 +12,6 @@ from .proto_graph import node_proto
 methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
               'kind', 'outputs', 'outputsSize', 'scopeName']
 methods_IO = []
-backward_compat_mode = False
 
 GETATTR_KIND = 'prim::GetAttr'
 CLASSTYPE_KIND = 'ClassType'
@@ -47,17 +46,13 @@ class NodePy(NodeBase):
         super(NodePy, self).__init__(node_cpp)
         valid_methods = valid_methods[:]
         self.inputs = []
-        global backward_compat_mode
         for m in valid_methods:
             if m == 'inputs' or m == 'outputs':
                 list_of_node = list(getattr(node_cpp, m)())
                 io_unique_names = []
                 io_tensor_sizes = []
                 for n in list_of_node:
-                    if backward_compat_mode:
-                        io_unique_names.append(n.uniqueName())
-                    else:
-                        io_unique_names.append(n.debugName())
+                    io_unique_names.append(n.debugName())
 
                     if n.isCompleteTensor():
                         io_tensor_sizes.append(n.type().sizes())
@@ -68,10 +63,7 @@ class NodePy(NodeBase):
                 setattr(self, m + 'tensor_size', io_tensor_sizes)
 
             else:
-                if m == 'debugName' and backward_compat_mode:
-                    setattr(self, m, getattr(node_cpp, 'uniqueName')())
-                else:
-                    setattr(self, m, getattr(node_cpp, m)())
+                setattr(self, m, getattr(node_cpp, m)())
 
 
 class NodePyIO(NodePy):
@@ -272,12 +264,6 @@ def parse(graph, trace, args=None, profile_result=None):
     n_inputs = len(args)  # not sure...
 
     inputnodes = list(graph.inputs())
-    global backward_compat_mode
-    if not backward_compat_mode:
-        try:
-            inputnodes[0].debugName()
-        except AttributeError:
-            backward_compat_mode = True
 
     nodes_py = GraphPy()
     nodes_py.profile_result = profile_result
@@ -374,6 +360,8 @@ def graph(model, args, verbose=False, use_cuda=False, **kwargs):
         processing.
     """
     import torch
+    from packaging import version
+    assert version.parse(torch.__version__) >= version.parse("1.4.0"), "add_graph needs torch>=1.4.0"
 
     with torch.onnx.set_training(model, False):  # TODO: move outside of torch.onnx
         try:
