@@ -57,7 +57,6 @@ install:
   - pip install crc32c
   - pip install protobuf==3.8.0
   - pip install google-cloud-storage==1.25.0
-  - pip install opencv-python
   - conda install ffmpeg
   - conda list
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
