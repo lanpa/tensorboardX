@@ -43,3 +43,9 @@ class SummaryWriterTest(unittest.TestCase):
             writer.add_scalar('test', 1)
         import shutil
         shutil.rmtree(str(p))
+
+    def test_dummy_summary_writer(self):
+        # You can't write to root folder without sudo.
+        with SummaryWriter('/', write_to_disk=False) as writer:
+            writer.add_scalar('test', 1)
+            writer.flush()
