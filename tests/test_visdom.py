@@ -19,7 +19,7 @@ class VisdomTest(unittest.TestCase):
         w.add_scalar('scalar_visdom', 2, 1)
         w.add_histogram('histogram_visdom', np.array([1, 2, 3, 4, 5]), 1)
         w.add_image('image_visdom', np.ndarray((3, 20, 20)), 2)
-        w.add_video('video_visdom', np.random.randn(1, 3, 100, 200, 200), 3)
+        # w.add_video('video_visdom', np.random.randn(1, 3, 100, 200, 200), 3)
         w.add_audio('audio_visdom', [1, 2, 3, 4, 5])
         w.add_text('text_visdom', 'mystring')
         w.add_pr_curve('pr_curve_visdom', np.random.randint(2, size=100), np.random.rand(100), 10)
