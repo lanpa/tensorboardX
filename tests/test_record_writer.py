@@ -28,4 +28,6 @@ class RecordWriterTest(unittest.TestCase):
     def test_record_writer_gcs(self):
         # we don't have mock test
         # with self.assertRaises(Exception):
-            writer = GCSRecordWriter('gs://this/is/apen')
+        writer = GCSRecordWriter('gs://this/is/apen')
+        writer.write(bytes(42))
+        writer.flush()
