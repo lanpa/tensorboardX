@@ -7,11 +7,11 @@ python:
 
 env:
   - PYTORCH_VER="torch"
-  - PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+  - PYTORCH_VER="--pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
 matrix:
   allow_failures:
-    - env: PYTORCH_VER="torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+    - env: PYTORCH_VER="--pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
 
 install:
   - export MPLBACKEND=Agg
