@@ -1,6 +1,6 @@
 from tensorboardX import SummaryWriter
 import unittest
-from tensorboardX.record_writer import S3RecordWriter, make_valid_tf_name
+from tensorboardX.record_writer import S3RecordWriter, make_valid_tf_name, GCSRecordWriter
 import os
 import boto3
 from moto import mock_s3
@@ -24,3 +24,8 @@ class RecordWriterTest(unittest.TestCase):
     def test_make_valid_tf_name(self):
         newname = make_valid_tf_name('$ave/&sound')
         assert newname == '._ave/_sound'
+
+    def test_record_writer_gcs(self):
+        # we don't have mock test
+        with self.assertRaises(Exception):
+            writer = GCSRecordWriter('gs://this/is/apen')
