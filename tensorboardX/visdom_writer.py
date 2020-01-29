@@ -177,7 +177,7 @@ class VisdomWriter:
 
         Args:
             tag (string): Data identifier
-            vid_tensor (torch.Tensor): Video data
+            vid_tensor (torch.Tensor): Video data, the pixel value should in [0, 1]
             global_step (int): Global step value to record
             fps (float or int): Frames per second
         Shape:
@@ -197,8 +197,7 @@ class VisdomWriter:
                         vid_tensor[i, :, :, :, :]).permute(1, 2, 3, 0)
                 else:
                     ind_vid = vid_tensor[i, :, :, :, :].permute(1, 2, 3, 0)
-                scale_factor = 255 if np.any(
-                    (ind_vid > 0) & (ind_vid < 1)) else 1
+                scale_factor = 255
                 # Visdom looks for .ndim attr, this is something raw Tensors don't have
                 # Cast to Numpy array to get .ndim attr
                 ind_vid = ind_vid.numpy()
