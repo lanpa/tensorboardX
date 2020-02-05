@@ -10,6 +10,7 @@ import os
 import six
 import time
 import logging
+import atexit
 
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
@@ -92,6 +93,11 @@ class FileWriter(object):
         logdir = str(logdir)
         self.event_writer = EventFileWriter(
             logdir, max_queue, flush_secs, filename_suffix)
+
+        def cleanup():
+            self.event_writer.close()
+
+        atexit.register(cleanup)
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
