@@ -17,6 +17,7 @@ GETATTR_KIND = 'prim::GetAttr'
 CLASSTYPE_KIND = 'ClassType'
 CONST_KIND = 'prim::Constant'
 
+
 class NodeBase(object):
     def __init__(self,
                  debugName=None,
@@ -275,7 +276,7 @@ def parse(graph, trace, args=None, profile_result=None):
         try:
             tensor_size = node.type().sizes()
         except RuntimeError:
-            # RuntimeError: r INTERNAL ASSERT FAILED at ../aten/src/ATen/core/jit_type.h:131, please report a bug to PyTorch.
+            # INTERNAL ASSERT FAILED at ../aten/src/ATen/core/jit_type.h:131, please report a bug to PyTorch.
             tensor_size = []
         nodes_py.append(NodePyIO(node, input_or_output='Input', debugName=node.debugName(), tensor_size=tensor_size))
     attr_to_scope = dict()
