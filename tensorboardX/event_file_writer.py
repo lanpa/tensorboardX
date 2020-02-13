@@ -217,7 +217,10 @@ class _EventLoggerThread(threading.Thread):
                     # Small optimization - if there are no pending data,
                     # there's no need to flush, since each flush can be
                     # expensive (e.g. uploading a new file to a server).
-                    self._record_writer.flush()
+                    try:
+                        self._record_writer.flush()
+                    except:
+                        continue
                     self._has_pending_data = False
                 # Do it again in flush_secs.
                 self._next_flush_time = now + self._flush_secs
