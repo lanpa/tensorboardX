@@ -22,7 +22,7 @@ import os
 import socket
 import threading
 import time
-
+import multiprocessing
 import six
 
 from .proto import event_pb2
@@ -102,7 +102,7 @@ class EventFileWriter(object):
         """
         self._logdir = logdir
         directory_check(self._logdir)
-        self._event_queue = six.moves.queue.Queue(max_queue_size)
+        self._event_queue = multiprocessing.Queue(max_queue_size)
         self._ev_writer = EventsWriter(os.path.join(
             self._logdir, "events"), filename_suffix)
         self._flush_secs = flush_secs
@@ -145,7 +145,6 @@ class EventFileWriter(object):
         disk.
         """
         if not self._closed:
-            self._event_queue.join()
             self._ev_writer.flush()
 
     def close(self):
@@ -157,6 +156,7 @@ class EventFileWriter(object):
             self.flush()
             self._worker.stop()
             self._ev_writer.close()
+            self._event_queue.close()
             self._closed = True
 
 
@@ -201,15 +201,12 @@ class _EventLoggerThread(threading.Thread):
                 else:
                     data = self._queue.get(False)
 
-                if data == self._shutdown_signal:
+                if type(data) == type(self._shutdown_signal):
                     return
                 self._record_writer.write_event(data)
                 self._has_pending_data = True
             except six.moves.queue.Empty:
                 pass
-            finally:
-                if data:
-                    self._queue.task_done()
 
             now = time.time()
             if now > self._next_flush_time:
