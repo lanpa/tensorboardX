@@ -2,13 +2,15 @@ from .writer import SummaryWriter
 from multiprocessing import Value
 import multiprocessing as mp
 
+
 class GlobalSummaryWriter(object):
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
                  flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None, coalesce_process=True, **kwargs):
         self.smw = SummaryWriter(logdir=logdir, comment=comment, purge_step=purge_step, max_queue=max_queue,
-                 flush_secs=flush_secs, filename_suffix=filename_suffix, write_to_disk=write_to_disk, log_dir=log_dir)
+                                 flush_secs=flush_secs, filename_suffix=filename_suffix, write_to_disk=write_to_disk,
+                                 log_dir=log_dir)
         self.new_tag_mutex = mp.Value("i", 0)
-        
+
         self.scalar_tag_to_step = mp.Manager().dict()
         self.image_tag_to_step = mp.Manager().dict()
         self.histogram_tag_to_step = mp.Manager().dict()
@@ -38,7 +40,8 @@ class GlobalSummaryWriter(object):
     #     Args:
     #         tag (string): Data identifier
     #         values (torch.Tensor, numpy.array): Values to build histogram
-    #         bins (string): One of {'tensorflow','auto', 'fd', ...}. This determines how the bins are made. You can find
+    #         bins (string): One of {'tensorflow','auto', 'fd', ...}.
+    #           This determines how the bins are made. You can find
     #           other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
     #         walltime (float): Optional override default walltime (time.time()) of event
 
@@ -48,8 +51,12 @@ class GlobalSummaryWriter(object):
     #             self.histogram_tag_to_step[tag] += 1
     #         else:
     #             self.histogram_tag_to_step[tag] = 0
-
-    #         self.smw.add_histogram(tag, values, self.histogram_tag_to_step[tag], bins=bins, walltime=walltime, max_bins=max_bins)
+    #         self.smw.add_histogram(tag,
+    #                                values,
+    #                                self.histogram_tag_to_step[tag],
+    #                                bins=bins,
+    #                                walltime=walltime,
+    #                                max_bins=max_bins)
 
     def add_image(self, tag, img_tensor, walltime=None, dataformats='CHW'):
         """Add image data to summary.
