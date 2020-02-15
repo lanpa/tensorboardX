@@ -125,6 +125,10 @@ class GlobalSummaryWriter(object):
     def getSummaryWriter(self):
         return self.smw
 
+    @property
+    def file_writer(self):
+        return self.smw._get_file_writer()
+
     def close(self):
         self.smw.flush()
         self.smw.close()
