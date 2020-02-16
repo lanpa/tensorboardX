@@ -9,8 +9,7 @@ class GlobalSummaryWriter(object):
         self.smw = SummaryWriter(logdir=logdir, comment=comment, purge_step=purge_step, max_queue=max_queue,
                                  flush_secs=flush_secs, filename_suffix=filename_suffix, write_to_disk=write_to_disk,
                                  log_dir=log_dir)
-        self.new_tag_mutex = mp.Value("i", 0)
-
+        self.lock = mp.Lock()
         self.scalar_tag_to_step = mp.Manager().dict()
         self.image_tag_to_step = mp.Manager().dict()
         self.histogram_tag_to_step = mp.Manager().dict()
@@ -26,7 +25,7 @@ class GlobalSummaryWriter(object):
             walltime (float): Optional override default walltime (time.time()) of event
 
         """
-        with self.new_tag_mutex.get_lock():
+        with self.lock:
             if tag in self.scalar_tag_to_step:
                 self.scalar_tag_to_step[tag] += 1
             else:
@@ -77,7 +76,7 @@ class GlobalSummaryWriter(object):
             Tensor with :math:`(1, H, W)`, :math:`(H, W)`, :math:`(H, W, 3)` is also suitible as long as
             corresponding ``dataformats`` argument is passed. e.g. CHW, HWC, HW.
         """
-        with self.new_tag_mutex.get_lock():
+        with self.lock:
             if tag in self.image_tag_to_step:
                 self.image_tag_to_step[tag] += 1
             else:
@@ -114,7 +113,7 @@ class GlobalSummaryWriter(object):
             walltime (float): Optional override default walltime (time.time()) of event
 
         """
-        with self.new_tag_mutex.get_lock():
+        with self.lock:
             if tag in self.text_tag_to_step:
                 self.text_tag_to_step[tag] += 1
             else:
