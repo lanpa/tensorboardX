@@ -3,6 +3,9 @@ from multiprocessing import Value
 import multiprocessing as mp
 
 
+global _writer
+_writer = None
+
 class GlobalSummaryWriter(object):
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
                  flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None, coalesce_process=True, **kwargs):
@@ -119,10 +122,17 @@ class GlobalSummaryWriter(object):
             else:
                 self.text_tag_to_step[tag] = 0
 
-            self.smw.add_text(tag, text_string, self.text_tag_to_step[tag], walltime=walltime)
+            self.smw.add_text(tag, text_string, global_step=self.text_tag_to_step[tag], walltime=walltime)
 
-    def getSummaryWriter(self):
-        return self.smw
+    @staticmethod
+    def getSummaryWriter():
+        global _writer
+        if not hasattr(_writer, "smw") or _writer.smw == None:
+            _writer = GlobalSummaryWriter()
+
+        print("Using the global logger in:", _writer.smw.file_writer.get_logdir())
+        return _writer
+
 
     @property
     def file_writer(self):
