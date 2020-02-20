@@ -2,9 +2,9 @@ from .writer import SummaryWriter
 from multiprocessing import Value
 import multiprocessing as mp
 
-
 global _writer
 _writer = None
+
 
 class GlobalSummaryWriter(object):
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
@@ -127,12 +127,11 @@ class GlobalSummaryWriter(object):
     @staticmethod
     def getSummaryWriter():
         global _writer
-        if not hasattr(_writer, "smw") or _writer.smw == None:
+        if not hasattr(_writer, "smw") or _writer.smw is None:
             _writer = GlobalSummaryWriter()
 
         print("Using the global logger in:", _writer.smw.file_writer.get_logdir())
         return _writer
-
 
     @property
     def file_writer(self):
