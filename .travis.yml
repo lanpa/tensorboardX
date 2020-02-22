@@ -67,6 +67,7 @@ script:
   - sleep 5
   - python -c "import visdom; v = visdom.Visdom()"
   - py.test --cov=tensorboardX tests/
+  - pytest tests/tset_multiprocess_write.py  # pytest has issue with multiprocessing, so I rename to "tset"
   - python examples/demo.py
   - python examples/demo_graph.py
   - python examples/demo_embedding.py

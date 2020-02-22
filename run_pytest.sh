@@ -8,3 +8,5 @@ if [ `ps|grep visdom |wc -l` = "1" ]
 fi
 
 PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python pytest
+
+pytest tests/tset_global_writer.py
