@@ -16,14 +16,9 @@ class SummaryWriterTest(unittest.TestCase):
     def test_summary_writer_close(self):
         # Opening and closing SummaryWriter a lot should not run into
         # OSError: [Errno 24] Too many open files
-        passed = True
-        try:
+        for i in range(1000):
             writer = SummaryWriter()
             writer.close()
-        except OSError:
-            passed = False
-
-        assert passed
 
     def test_windowsPath(self):
         dummyPath = "C:\\Downloads\\fjoweifj02utj43tj430"
