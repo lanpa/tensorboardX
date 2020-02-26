@@ -157,6 +157,8 @@ class EventFileWriter(object):
             self._worker.stop()
             self._ev_writer.close()
             self._event_queue.close()
+            self._event_queue = None  # this is critical
+            self._worker = None  # this is critical too
             self._closed = True
 
 
