@@ -7,6 +7,11 @@ tensorboardX
     
     .. automethod:: __init__
 
+.. autoclass:: GlobalSummaryWriter
+    :members:
+    
+    .. automethod:: __init__
+
 .. autoclass:: TorchVis
     :members:
 

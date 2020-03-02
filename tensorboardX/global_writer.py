@@ -7,8 +7,45 @@ _writer = None
 
 
 class GlobalSummaryWriter(object):
+    """A class that implements an event writer that supports concurrent logging and global logging across different modules.
+
+    The GlobalSummaryWriter class provides a set of API to write TensorBoard events from different processes. The writer instance 
+    can be accessed from different processes or modules. Also, the instance maintains the ``global_step`` value 
+    itself so that the interleaved requests to write an event will not conflict each other. This ensures that the resulting 
+    event file is TensorBoard compatible. 
+    With GlobalSummaryWriter, you can easily log the metrics of your parallel-trained model. The GlobalSummaryWriter and also be 
+    used like the ``logging`` module of Python. See how ``getSummaryWriter`` is used below.
+    """
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
                  flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None, coalesce_process=True, **kwargs):
+        """
+        Initialize a GlobalSummaryWriter. The resulting instance will maintain a monotonically increasing ``global_step`` 
+        for the the event to be written. So there is no need to pass the global_step when calling its member functions such as ``add_scalar()``.
+        All arguments for the constructor will be passed to the ordinary ``SummaryWriter.__init__()`` directly.
+
+        Examples::
+
+            import multiprocessing as mp
+            import numpy as np
+            import time
+            from tensorboardX import GlobalSummaryWriter
+            w = GlobalSummaryWriter()
+
+            def train(x):
+                w.add_scalar('poolmap/1', x*np.random.randn())
+                time.sleep(0.05*np.random.randint(0, 10))
+                w.add_scalar('poolmap/2', x*np.random.randn())
+
+            with mp.Pool() as pool:
+                pool.map(train, range(100))
+
+        Expected result:
+
+        .. image:: _static/img/tensorboard/add_scalar_global.png
+           :scale: 50 %
+
+        """
+
         self.smw = SummaryWriter(logdir=logdir, comment=comment, purge_step=purge_step, max_queue=max_queue,
                                  flush_secs=flush_secs, filename_suffix=filename_suffix, write_to_disk=write_to_disk,
                                  log_dir=log_dir)
@@ -126,6 +163,25 @@ class GlobalSummaryWriter(object):
 
     @staticmethod
     def getSummaryWriter():
+        """Get the writer from global namespace.
+
+        Examples::
+
+            # main.py
+            import global_1
+            import global_2
+
+            # global1.py
+            from tensorboardX import GlobalSummaryWriter
+            writer = GlobalSummaryWriter.getSummaryWriter()  # This creates a new instance.
+            writer.add_text('my_log', 'greeting from global1')
+
+            # global2.py
+            from tensorboardX import GlobalSummaryWriter
+            writer = GlobalSummaryWriter.getSummaryWriter()  # Get the instance in global1.py.
+            writer.add_text('my_log', 'greeting from global2')
+
+        """
         global _writer
         if not hasattr(_writer, "smw") or _writer.smw is None:
             _writer = GlobalSummaryWriter()
