@@ -7,20 +7,24 @@ _writer = None
 
 
 class GlobalSummaryWriter(object):
-    """A class that implements an event writer that supports concurrent logging and global logging across different modules.
+    """A class that implements an event writer that supports concurrent logging and global logging across
+    different modules.
 
-    The GlobalSummaryWriter class provides a set of API to write TensorBoard events from different processes. The writer instance 
-    can be accessed from different processes or modules. Also, the instance maintains the ``global_step`` value 
-    itself so that the interleaved requests to write an event will not conflict each other. This ensures that the resulting 
-    event file is TensorBoard compatible. 
-    With GlobalSummaryWriter, you can easily log the metrics of your parallel-trained model. The GlobalSummaryWriter and also be 
-    used like the ``logging`` module of Python. See how ``getSummaryWriter`` is used below.
+    The GlobalSummaryWriter class provides a set of API to write TensorBoard events from different processes.
+    The writer instance can be accessed from different processes or modules. Also, the instance maintains
+    the ``global_step`` value itself so that the interleaved requests to write an event will not conflict
+    each other. This ensures that the resulting event file is TensorBoard compatible.
+    With GlobalSummaryWriter, you can easily log the metrics of your parallel-trained model.
+    The GlobalSummaryWriter and also be used like the ``logging`` module of Python.
+    See how ``getSummaryWriter`` is used below.
     """
     def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
-                 flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None, coalesce_process=True, **kwargs):
+                 flush_secs=120, filename_suffix='', write_to_disk=True, log_dir=None,
+                 coalesce_process=True, **kwargs):
         """
-        Initialize a GlobalSummaryWriter. The resulting instance will maintain a monotonically increasing ``global_step`` 
-        for the the event to be written. So there is no need to pass the global_step when calling its member functions such as ``add_scalar()``.
+        Initialize a GlobalSummaryWriter. The resulting instance will maintain a monotonically
+        increasing ``global_step`` for the the event to be written. So there is no need to pass
+        the global_step when calling its member functions such as ``add_scalar()``.
         All arguments for the constructor will be passed to the ordinary ``SummaryWriter.__init__()`` directly.
 
         Examples::
