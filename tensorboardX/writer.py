@@ -840,7 +840,7 @@ class SummaryWriter(object):
         return retval
 
     def add_embedding(self, mat, metadata=None, label_img=None, global_step=None, tag='default', metadata_header=None):
-        """Add embedding projector data to summary.
+        r"""Add embedding projector data to summary.
 
         Args:
             mat (torch.Tensor or numpy.array): A matrix which each row is the feature vector of the data point
