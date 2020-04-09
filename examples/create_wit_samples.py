@@ -22,7 +22,6 @@ Here I only choose feature 1~8 for example.
 
 """
 
-import tensorflow as tf
 
 with open("processed.cleveland.data") as f:
     lines = f.readlines()
@@ -36,11 +35,33 @@ for line in lines:
     if '?' in x[:8]:  # skip missing data
         continue
     ft = [float(i) for i in x[:8]+[y]]
-    print(ft)
+    # print(ft)
     features_targets.append(ft)
 
-# print(columns)
-# print(features_targets)
+
+"""
+  The first line of the CSV file must contain column names.
+  Each line after that contains one example from the dataset,
+  with values for each of the columns defined on the first line.
+  The pipe character ("|") deliminates separate feature values
+  in a list of feature values for a given feature.
+"""
+
+with open("test.csv", 'w') as f:
+    f.write(','.join(columns) + '\n')
+    for feature in features_targets:
+        feature = [str(i) for i in feature]
+        f.write(','.join(feature) + '\n')
+
+# launch tensorboard and fill [git/]tensorboardX/examples/test.csv in the WIT page and see the data distribution.
+
+exit()
+
+
+# For interactive inference, you may need the data in tfrecord format.
+
+import tensorflow as tf
+
 
 def to_examples(features_targets, columns=None):
     examples = []
