@@ -381,7 +381,8 @@ class SummaryWriter(object):
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
 
-    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
+    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None,
+                   display_name="", summary_description=""):
         """Add scalar data to summary.
 
         Args:
@@ -389,7 +390,10 @@ class SummaryWriter(object):
             scalar_value (float or string/blobname): Value to save
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
-
+            display_name (string): The title of the plot. If empty string is passed,
+              `tag` will be used.
+            summary_description (string): The comprehensive text that will showed
+              by clicking the information icon on TensorBoard.
         Examples::
 
             from tensorboardX import SummaryWriter
@@ -408,7 +412,7 @@ class SummaryWriter(object):
         if self._check_caffe2_blob(scalar_value):
             scalar_value = workspace.FetchBlob(scalar_value)
         self._get_file_writer().add_summary(
-            scalar(tag, scalar_value), global_step, walltime)
+            scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None, walltime=None):
         """Adds many scalar data to summary.

@@ -126,15 +126,15 @@ def hparams(hparam_dict=None, metric_dict=None):
     return exp, ssi, sei
 
 
-def scalar(name, scalar, collections=None):
+def scalar(name, scalar, display_name="", summary_description=""):
     """Outputs a `Summary` protocol buffer containing a single scalar value.
     The generated Summary has a Tensor.proto containing the input Tensor.
     Args:
       name: A name for the generated node. Will also serve as the series name in
         TensorBoard.
       tensor: A real numeric Tensor containing a single value.
-      collections: Optional list of graph collections keys. The new summary op is
-        added to these collections. Defaults to `[GraphKeys.SUMMARIES]`.
+      display_name: The title of the plot. If empty string is passed, `name` will be used.
+      summary_description: The comprehensive text that will showed by clicking the information icon on TensorBoard.
     Returns:
       A scalar `Tensor` of type `string`. Which contains a `Summary` protobuf.
     Raises:
@@ -144,7 +144,11 @@ def scalar(name, scalar, collections=None):
     scalar = make_np(scalar)
     assert(scalar.squeeze().ndim == 0), 'scalar should be 0D'
     scalar = float(scalar)
-    return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
+    if display_name == "" and summary_description == "":
+        return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
+
+    metadata = SummaryMetadata(display_name=display_name, summary_description=summary_description)
+    return Summary(value=[Summary.Value(tag=name, simple_value=scalar, metadata=metadata)])
 
 
 def histogram_raw(name, min, max, num, sum, sum_squares, bucket_limits, bucket_counts):
