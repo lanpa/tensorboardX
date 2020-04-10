@@ -23,9 +23,9 @@ for n_iter in range(100):
     s1 = torch.rand(1)  # value to keep
     s2 = torch.rand(1)
     # data grouping by `slash`
-    writer.add_scalar('data/scalar_systemtime', s1[0], n_iter)
+    writer.add_scalar('data/scalar_systemtime', s1[0], n_iter, summary_description="# markdown is supported!")
     # data grouping by `slash`
-    writer.add_scalar('data/scalar_customtime', s1[0], n_iter, walltime=n_iter)
+    writer.add_scalar('data/scalar_customtime', s1[0], n_iter, walltime=n_iter, display_name="dudubird")
     writer.add_scalars('data/scalar_group', {"xsinx": n_iter * np.sin(n_iter),
                                              "xcosx": n_iter * np.cos(n_iter),
                                              "arctanx": np.arctan(n_iter)}, n_iter)

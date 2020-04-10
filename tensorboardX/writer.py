@@ -381,7 +381,7 @@ class SummaryWriter(object):
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
 
-    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None):
+    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None, display_name="", summary_description=""):
         """Add scalar data to summary.
 
         Args:
@@ -408,7 +408,7 @@ class SummaryWriter(object):
         if self._check_caffe2_blob(scalar_value):
             scalar_value = workspace.FetchBlob(scalar_value)
         self._get_file_writer().add_summary(
-            scalar(tag, scalar_value), global_step, walltime)
+            scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
 
     def add_scalars(self, main_tag, tag_scalar_dict, global_step=None, walltime=None):
         """Adds many scalar data to summary.
