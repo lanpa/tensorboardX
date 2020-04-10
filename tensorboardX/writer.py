@@ -391,7 +391,7 @@ class SummaryWriter(object):
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
             display_name (string): The title of the plot. If empty string is passed,
-              `name` will be used.
+              `tag` will be used.
             summary_description (string): The comprehensive text that will showed
               by clicking the information icon on TensorBoard.
         Examples::
