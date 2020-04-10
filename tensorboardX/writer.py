@@ -381,7 +381,8 @@ class SummaryWriter(object):
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
 
-    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None, display_name="", summary_description=""):
+    def add_scalar(self, tag, scalar_value, global_step=None, walltime=None,
+                   display_name="", summary_description=""):
         """Add scalar data to summary.
 
         Args:
@@ -389,7 +390,10 @@ class SummaryWriter(object):
             scalar_value (float or string/blobname): Value to save
             global_step (int): Global step value to record
             walltime (float): Optional override default walltime (time.time()) of event
-
+            display_name (string): The title of the plot. If empty string is passed,
+              `name` will be used.
+            summary_description (string): The comprehensive text that will showed
+              by clicking the information icon on TensorBoard.
         Examples::
 
             from tensorboardX import SummaryWriter
