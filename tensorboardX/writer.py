@@ -345,7 +345,8 @@ class SummaryWriter(object):
 
         Args:
             hparam_dict (dictionary): Each key-value pair in the dictionary is the
-              name of the hyper parameter and it's corresponding value.
+              name of the hyper parameter and it's corresponding value. The type of the value
+              can be one of `bool`, `string`, `float`, `int`, or `None`.
             metric_dict (dictionary): Each key-value pair in the dictionary is the
               name of the metric and it's corresponding value. Note that the key used
               here should be unique in the tensorboard record. Otherwise the value

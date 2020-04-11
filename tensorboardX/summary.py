@@ -87,6 +87,9 @@ def hparams(hparam_dict=None, metric_dict=None):
 
     ssi = SessionStartInfo()
     for k, v in hparam_dict.items():
+        if v is None:
+            continue
+
         if isinstance(v, string_types):
             ssi.hparams[k].string_value = v
             hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_STRING))
@@ -97,7 +100,7 @@ def hparams(hparam_dict=None, metric_dict=None):
             hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_BOOL))
             continue
 
-        if not isinstance(v, int) or not isinstance(v, float):
+        if isinstance(v, int) or isinstance(v, float):
             v = make_np(v)[0]
             ssi.hparams[k].number_value = v
             hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_FLOAT64))
