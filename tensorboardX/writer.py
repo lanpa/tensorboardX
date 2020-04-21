@@ -744,7 +744,7 @@ class SummaryWriter(object):
             sample_rate (int): sample rate in Hz
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
+            snd_tensor: :math:`(L, c)`. The values should lie between [-1, 1].
         """
         if self._check_caffe2_blob(snd_tensor):
             snd_tensor = workspace.FetchBlob(snd_tensor)
