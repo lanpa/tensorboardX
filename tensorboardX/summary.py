@@ -92,21 +92,21 @@ def hparams(hparam_dict=None, metric_dict=None):
 
         if isinstance(v, string_types):
             ssi.hparams[k].string_value = v
-            hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_STRING))
+            hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_STRING")))
             continue
 
         if isinstance(v, bool):
             ssi.hparams[k].bool_value = v
-            hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_BOOL))
+            hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_BOOL")))
             continue
 
         if isinstance(v, int) or isinstance(v, float):
             v = make_np(v)[0]
             ssi.hparams[k].number_value = v
-            hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_FLOAT64))
+            hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_FLOAT64")))
             continue
 
-        hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_UNSET))
+        hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_UNSET")))
 
     content = HParamsPluginData(session_start_info=ssi, version=PLUGIN_DATA_VERSION)
     smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name=PLUGIN_NAME,
@@ -121,7 +121,7 @@ def hparams(hparam_dict=None, metric_dict=None):
                                                                  content=content.SerializeToString()))
     exp = Summary(value=[Summary.Value(tag=EXPERIMENT_TAG, metadata=smd)])
 
-    sei = SessionEndInfo(status=Status.STATUS_SUCCESS)
+    sei = SessionEndInfo(status=Status.Value("STATUS_SUCCESS"))
     content = HParamsPluginData(session_end_info=sei, version=PLUGIN_DATA_VERSION)
     smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name=PLUGIN_NAME,
                                                                  content=content.SerializeToString()))
