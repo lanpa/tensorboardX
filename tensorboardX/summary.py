@@ -106,6 +106,11 @@ def hparams(hparam_dict=None, metric_dict=None):
             hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_FLOAT64))
             continue
 
+        if callable(v):
+            ssi.hparams[k].string_value = getattr(v, '__name__', str(v))
+            hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_STRING))
+            continue
+
         hps.append(HParamInfo(name=k, type=DataType.DATA_TYPE_UNSET))
 
     content = HParamsPluginData(session_start_info=ssi, version=PLUGIN_DATA_VERSION)
