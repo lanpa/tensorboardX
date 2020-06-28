@@ -411,7 +411,7 @@ class SummaryWriter(object):
 
         """
         if self._check_caffe2_blob(scalar_value):
-            scalar_value = workspace.FetchBlob(scalar_value)
+                scalar_value = workspace.FetchBlob(scalar_value)
         self._get_file_writer().add_summary(
             scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
 
@@ -744,7 +744,8 @@ class SummaryWriter(object):
             sample_rate (int): sample rate in Hz
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            snd_tensor: :math:`(L, c)`. The values should lie between [-1, 1].
+            snd_tensor: :math:`(L, C)`. The values should lie between [-1, 1]. Where `L`
+              is the number of audio frames and `C` is the channel. 1 for mono, 2 for stereo.
         """
         if self._check_caffe2_blob(snd_tensor):
             snd_tensor = workspace.FetchBlob(snd_tensor)

@@ -387,18 +387,28 @@ def make_video(tensor, fps):
 
 
 def audio(tag, tensor, sample_rate=44100):
+    """
+    Args:
+      tensor: A 2-D float Tensor of shape `[frames, channels]` where `channels` is 1 or 2.
+        The values should between [-1, 1]. We also accepts 1-D tensor.
+    """
+    import io
+    import soundfile
     tensor = make_np(tensor)
     if abs(tensor).max() > 1:
         print('warning: audio amplitude out of range, auto clipped.')
         tensor = tensor.clip(-1, 1)
-    assert(tensor.ndim == 2), 'input tensor should be 2 dimensional.'
+    if tensor.ndim == 1:  # old API, which expects single channel audio
+        tensor = np.expand_dims(tensor, axis=1)
+
+    assert(tensor.ndim == 2), 'Input tensor should be 2 dimensional.'
     length_frames, num_channels = tensor.shape
-    assert num_channels == 1 or num_channels == 2, f'Expected 1/2 channels, got {num_channels}'
-    import soundfile
-    import io
+    assert num_channels == 1 or num_channels == 2, 'The second dimension should be 1 or 2.'
+
     with io.BytesIO() as fio:
         soundfile.write(fio, tensor, samplerate=sample_rate, format='wav')
         audio_string = fio.getvalue()
+
     audio = Summary.Audio(sample_rate=sample_rate,
                           num_channels=num_channels,
                           length_frames=length_frames,
