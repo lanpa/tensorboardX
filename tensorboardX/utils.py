@@ -80,7 +80,7 @@ def make_grid(I, ncols=8):
     W = I.shape[3]
     ncols = min(nimg, ncols)
     nrows = int(np.ceil(float(nimg) / ncols))
-    canvas = np.zeros((I.shape[1], H * nrows, W * ncols))
+    canvas = np.zeros((I.shape[1], H * nrows, W * ncols), dtype=I.dtype)
     i = 0
     for y in range(nrows):
         for x in range(ncols):
