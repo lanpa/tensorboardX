@@ -747,7 +747,8 @@ class SummaryWriter(object):
             sample_rate (int): sample rate in Hz
             walltime (float): Optional override default walltime (time.time()) of event
         Shape:
-            snd_tensor: :math:`(1, L)`. The values should lie between [-1, 1].
+            snd_tensor: :math:`(L, C)`. The values should lie between [-1, 1]. Where `L`
+              is the number of audio frames and `C` is the channel. 1 for mono, 2 for stereo.
         """
         if self._check_caffe2_blob(snd_tensor):
             snd_tensor = workspace.FetchBlob(snd_tensor)
