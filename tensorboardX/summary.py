@@ -421,6 +421,7 @@ def audio(tag, tensor, sample_rate=44100):
                           content_type='audio/wav')
     return Summary(value=[Summary.Value(tag=tag, audio=audio)])
 
+
 def custom_scalars(layout):
     categoriesnames = layout.keys()
     categories = []

@@ -415,7 +415,6 @@ class SummaryWriter(object):
                 scalar_value = workspace.FetchBlob(scalar_value)
             else:
                 raise TypeError("Input value: \"{}\" is not a scalar".format(scalar_value))
-
         self._get_file_writer().add_summary(
             scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
 
