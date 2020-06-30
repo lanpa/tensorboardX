@@ -320,23 +320,16 @@ class SummaryWriter(object):
             return self.file_writer
 
         if self.all_writers is None or self.file_writer is None:
-            if 'purge_step' in self.kwargs.keys():
-                most_recent_step = self.kwargs.pop('purge_step')
-                self.file_writer = FileWriter(logdir=self.logdir,
-                                              max_queue=self._max_queue,
-                                              flush_secs=self._flush_secs,
-                                              filename_suffix=self._filename_suffix,
-                                              **self.kwargs)
+            self.file_writer = FileWriter(logdir=self.logdir,
+                                          max_queue=self._max_queue,
+                                          flush_secs=self._flush_secs,
+                                          filename_suffix=self._filename_suffix,
+                                          **self.kwargs)
+            if self.purge_step is not None:
                 self.file_writer.add_event(
-                    Event(step=most_recent_step, file_version='brain.Event:2'))
+                    Event(step=self.purge_step, file_version='brain.Event:2'))
                 self.file_writer.add_event(
-                    Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
-            else:
-                self.file_writer = FileWriter(logdir=self.logdir,
-                                              max_queue=self._max_queue,
-                                              flush_secs=self._flush_secs,
-                                              filename_suffix=self._filename_suffix,
-                                              **self.kwargs)
+                    Event(step=self.purge_step, session_log=SessionLog(status=SessionLog.START)))
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
