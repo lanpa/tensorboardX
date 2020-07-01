@@ -780,10 +780,23 @@ class SummaryWriter(object):
         """
         self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
 
-    def add_graph(self, model, input_to_model=None, verbose=False, profile_with_cuda=False, **kwargs):
+    def add_graph(self, model, input_to_model=None, verbose=False):
+        """Add graph data to summary. The graph is actually processed by `torch.utils.tensorboard.add_graph()`
+
+        Args:
+            model (torch.nn.Module): Model to draw.
+            input_to_model (torch.Tensor or list of torch.Tensor): A variable or a tuple of
+                variables to be fed.
+            verbose (bool): Whether to print graph structure in console.
+
+        """
+        from torch.utils.tensorboard._pytorch_graph import graph
+        self._get_file_writer().add_graph(graph(model, input_to_model, verbose))
+
+    def add_graph_deprecated(self, model, input_to_model=None, verbose=False, profile_with_cuda=False, **kwargs):
         # prohibit second call?
         # no, let tensorboard handle it and show its warning message.
-        """Add graph data to summary.
+        """[deprecated] Add graph data to summary. This was used in tensorboardX <= 2.0
 
         Args:
             model (torch.nn.Module): Model to draw.
