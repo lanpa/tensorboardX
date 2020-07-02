@@ -5,3 +5,4 @@ recursive-include tensorboardX/proto *
 recursive-exclude test *
 recursive-exclude examples *
 recursive-include tensorboardX/beholder *
+global-exclude *.pyc
