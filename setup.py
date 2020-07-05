@@ -3,6 +3,7 @@
 
 import subprocess
 import os
+import sys
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
@@ -30,16 +31,16 @@ class PostInstallCommand(install):
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-preparing_PyPI_package = False
-version_git = version = '2.0'
+preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
+version_git = version = '2.1'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
         sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
         version_git = version_git + '+' + sha[:7]
 
-    with open('tensorboardX/__init__.py', 'a') as f:
-        f.write('\n__version__ = "{}"\n'.format(version_git))
+with open('tensorboardX/__init__.py', 'a') as f:
+    f.write('\n__version__ = "{}"\n'.format(version_git))
 
 requirements = [
     'numpy',
@@ -88,10 +89,9 @@ setup(
 
 
 # checklist: update History.rst readme.md
-# change preparing_PyPI_package to True, and update version_git to new version
-# remove __version__ = "1.old" in __init__.py, update the version number
+# update the version number in this file.
 # python setup.py sdist bdist_wheel --universal
-# check the generated tar.gz file
+# check the generated tar.gz file (the version, no *.pyc)
 # git add [files]
 # git commit -m 'prepare for release'
 # add tag

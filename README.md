@@ -8,16 +8,15 @@
 
 Write TensorBoard events with simple function call.
 
+The current release (v2.1) is tested on anaconda3, with PyTorch 1.5.1 / torchvision 0.6.1 / tensorboard 2.2.2.
+
 * Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`, `mesh`, `hyper-parameters`
   and `video` summaries.
 
-* requirement for `demo_graph.py` is tensorboardX>=1.9 and pytorch>=1.3
-
 * [FAQ](https://github.com/lanpa/tensorboardX/wiki)
 
-## Install
 
-Tested on anaconda2 / anaconda3, with PyTorch 1.3.1 / torchvision 0.4.1 / tensorboard 2.0.0
+## Install
 
 `pip install tensorboardX`
 
@@ -25,15 +24,20 @@ or build from source:
 
 `pip install 'git+https://github.com/lanpa/tensorboardX'`
 
+You can optionally install [`crc32c`](https://github.com/ICRAR/crc32c) to speed up.
 
-You can optionally install [`crc32c`](https://github.com/ICRAR/crc32c) to speed up saving a large amount of data.
+`pip install crc32c`
 
+Starting from tensorboardX 2.1, You need to install `soundfile` for the `add_audio()` function (200x speedup).
+
+`pip install soundfile`
 
 ## Example
 
 * Clone the files in https://github.com/lanpa/tensorboardX/tree/master/examples
 * Run the demo script: e.g. `python examples/demo.py`
-* Use TensorBoard with `tensorboard --logdir runs`  (needs to install TensorFlow)
+* Start TensorBoard with `tensorboard --logdir runs`  
+
 
 ```python
 # demo.py

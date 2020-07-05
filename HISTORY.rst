@@ -1,5 +1,13 @@
 History
 =======
+2.1 (2020-07-05)
+-----------------
+* Global SummaryWriter that mimics python's default logger class, concurrent write is supported.
+* 200x speed up for add_audio. Please install the soundfile package for this feature.
+* Supports jax tensors.
+* The add_graph function is delegated to the one in torch.utils.tensorboard.
+* Bug fixes, see the commit log in Github.
+
 2.0 (2019-12-31)
 -----------------
 * Now you can tag Hparams trials with custom name instead of the default epoch time

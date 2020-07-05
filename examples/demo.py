@@ -6,6 +6,12 @@ from torchvision import datasets
 from tensorboardX import SummaryWriter
 import datetime
 
+try:
+    import soundfile
+    skip_audio = False
+except ImportError:
+    skip_audio = True
+
 resnet18 = models.resnet18(False)
 writer = SummaryWriter()
 sample_rate = 44100
@@ -37,12 +43,13 @@ for n_iter in range(100):
              torch.Tensor([[10, 10, 100, 100], [101, 101, 200, 200]]),
              n_iter, 
              labels=['abcde' + str(n_iter), 'fgh' + str(n_iter)])
-        x = torch.zeros(sample_rate * 2)
-        for i in range(x.size(0)):
-            # sound amplitude should in [-1, 1]
-            x[i] = np.cos(freqs[n_iter // 10] * np.pi *
-                          float(i) / float(sample_rate))
-        writer.add_audio('myAudio', x, n_iter)
+        if not skip_audio:
+            x = torch.zeros(sample_rate * 2)
+            for i in range(x.size(0)):
+                # sound amplitude should in [-1, 1]
+                x[i] = np.cos(freqs[n_iter // 10] * np.pi *
+                            float(i) / float(sample_rate))
+            writer.add_audio('myAudio', x, n_iter)
         writer.add_text('Text', 'text logged at step:' + str(n_iter), n_iter)
         writer.add_text('markdown Text', '''a|b\n-|-\nc|d''', n_iter)
         for name, param in resnet18.named_parameters():
