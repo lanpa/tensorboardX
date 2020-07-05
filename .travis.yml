@@ -60,7 +60,7 @@ install:
   - conda install ffmpeg
   - conda list
   - python -c "import imageio; imageio.plugins.ffmpeg.download()"
-  - pip install --upgrade pytest-cov flake8
+  - pip install --upgrade pytest-cov flake8==3.8.3
   - python setup.py install
 
 script:

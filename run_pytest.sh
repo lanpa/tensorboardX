@@ -1,4 +1,4 @@
-pip install pytest boto3 moto onnx tensorboard matplotlib 
+pip install pytest boto3 moto onnx tensorboard matplotlib flake8==3.8.3
 
 if [ `ps|grep visdom |wc -l` = "1" ]
     then
