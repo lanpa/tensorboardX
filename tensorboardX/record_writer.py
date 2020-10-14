@@ -148,7 +148,7 @@ class GCSRecordWriter(object):
         upload_buffer = copy.copy(self.buffer)
         upload_buffer.seek(0)
         try:
-            self.blob.upload_from_string(upload_buffer.getvalue())
+            self.blob.upload_from_string(upload_buffer.getvalue(), timeout=300)
         except ConnectionError:
             self.flush()
 
