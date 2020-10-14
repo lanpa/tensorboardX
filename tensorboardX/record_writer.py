@@ -9,6 +9,8 @@ import io
 import os.path
 import re
 import struct
+from requests import ConnectionError
+
 try:
     import boto3
     S3_ENABLED = True
@@ -145,8 +147,10 @@ class GCSRecordWriter(object):
     def flush(self):
         upload_buffer = copy.copy(self.buffer)
         upload_buffer.seek(0)
-
-        self.blob.upload_from_string(upload_buffer.getvalue())
+        try:
+            self.blob.upload_from_string(upload_buffer.getvalue())
+        except ConnectionError:
+            self.flush()
 
     def close(self):
         self.flush()
