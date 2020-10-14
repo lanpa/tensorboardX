@@ -14,16 +14,18 @@
 # ==============================================================================
 """Writes events to disk in a logdir."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
+import logging
+import multiprocessing
 import os
 import socket
 import threading
 import time
-import multiprocessing
+
 import six
+from botocore.exceptions import EndpointConnectionError
+from requests import ConnectionError
 
 from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check
@@ -193,6 +195,7 @@ class _EventLoggerThread(threading.Thread):
         # time to flush the writer, whichever is earlier. If we have an
         # data, write it. If not, an empty queue exception will be raised
         # and we can proceed to flush the writer.
+        connection = True
         while True:
             now = time.time()
             queue_wait_duration = self._next_flush_time - now
@@ -216,7 +219,22 @@ class _EventLoggerThread(threading.Thread):
                     # Small optimization - if there are no pending data,
                     # there's no need to flush, since each flush can be
                     # expensive (e.g. uploading a new file to a server).
-                    self._record_writer.flush()
+                    # The try-catch statement below will prevent the thread
+                    # from hanging when connection gets dropped either by GCS
+                    # or S3 client.
+                    try:
+                        self._record_writer.flush()
+                        if not connection:
+                            logging.debug("Connection established.")
+                            connection = True
+                    except (ConnectionError, ConnectionAbortedError) as e:
+                        if connection:
+                            logging.debug(
+                                "Connection lost, trying to "
+                                "reestablish the connection."
+                            )
+                            connection = False
+                        continue
                     self._has_pending_data = False
                 # Do it again in flush_secs.
                 self._next_flush_time = now + self._flush_secs
