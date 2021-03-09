@@ -680,7 +680,7 @@ class SummaryWriter(object):
             e.g. CHW or HWC
 
             box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of
-            boxes and each 4 elememts in a row represents (xmin, ymin, xmax, ymax).
+            boxes and each 4 elements in a row represents (xmin, ymin, xmax, ymax).
         """
         if self._check_caffe2_blob(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
