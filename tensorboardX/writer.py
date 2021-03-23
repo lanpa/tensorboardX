@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import json
 import os
+import numpy
 import six
 import time
 import logging
@@ -26,6 +27,13 @@ from .summary import (
     scalar, histogram, histogram_raw, image, audio, text,
     pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh, hparams
 )
+
+numpy_compatible = numpy.ndarray
+try:
+    import torch
+    numpy_compatible = torch.Tensor
+except ImportError:
+    pass
 
 
 class DummyFileWriter(object):
@@ -355,9 +363,10 @@ class SummaryWriter(object):
             hparam_dict: Each key-value pair in the dictionary is the
               name of the hyper parameter and it's corresponding value.
             metric_dict: Each key-value pair in the dictionary is the
-              name of the metric and it's corresponding value. Note that the key used
-              here should be unique in the tensorboard record. Otherwise the value
-              you added by `add_scalar` will be displayed in hparam plugin. In most
+              name of the metric and it's corresponding value.
+              Note that the key used here should be unique in the
+              tensorboard record. Otherwise the value you added by `add_scalar`
+              will be displayed in hparam plugin. In most
               cases, this is unwanted.
             name: Personnalised name of the hparam session
             global_step: Current time step
@@ -392,7 +401,7 @@ class SummaryWriter(object):
     def add_scalar(
             self,
             tag: str,
-            scalar_value: Union[float, str],
+            scalar_value: Union[float, numpy_compatible],
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
             display_name: Optional[str] = "",
@@ -401,7 +410,8 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            scalar_value: Value to save, if string is passed, it will be treated as caffe blob name.
+            scalar_value: Value to save, if string is passed, it will be treated
+                as caffe blob name.
             global_step: Global step value to record
             walltime: Optional override default walltime (time.time()) of event
             display_name: The title of the plot. If empty string is passed,
@@ -496,7 +506,7 @@ class SummaryWriter(object):
     def add_histogram(
             self,
             tag: str,
-            values,
+            values: numpy_compatible,
             global_step: Optional[int] = None,
             bins: Optional[str] = 'tensorflow',
             walltime: Optional[float] = None,
@@ -505,7 +515,7 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            values (torch.Tensor, numpy.array, or string/blobname): Values to build histogram
+            values: Values to build histogram
             global_step: Global step value to record
             bins: One of {'tensorflow','auto', 'fd', ...}. This determines how the bins are made. You can find
               other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
@@ -601,7 +611,7 @@ class SummaryWriter(object):
     def add_image(
             self,
             tag: str,
-            img_tensor,
+            img_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
             dataformats: Optional[str] = 'CHW'):
@@ -611,9 +621,10 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            img_tensor (torch.Tensor, numpy.array, or string/blobname): An `uint8` or `float`
-                Tensor of shape `[channel, height, width]` where `channel` is 1, 3, or 4.
-                The elements in img_tensor can either have values in [0, 1] (float32) or [0, 255] (uint8).
+            img_tensor: An `uint8` or `float` Tensor of shape `
+                [channel, height, width]` where `channel` is 1, 3, or 4.
+                The elements in img_tensor can either have values
+                in [0, 1] (float32) or [0, 255] (uint8).
                 Users are responsible to scale the data in the correct range/type.
             global_step: Global step value to record
             walltime: Optional override default walltime (time.time()) of event.
@@ -657,7 +668,7 @@ class SummaryWriter(object):
     def add_images(
             self,
             tag: str,
-            img_tensor,
+            img_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
             dataformats: Optional[str] = 'NCHW'):
@@ -668,7 +679,7 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
+            img_tensor: Image data
                 The elements in img_tensor can either have values in [0, 1] (float32) or [0, 255] (uint8).
                 Users are responsible to scale the data in the correct range/type.
             global_step: Global step value to record
@@ -719,8 +730,8 @@ class SummaryWriter(object):
     def add_image_with_boxes(
             self,
             tag: str,
-            img_tensor,
-            box_tensor,
+            img_tensor: numpy_compatible,
+            box_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
             dataformats: Optional[str] = 'CHW',
@@ -730,8 +741,8 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            img_tensor (torch.Tensor, numpy.array, or string/blobname): Image data
-            box_tensor (torch.Tensor, numpy.array, or string/blobname): Box data (for detected objects)
+            img_tensor: Image data
+            box_tensor: Box data (for detected objects)
               box should be represented as [x1, y1, x2, y2].
             global_step: Global step value to record
             walltime: override default walltime (time.time()) of event
@@ -782,7 +793,7 @@ class SummaryWriter(object):
     def add_video(
             self,
             tag: str,
-            vid_tensor,
+            vid_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             fps: Optional[Union[int, float]] = 4,
             walltime: Optional[float] = None):
@@ -792,7 +803,7 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            vid_tensor (torch.Tensor): Video data
+            vid_tensor: Video data
             global_step: Global step value to record
             fps: Frames per second
             walltime: Optional override default walltime (time.time()) of event
@@ -806,7 +817,7 @@ class SummaryWriter(object):
     def add_audio(
             self,
             tag: str,
-            snd_tensor,
+            snd_tensor: numpy_compatible,
             global_step: Optional[int],
             sample_rate: Optional[int] = 44100,
             walltime: Optional[float] = None):
@@ -814,7 +825,7 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            snd_tensor (torch.Tensor): Sound data
+            snd_tensor: Sound data
             global_step: Global step value to record
             sample_rate: sample rate in Hz
             walltime: Optional override default walltime (time.time()) of event
@@ -954,19 +965,21 @@ class SummaryWriter(object):
 
     def add_embedding(
             self,
-            mat,
+            mat: numpy_compatible,
             metadata=None,
-            label_img=None,
+            label_img: numpy_compatible = None,
             global_step: Optional[int] = None,
             tag='default',
             metadata_header=None):
         r"""Add embedding projector data to summary.
 
         Args:
-            mat (torch.Tensor or numpy.array): A matrix which each row is the feature vector of the data point
-            metadata (list): A list of labels, each element will be convert to string
-            label_img (torch.Tensor or numpy.array): Images correspond to each data point. Each image should
-                be square. The amount and size of the images are limited by the Tensorboard frontend,
+            mat: A matrix which each row is the feature vector of the data point
+            metadata (list): A list of labels, each element will be converted to
+                string.
+            label_img: Images correspond to each
+                data point. Each image should be square sized. The amount and
+                the size of the images are limited by the Tensorboard frontend,
                 see limits below.
             global_step: Global step value to record
             tag: Name for the embedding
@@ -1033,8 +1046,8 @@ class SummaryWriter(object):
     def add_pr_curve(
             self,
             tag: str,
-            labels,
-            predictions,
+            labels: numpy_compatible,
+            predictions: numpy_compatible,
             global_step: Optional[int] = None,
             num_thresholds: Optional[int] = 127,
             weights=None,
@@ -1048,9 +1061,8 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            labels (torch.Tensor, numpy.array, or string/blobname):
-              Ground truth data. Binary label for each element.
-            predictions (torch.Tensor, numpy.array, or string/blobname):
+            labels: Ground truth data. Binary label for each element.
+            predictions:
               The probability that an element be classified as true.
               Value should in [0, 1]
             global_step: Global step value to record
@@ -1077,12 +1089,12 @@ class SummaryWriter(object):
     def add_pr_curve_raw(
             self,
             tag: str,
-            true_positive_counts,
-            false_positive_counts,
-            true_negative_counts,
-            false_negative_counts,
-            precision,
-            recall,
+            true_positive_counts: numpy_compatible,
+            false_positive_counts: numpy_compatible,
+            true_negative_counts: numpy_compatible,
+            false_negative_counts: numpy_compatible,
+            precision: numpy_compatible,
+            recall: numpy_compatible,
             global_step: Optional[int] = None,
             num_thresholds: Optional[int] = 127,
             weights=None,
@@ -1091,12 +1103,6 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            true_positive_counts (torch.Tensor, numpy.array, or string/blobname): true positive counts
-            false_positive_counts (torch.Tensor, numpy.array, or string/blobname): false positive counts
-            true_negative_counts (torch.Tensor, numpy.array, or string/blobname): true negative counts
-            false_negative_counts (torch.Tensor, numpy.array, or string/blobname): false negative counts
-            precision (torch.Tensor, numpy.array, or string/blobname): precision
-            recall (torch.Tensor, numpy.array, or string/blobname): recall
             global_step: Global step value to record
             num_thresholds (int): Number of thresholds used to draw the curve.
             walltime: Optional override default walltime (time.time()) of event
@@ -1178,9 +1184,9 @@ class SummaryWriter(object):
     def add_mesh(
             self,
             tag: str,
-            vertices,
-            colors=None,
-            faces=None,
+            vertices: numpy_compatible,
+            colors: numpy_compatible = None,
+            faces: numpy_compatible = None,
             config_dict=None,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None):
@@ -1192,9 +1198,9 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            vertices (torch.Tensor): List of the 3D coordinates of vertices.
-            colors (torch.Tensor): Colors for each vertex
-            faces (torch.Tensor): Indices of vertices within each triangle. (Optional)
+            vertices: List of the 3D coordinates of vertices.
+            colors: Colors for each vertex
+            faces: Indices of vertices within each triangle. (Optional)
             config_dict: Dictionary with ThreeJS classes names and configuration.
             global_step: Global step value to record
             walltime: Optional override default walltime (time.time())
