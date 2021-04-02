@@ -20,7 +20,7 @@ from .proto.plugin_text_pb2 import TextPluginData
 from .proto.plugin_mesh_pb2 import MeshPluginData
 from .proto import layout_pb2
 from .x2num import make_np
-from .utils import _prepare_video, convert_to_HWC
+from .utils import _prepare_video, convert_to_HWC, convert_to_NTCHW
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -340,9 +340,10 @@ def make_image(tensor, rescale=1, rois=None, labels=None):
                          encoded_image_string=image_string)
 
 
-def video(tag, tensor, fps=4):
+def video(tag, tensor, fps=4, dataformats="NTCHW"):
     tag = _clean_tag(tag)
     tensor = make_np(tensor)
+    tensor = convert_to_NTCHW(tensor, input_format=dataformats)
     tensor = _prepare_video(tensor)
     # If user passes in uint8, then we don't need to rescale by 255
     if tensor.dtype != np.uint8:
