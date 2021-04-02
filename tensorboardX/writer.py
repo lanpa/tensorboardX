@@ -808,9 +808,10 @@ class SummaryWriter(object):
             global_step: Global step value to record
             fps: Frames per second
             walltime: Optional override default walltime (time.time()) of event
+            dataformats: Specify different permutation of the video tensor
         Shape:
-            vid_tensor: :math:`(N, T, C, H, W)`. The values should lie in [0, 255] for type
-            `uint8` or [0, 1] for type `float`.
+            vid_tensor: :math:`(N, T, C, H, W)`. The values should lie in [0, 255]
+            for type `uint8` or [0, 1] for type `float`.
         """
         self._get_file_writer().add_summary(
             video(tag, vid_tensor, fps, dataformats=dataformats), global_step, walltime)
