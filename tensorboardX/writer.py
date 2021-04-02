@@ -796,7 +796,8 @@ class SummaryWriter(object):
             vid_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             fps: Optional[Union[int, float]] = 4,
-            walltime: Optional[float] = None):
+            walltime: Optional[float] = None,
+            dataformats: Optional[str] = 'NTCHW'):
         """Add video data to summary.
 
         Note that this requires the ``moviepy`` package.
@@ -809,10 +810,10 @@ class SummaryWriter(object):
             walltime: Optional override default walltime (time.time()) of event
         Shape:
             vid_tensor: :math:`(N, T, C, H, W)`. The values should lie in [0, 255] for type
-              `uint8` or [0, 1] for type `float`.
+            `uint8` or [0, 1] for type `float`.
         """
         self._get_file_writer().add_summary(
-            video(tag, vid_tensor, fps), global_step, walltime)
+            video(tag, vid_tensor, fps, dataformats=dataformats), global_step, walltime)
 
     def add_audio(
             self,

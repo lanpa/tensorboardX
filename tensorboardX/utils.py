@@ -90,9 +90,17 @@ def make_grid(I, ncols=8):
             i = i + 1
     return canvas
 
-    # if modality == 'IMG':
-    #     if x.dtype == np.uint8:
-    #         x = x.astype(np.float32) / 255.0
+
+def convert_to_NTCHW(tensor, input_format):
+    assert(len(input_format) == 5), "Only 5D tensor is supported."
+    assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice. \
+        input_format: {}".format(input_format)
+    assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different. \
+        tensor shape: {}, input_format: {}".format(tensor.shape, input_format)
+    input_format = input_format.upper()
+    index = [input_format.find(c) for c in 'NTCHW']
+    tensor_NTCHW = tensor.transpose(index)
+    return tensor_NTCHW
 
 
 def convert_to_HWC(tensor, input_format):  # tensor: numpy array
