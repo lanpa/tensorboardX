@@ -517,8 +517,9 @@ class SummaryWriter(object):
             tag: Data identifier
             values: Values to build histogram
             global_step: Global step value to record
-            bins: One of {'tensorflow','auto', 'fd', ...}. This determines how the bins are made. You can find
-              other options in: https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
+            bins: One of {'tensorflow','auto', 'fd', ...}. This determines how the
+              bins are made. You can find other options in the `numpy reference
+              <https://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`_.
             walltime: Optional override default walltime (time.time()) of event
 
         Examples::
@@ -832,8 +833,9 @@ class SummaryWriter(object):
             sample_rate: sample rate in Hz
             walltime: Optional override default walltime (time.time()) of event
         Shape:
-            snd_tensor: :math:`(L, C)`. The values should lie between [-1, 1]. Where `L`
-              is the number of audio frames and `C` is the channel. 1 for mono, 2 for stereo.
+            snd_tensor: :math:`(L, C)`. The values should lie between [-1, 1].
+            Where `L` is the number of audio frames and `C` is the channel. Set
+            channel equals to 2 for stereo.
         """
         if self._check_caffe2_blob(snd_tensor):
             snd_tensor = workspace.FetchBlob(snd_tensor)
@@ -1108,7 +1110,8 @@ class SummaryWriter(object):
             global_step: Global step value to record
             num_thresholds (int): Number of thresholds used to draw the curve.
             walltime: Optional override default walltime (time.time()) of event
-            see: https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/README.md
+              see: `Tensorboard refenence
+              <https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/pr_curve/README.md>`_
         """
         self._get_file_writer().add_summary(
             pr_curve_raw(tag,
@@ -1196,7 +1199,7 @@ class SummaryWriter(object):
         so it allows users to interact with the rendered object. Besides the basic definitions
         such as vertices, faces, users can further provide camera parameter, lighting condition, etc.
         Please check https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene for
-        advanced usage. Note that currently this depends on tb-nightly to show.
+        advanced usage.
 
         Args:
             tag: Data identifier
@@ -1209,39 +1212,18 @@ class SummaryWriter(object):
               seconds after epoch of event
 
         Shape:
-            vertices: :math:`(B, N, 3)`. (batch, number_of_vertices, channels). If you see nothing on
-              tensorboard, try normalizing the values to [-1, 1].
+            vertices: :math:`(B, N, 3)`. (batch, number_of_vertices, channels). If
+              Nothing show on tensorboard, try normalizing the values to [-1, 1].
 
             colors: :math:`(B, N, 3)`. The values should lie in [0, 255].
 
             faces: :math:`(B, N, 3)`. The values should lie in [0, number_of_vertices] for type `uint8`.
 
-        Examples::
+        Expected result after running ``examples/demo_mesh.py``:
 
-            from tensorboardX import SummaryWriter
-            vertices_tensor = np.array([[
-                [1, 1, 1],
-                [-1, -1, 1],
-                [1, -1, -1],
-                [-1, 1, -1],
-            ]], dtype=float)
-            colors_tensor = np.array([[
-                [255, 0, 0],
-                [0, 255, 0],
-                [0, 0, 255],
-                [255, 0, 255],
-            ]], dtype=int)
-            faces_tensor = np.array([[
-                [0, 2, 3],
-                [0, 3, 1],
-                [0, 1, 2],
-                [1, 3, 2],
-            ]], dtype=int)
+        .. image:: _static/img/tensorboard/add_mesh.png
+           :scale: 30 %
 
-            writer = SummaryWriter()
-            writer.add_mesh('my_mesh', vertices=vertices_tensor, colors=colors_tensor, faces=faces_tensor)
-
-            writer.close()
         """
         self._get_file_writer().add_summary(mesh(tag, vertices, colors, faces, config_dict), global_step, walltime)
 
