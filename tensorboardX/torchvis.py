@@ -23,7 +23,8 @@ class TorchVis:
             args (list of strings): The name of the visualization target(s).
               Accepted targets are 'tensorboard' and 'visdom'.
             init_kwargs: Additional keyword parameters for the visdom writer (For example, server IP).
-              See `visdom doc <https://github.com/facebookresearch/visdom/blob/master/README.md#visdom-arguments-python-only>`_ for more.
+              See `visdom doc <https://github.com/facebookresearch/visdom/blob
+              /master/README.md#visdom-arguments-python-only>`_ for more.
         """
         self.subscribers = {}
         self.register(*args, **init_kwargs)

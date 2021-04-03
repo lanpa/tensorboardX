@@ -9,4 +9,3 @@ fi
 
 PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python pytest
 
-pytest tests/tset_multiprocess_write.py

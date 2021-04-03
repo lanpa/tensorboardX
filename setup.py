@@ -25,14 +25,14 @@ class PostInstallCommand(install):
     def run(self):
         compileProtoBuf()
         import os
-        os.system("pip install protobuf numpy six")
+        os.system("pip install protobuf numpy")
         install.run(self)
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = '2.1'
+version_git = version = '2.2'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -45,10 +45,10 @@ with open('tensorboardX/__init__.py', 'a') as f:
 requirements = [
     'numpy',
     'protobuf >= 3.8.0',
-    'six',
 ]
 
 test_requirements = [
+    'future'
     'pytest',
     'matplotlib',
     'crc32c',
@@ -68,16 +68,14 @@ setup(
     license='MIT license',
     zip_safe=False,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     cmdclass={
         'develop': PostDevelopCommand,
@@ -89,11 +87,14 @@ setup(
 
 
 # checklist: update History.rst readme.md
-# update the version number in this file.
+# update the version number in this file (setup.py).
 # python setup.py sdist bdist_wheel --universal
-# check the generated tar.gz file (the version, no *.pyc)
-# git add [files]
-# git commit -m 'prepare for release'
+# check the generated tar.gz file 
+# (1. The version number is correct. 2. no *.pyc __pycache__ files)
+# git checkout -b "release x.x"
+# git add setup.py History.rst readme.md
+# git commit -m 'prepare for release' (skip tensorboardX/__init__.py)
 # add tag
 # twine upload dist/*
-# push commit
+# git push
+

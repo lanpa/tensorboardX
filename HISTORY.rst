@@ -1,5 +1,11 @@
 History
 =======
+2.2 (2021-04-03)
+-----------------
+* Support for type hints.
+* Dropped Python 2 support.
+* Bug fixes, see the commit log in Github.
+
 2.1 (2020-07-05)
 -----------------
 * Global SummaryWriter that mimics python's default logger class, concurrent write is supported.
