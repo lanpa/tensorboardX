@@ -545,7 +545,7 @@ class SummaryWriter(object):
                 fw_tag, scalar_value, global_step, walltime)
         dict_ = {"{}/{}".format(main_tag, k):v for k, v in
                  tag_scalar_dict.items()}
-        self.comet_logger.log_metrics(dict_, global_step)
+        self.comet_logger.log_metrics(dict_, step=global_step)
 
     def export_scalars_to_json(self, path):
         """Exports to the given path an ASCII file containing all the scalars written
@@ -599,7 +599,7 @@ class SummaryWriter(object):
             bins = self.default_bins
         self._get_file_writer().add_summary(
             histogram(tag, values, bins, max_bins=max_bins), global_step, walltime)
-        hist = numpy.histogram(values)
+        hist = numpy.histogram(values.detach().numpy())
         self.comet_logger.log_histogram(hist, tag, global_step)
 
     def add_histogram_raw(
@@ -725,7 +725,8 @@ class SummaryWriter(object):
         summary, image_pil = image(tag, img_tensor, dataformats=dataformats)
         self._get_file_writer().add_summary(
             summary, global_step, walltime)
-        self.comet_logger.log_image(image_pil, _clean_tag(tag), global_step)
+        self.comet_logger.log_image(image_pil, _clean_tag(tag),
+                                    step=global_step)
         
     def add_images(
             self,
@@ -789,7 +790,8 @@ class SummaryWriter(object):
         summary, image_pil = image(tag, img_tensor, dataformats=dataformats)
         self._get_file_writer().add_summary(
             summary, global_step, walltime)
-        self.comet_logger.log_image(image_pil, _clean_tag(tag), global_step)
+        self.comet_logger.log_image(image_pil, _clean_tag(tag),
+                                    step=global_step)
 
     def add_image_with_boxes(
             self,
@@ -832,7 +834,8 @@ class SummaryWriter(object):
             tag, img_tensor, box_tensor, dataformats=dataformats, labels=labels, **kwargs)
         self._get_file_writer().add_summary(
             summary, global_step, walltime)
-        self.comet_logger.log_image(image_pil, _clean_tag(tag), global_step)
+        self.comet_logger.log_image(image_pil, _clean_tag(tag),
+                                    step=global_step)
 
     def add_figure(
             self,
@@ -880,10 +883,11 @@ class SummaryWriter(object):
             vid_tensor: :math:`(N, T, C, H, W)`. The values should lie in [0, 255]
             for type `uint8` or [0, 1] for type `float`.
         """
-        summary, filename = video(tag, vid_tensor, fps, dataformats=dataformats)
+        summary, file_data = video(tag, vid_tensor, fps, dataformats=dataformats)
         self._get_file_writer().add_summary(
             summary, global_step, walltime)
-        self.comet_logger.log_asset(filename)
+        self.comet_logger.log_image(file_data, 'video.gif',
+                                    image_format='gif')
 
     def add_audio(
             self,
@@ -910,7 +914,7 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(
             audio(tag, snd_tensor, sample_rate=sample_rate), global_step, walltime)
         self.comet_logger.log_audio(snd_tensor, sample_rate, tag,
-                                    global_step)
+                                    step=global_step)
 
     def add_text(
             self,
@@ -1165,7 +1169,8 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(
             pr_curve(tag, labels, predictions, num_thresholds, weights),
             global_step, walltime)
-        self.comet_logger.log_curve(tag, labels, predictions, global_step)
+        self.comet_logger.log_curve(tag, labels, predictions,
+                                    step=global_step)
 
     def add_pr_curve_raw(
             self,
@@ -1305,9 +1310,10 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(mesh(tag, vertices, colors, faces, config_dict), global_step, walltime)
         mesh_json = {}
         mesh_json['tag'] = tag
-        mesh_json['vertices'] = vertices
-        mesh_json['colors'] = colors
-        mesh_json['faces'] = faces
+        mesh_json['vertices'] = vertices.tolist()
+        mesh_json['colors'] = colors.tolist()
+        mesh_json['faces'] = faces.tolist()
+        mesh_json = json.dumps(mesh_json)
         self.comet_logger.log_asset_data(mesh_json, 'mesh.json')
 
     def close(self):
@@ -1321,6 +1327,7 @@ class SummaryWriter(object):
             writer.close()
         self.file_writer = self.all_writers = None
         self.comet_logger.end()
+        self.comet_logger = None
 
     def flush(self):
         """Force the data in memory to be flushed to disk. Use this call if tensorboard does not update reqularly.

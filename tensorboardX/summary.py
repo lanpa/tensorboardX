@@ -349,8 +349,8 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
     if tensor.dtype != np.uint8:
         tensor = (tensor * 255.0).astype(np.uint8)
 
-    video, filename = make_video(tensor, fps)
-    return Summary(value=[Summary.Value(tag=tag, image=video)]), filename
+    video, file_data = make_video(tensor, fps)
+    return Summary(value=[Summary.Value(tag=tag, image=video)]), file_data
 
 
 def make_video(tensor, fps):
@@ -383,13 +383,15 @@ def make_video(tensor, fps):
 
     with open(filename, 'rb') as f:
         tensor_string = f.read()
+    from PIL import Image
+    file_data = Image.open(filename)
 
     try:
         os.remove(filename)
     except OSError:
         logging.warning('The temporary file used by moviepy cannot be deleted.')
 
-    return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string), filename
+    return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string), file_data
 
 
 def audio(tag, tensor, sample_rate=44100):
