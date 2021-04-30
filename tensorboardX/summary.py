@@ -285,8 +285,8 @@ def image(tag, tensor, rescale=1, dataformats='CHW'):
     if tensor.dtype != np.uint8:
         tensor = (tensor * 255.0).astype(np.uint8)
 
-    image, image_pil = make_image(tensor, rescale=rescale)
-    return Summary(value=[Summary.Value(tag=tag, image=image)]), image_pil
+    image = make_image(tensor, rescale=rescale)
+    return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
 def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW', labels=None):
@@ -298,10 +298,10 @@ def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW', l
     if tensor_image.dtype != np.uint8:
         tensor_image = (tensor_image * 255.0).astype(np.uint8)
 
-    image, image_pil = make_image(tensor_image,
+    image = make_image(tensor_image,
                        rescale=rescale,
                        rois=tensor_boxes, labels=labels)
-    return Summary(value=[Summary.Value(tag=tag, image=image)]), image_pil
+    return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
 def draw_boxes(disp_image, boxes, labels=None):
@@ -337,7 +337,7 @@ def make_image(tensor, rescale=1, rois=None, labels=None):
     return Summary.Image(height=height,
                          width=width,
                          colorspace=channel,
-                         encoded_image_string=image_string), image
+                         encoded_image_string=image_string)
 
 
 def video(tag, tensor, fps=4, dataformats="NTCHW"):
@@ -349,8 +349,8 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
     if tensor.dtype != np.uint8:
         tensor = (tensor * 255.0).astype(np.uint8)
 
-    video, file_data = make_video(tensor, fps)
-    return Summary(value=[Summary.Value(tag=tag, image=video)]), file_data
+    video = make_video(tensor, fps)
+    return Summary(value=[Summary.Value(tag=tag, image=video)])
 
 
 def make_video(tensor, fps):
@@ -383,15 +383,13 @@ def make_video(tensor, fps):
 
     with open(filename, 'rb') as f:
         tensor_string = f.read()
-    from PIL import Image
-    file_data = Image.open(filename)
 
     try:
         os.remove(filename)
     except OSError:
         logging.warning('The temporary file used by moviepy cannot be deleted.')
 
-    return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string), file_data
+    return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 
 
 def audio(tag, tensor, sample_rate=44100):
