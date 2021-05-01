@@ -1,13 +1,13 @@
 from __future__ import print_function
 import argparse
 import os
+from tensorboardX import GlobalSummaryWriter
 import torch
 import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.multiprocessing as mp
 from torchvision import datasets, transforms
-from tensorboardX import GlobalSummaryWriter
 
 
 # Training settings

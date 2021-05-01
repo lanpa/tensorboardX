@@ -3,12 +3,14 @@ import json
 import functools
 from PIL import Image
 from io import BytesIO
+import numpy as np
 from .summary import _clean_tag
 try:
     import comet_ml
     comet_installed = True
 except:
     comet_installed = False
+import torch
 
 
 class CometLogger:
@@ -242,7 +244,10 @@ class CometLogger:
             image_size = image_data.shape[1:]
             if image_size[0] == 1:
                 image_size = image_size[1:]
-        labels = labels.cpu().detach().numpy()
+        if type(labels) == list:
+            labels = np.array(labels)
+        else:
+            labels = labels.cpu().detach().numpy()
         self._experiment.log_embedding(vectors, labels, image_data,
                                        image_size, image_preprocess_function,
                                        image_transparent_color,

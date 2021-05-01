@@ -391,12 +391,12 @@ class SummaryWriter(object):
         if type(hparam_dict) is not dict or type(metric_dict) is not dict:
             raise TypeError('hparam_dict and metric_dict should be dictionary.')
         exp, ssi, sei = hparams(hparam_dict, metric_dict)
-        self.comet_logger.log_parameters(hparam_dict, step=global_step)
 
         if not name:
             name = str(time.time())
 
         with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
+            w_hp.comet_logger.log_parameters(hparam_dict, step=global_step)
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)
             w_hp.file_writer.add_summary(sei)
