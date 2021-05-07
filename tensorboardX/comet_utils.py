@@ -7,6 +7,7 @@ import numpy as np
 from .summary import _clean_tag
 try:
     import comet_ml
+    comet_ml.init()
     comet_installed = True
 except:
     comet_installed = False
