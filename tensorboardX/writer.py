@@ -258,7 +258,7 @@ class SummaryWriter(object):
             write_to_disk:
               If pass `False`, SummaryWriter will not write to disk.
             comet:
-              If pass `True`, Comet will start logging
+              If pass `True`, Comet will start logging (Comet needs to be installed)
             workspace: (Comet settings) Attach an experiment to a project that belongs 
               to this workspace
             project_name: (Comet settings) Send your experiment to a specific project. 
