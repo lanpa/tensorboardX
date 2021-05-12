@@ -13,7 +13,7 @@ except ImportError:
     skip_audio = True
 
 resnet18 = models.resnet18(False)
-writer = SummaryWriter(comet=True, workspace='comet-integrations',
+writer = SummaryWriter(comet=True, workspace='myworkspace',
                        project_name='tensorboardx')
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
