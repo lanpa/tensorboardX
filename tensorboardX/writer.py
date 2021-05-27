@@ -227,10 +227,7 @@ class SummaryWriter(object):
             filename_suffix: Optional[str] = '',
             write_to_disk: Optional[bool] = True,
             log_dir: Optional[str] = None,
-            comet: Optional[bool] = False,
-            workspace: Optional[str] = '',
-            project_name: Optional[str] = '',
-            api_key: Optional[str] = None,
+            comet_config: Optional[dict] = {},
             **kwargs):
         """Creates a `SummaryWriter` that will write out events and summaries
         to the event file.
@@ -258,13 +255,9 @@ class SummaryWriter(object):
               tensorboard.summary.writer.event_file_writer.EventFileWriter.
             write_to_disk:
               If pass `False`, SummaryWriter will not write to disk.
-            comet:
-              If pass `True`, Comet will start logging (Comet needs to be installed)
-            workspace: (Comet settings) Attach an experiment to a project that belongs 
-              to this workspace
-            project_name: (Comet settings) Send your experiment to a specific project. 
-              Otherwise will be sent to Uncategorized Experiments
-            api_key: (Comet settings) Your API key obtained from comet.ml 
+            comet_config:
+              A comet config dictionary. Contains parameters that need to be
+              passed to comet like workspace, project_name, api_key, disabled etc
 
         Examples::
 
@@ -305,9 +298,7 @@ class SummaryWriter(object):
         self._get_file_writer()
 
         # Initialize the Comet Logger
-        self.comet_logger = CometLogger(comet, workspace=workspace,
-                                        project_name=project_name,
-                                        api_key=api_key)
+        self.comet_logger = CometLogger(comet_config)
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
         v = 1E-12

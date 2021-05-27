@@ -14,13 +14,13 @@ import torch
 
 
 class CometLogger:
-    def __init__(self, comet=False, **kwargs):
+    def __init__(self, comet_config={}):
         global comet_installed
         self._logging = None
-        self._comet_args = kwargs
-        if comet == False:
+        self._comet_config = comet_config
+        if comet_config["disabled"] == True:
             self._logging = False
-        elif comet == True and comet_installed == False:
+        elif comet_config["disabled"] == False and comet_installed == False:
             raise Exception("Comet not installed. Run 'pip install comet-ml'")
     
     def _requiresComet(method):
@@ -31,12 +31,13 @@ class CometLogger:
             if self._logging is None and comet_installed:
                 self._logging = False
                 try:
-                    comet_ml.init()
+                    if 'api_key' not in self._comet_config.keys():
+                        comet_ml.init()
                     if comet_ml.get_global_experiment() is not None:
                         logging.warning("You have already created a comet \
                                         experiment manually, which might \
                                         cause clashes")
-                    self._experiment = comet_ml.Experiment(**self._comet_args)
+                    self._experiment = comet_ml.Experiment(**self._comet_config)
                     self._logging = True
                 except Exception as e:
                     logging.warning(e)
