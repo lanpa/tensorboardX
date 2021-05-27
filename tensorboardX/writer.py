@@ -257,7 +257,7 @@ class SummaryWriter(object):
               If pass `False`, SummaryWriter will not write to disk.
             comet_config:
               A comet config dictionary. Contains parameters that need to be
-              passed to comet like workspace, project_name, api_key, disabled etc
+              passed to comet like workspace, project_name, api_key, disabled etc 
 
         Examples::
 

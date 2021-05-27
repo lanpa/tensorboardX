@@ -14,7 +14,7 @@ import torch
 
 
 class CometLogger:
-    def __init__(self, comet_config={}):
+    def __init__(self, comet_config={"disabled": True}):
         global comet_installed
         self._logging = None
         self._comet_config = comet_config
@@ -39,6 +39,7 @@ class CometLogger:
                                         cause clashes")
                     self._experiment = comet_ml.Experiment(**self._comet_config)
                     self._logging = True
+                    self._experiment.log_other("Created from", "tensorboardX")
                 except Exception as e:
                     logging.warning(e)
 
