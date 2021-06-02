@@ -227,7 +227,7 @@ class SummaryWriter(object):
             filename_suffix: Optional[str] = '',
             write_to_disk: Optional[bool] = True,
             log_dir: Optional[str] = None,
-            comet_config: Optional[dict] = {},
+            comet_config: Optional[dict] = {"disabled": True},
             **kwargs):
         """Creates a `SummaryWriter` that will write out events and summaries
         to the event file.
