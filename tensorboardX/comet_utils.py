@@ -228,7 +228,7 @@ class CometLogger:
     def log_embedding(self, vectors, labels, image_data=None,
                       image_preprocess_function=None, image_transparent_color=None,
                       image_background_color_function=None, title="Comet Embedding",
-                      template_filename="template_projector_config.json",
+                      template_filename=None,
                       group=None):
         """Log a multi-dimensional dataset and metadata for viewing
            with Comet's Embedding Projector (experimental).

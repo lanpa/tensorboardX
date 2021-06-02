@@ -1089,7 +1089,13 @@ class SummaryWriter(object):
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img,
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
-        self.comet_logger.log_embedding(mat, metadata, label_img)
+        if tag is not None:
+            template_filename = "%s.json" % tag
+            
+        else:
+            template_filename = None
+                    
+        self.comet_logger.log_embedding(mat, metadata, label_img, template_filename=template_filename)
 
     def add_pr_curve(
             self,
