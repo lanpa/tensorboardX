@@ -257,7 +257,7 @@ class SummaryWriter(object):
               If pass `False`, SummaryWriter will not write to disk.
             comet_config:
               A comet config dictionary. Contains parameters that need to be
-              passed to comet like workspace, project_name, api_key, disabled etc 
+              passed to comet like workspace, project_name, api_key, disabled etc
 
         Examples::
 
@@ -629,7 +629,7 @@ class SummaryWriter(object):
                                          sum_squares=sum_squares,
                                          bucket_limits=bucket_limits,
                                          bucket_counts=bucket_counts)
-    
+
     def add_image(
             self,
             tag: str,
@@ -690,7 +690,7 @@ class SummaryWriter(object):
             summary, global_step, walltime)
         self.comet_logger.log_image_encoded(encoded_image_string, tag,
                                             step=global_step)
-        
+
     def add_images(
             self,
             tag: str,
@@ -1091,10 +1091,10 @@ class SummaryWriter(object):
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
         if tag is not None:
             template_filename = "%s.json" % tag
-            
+
         else:
             template_filename = None
-                    
+
         self.comet_logger.log_embedding(mat, metadata, label_img, template_filename=template_filename)
 
     def add_pr_curve(

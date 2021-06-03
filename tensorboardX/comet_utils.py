@@ -8,7 +8,7 @@ from .summary import _clean_tag
 try:
     import comet_ml
     comet_installed = True
-except:
+except ImportError:
     comet_installed = False
 import torch
 
@@ -18,11 +18,11 @@ class CometLogger:
         global comet_installed
         self._logging = None
         self._comet_config = comet_config
-        if comet_config["disabled"] == True:
+        if comet_config["disabled"] is True:
             self._logging = False
-        elif comet_config["disabled"] == False and comet_installed == False:
+        elif comet_config["disabled"] is False and comet_installed is False:
             raise Exception("Comet not installed. Run 'pip install comet-ml'")
-    
+
     def _requiresComet(method):
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
@@ -43,10 +43,10 @@ class CometLogger:
                 except Exception as e:
                     logging.warning(e)
 
-            if self._logging == True:
+            if self._logging is True:
                 return method(*args, **kwargs)
         return wrapper
-    
+
     @_requiresComet
     def end(self):
         """Ends an experiment."""
@@ -101,7 +101,7 @@ class CometLogger:
                   step=None):
         """Logs the audio Asset determined by audio data.
 
-        Args:     
+        Args:
         audio_data: String or a numpy array - either the file path
             of the file you want to log, or a numpy array given to
             scipy.io.wavfile.write for wav conversion.
@@ -123,11 +123,11 @@ class CometLogger:
                                    metadata, overwrite, copy_to_tmp,
                                    step)
 
-    @_requiresComet    
+    @_requiresComet
     def log_text(self, text, step=None, metadata=None):
         """Logs the text. These strings appear on the Text Tab in the Comet UI.
 
-        Args:  
+        Args:
         text: string to be stored
         step: Optional. Used to associate the asset to a specific step.
         metadata: Some additional data to attach to the the text. Must
@@ -143,7 +143,7 @@ class CometLogger:
            same name and incremented steps will add additional histograms
            to the 3D chart on Comet.ml.
 
-        Args:  
+        Args:
         values: a list, tuple, array (any shape) to summarize, or a
             Histogram object
         name: str (optional), name of summary
@@ -157,10 +157,10 @@ class CometLogger:
                                           **kwargs)
 
     @_requiresComet
-    def log_curve(self,  name, x, y, overwrite=False, step=None):
+    def log_curve(self, name, x, y, overwrite=False, step=None):
         """Log timeseries data.
 
-        Args:  
+        Args:
         name: (str) name of data
         x: array of x-axis values
         y: array of y-axis values
@@ -173,7 +173,7 @@ class CometLogger:
     def log_image_encoded(self, encoded_image_string, tag, step=None):
         """Logs the image. Images are displayed on the Graphics tab on Comet.ml.
 
-        Args:  
+        Args:
         encoded_image_string: Required. An encoded image string
         tag: String - Data identifier
         step: Optional. Used to associate the image asset to a specific step.
@@ -188,7 +188,7 @@ class CometLogger:
                   copy_to_tmp=True, step=None, metadata=None):
         """Logs the Asset determined by file_data.
 
-        Args:  
+        Args:
         file_data: String or File-like - either the file path of the
             file you want to log, or a file-like asset.
         file_name: String - Optional. A custom file name to be displayed.
@@ -209,7 +209,7 @@ class CometLogger:
                        metadata=None, epoch=None):
         """Logs the data given (str, binary, or JSON).
 
-        Args:  
+        Args:
         data: data to be saved as asset
         name: String, optional. A custom file name to be displayed If
             not provided the filename from the temporary saved file
@@ -233,7 +233,7 @@ class CometLogger:
         """Log a multi-dimensional dataset and metadata for viewing
            with Comet's Embedding Projector (experimental).
 
-        Args:  
+        Args:
         vectors: the tensors to visualize in 3D
         labels: labels for each tensor
         image_data: (optional) list of arrays or Images
@@ -263,12 +263,12 @@ class CometLogger:
                                        image_background_color_function,
                                        title, template_filename,
                                        group)
-    
+
     @_requiresComet
     def log_mesh(self, tag, vertices, colors, faces, config_dict, step, walltime):
         """Logs a mesh as an asset
 
-        Args:  
+        Args:
         tag: Data identifier
         vertices: List of the 3D coordinates of vertices.
         colors: Colors for each vertex
@@ -293,7 +293,7 @@ class CometLogger:
     def log_raw_figure(self, tag, asset_type, step=None, **kwargs):
         """Logs a histogram as an asset.
 
-        Args:  
+        Args:
         tag: Data identifier
         asset_type: List of the 3D coordinates of vertices.
         step: step value to record
@@ -301,4 +301,3 @@ class CometLogger:
         file_json = kwargs
         file_json['asset_type'] = asset_type
         self.log_asset_data(file_json, tag, step=step)
-    
