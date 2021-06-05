@@ -14,6 +14,7 @@ import logging
 import atexit
 from typing import Union, Optional, Dict, List
 
+from .comet_utils import CometLogger
 from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
 from .event_file_writer import EventFileWriter
 from .onnx_graph import load_onnx_graph
@@ -226,6 +227,7 @@ class SummaryWriter(object):
             filename_suffix: Optional[str] = '',
             write_to_disk: Optional[bool] = True,
             log_dir: Optional[str] = None,
+            comet_config: Optional[dict] = {"disabled": True},
             **kwargs):
         """Creates a `SummaryWriter` that will write out events and summaries
         to the event file.
@@ -253,6 +255,9 @@ class SummaryWriter(object):
               tensorboard.summary.writer.event_file_writer.EventFileWriter.
             write_to_disk:
               If pass `False`, SummaryWriter will not write to disk.
+            comet_config:
+              A comet config dictionary. Contains parameters that need to be
+              passed to comet like workspace, project_name, api_key, disabled etc
 
         Examples::
 
@@ -291,6 +296,9 @@ class SummaryWriter(object):
         # and recreated later as needed.
         self.file_writer = self.all_writers = None
         self._get_file_writer()
+
+        # Initialize the Comet Logger
+        self.comet_logger = CometLogger(comet_config)
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
         v = 1E-12
@@ -392,6 +400,7 @@ class SummaryWriter(object):
             name = str(time.time())
 
         with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
+            w_hp.comet_logger.log_parameters(hparam_dict, step=global_step)
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)
             w_hp.file_writer.add_summary(sei)
@@ -440,6 +449,7 @@ class SummaryWriter(object):
                 raise TypeError("Input value: \"{}\" is not a scalar".format(scalar_value))
         self._get_file_writer().add_summary(
             scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
+        self.comet_logger.log_metric(tag, display_name, scalar_value, global_step)
 
     def add_scalars(
             self,
@@ -491,6 +501,8 @@ class SummaryWriter(object):
                            global_step, walltime)
             self.__append_to_scalar_dict(
                 fw_tag, scalar_value, global_step, walltime)
+        self.comet_logger.log_metrics(tag_scalar_dict, main_tag,
+                                      step=global_step)
 
     def export_scalars_to_json(self, path):
         """Exports to the given path an ASCII file containing all the scalars written
@@ -544,6 +556,7 @@ class SummaryWriter(object):
             bins = self.default_bins
         self._get_file_writer().add_summary(
             histogram(tag, values, bins, max_bins=max_bins), global_step, walltime)
+        self.comet_logger.log_histogram(values, tag, global_step)
 
     def add_histogram_raw(
             self,
@@ -608,6 +621,14 @@ class SummaryWriter(object):
                           bucket_counts),
             global_step,
             walltime)
+        self.comet_logger.log_raw_figure(tag, 'histogram_raw', global_step,
+                                         min=min,
+                                         max=max,
+                                         num=num,
+                                         sum=sum,
+                                         sum_squares=sum_squares,
+                                         bucket_limits=bucket_limits,
+                                         bucket_counts=bucket_counts)
 
     def add_image(
             self,
@@ -663,8 +684,12 @@ class SummaryWriter(object):
         """
         if self._check_caffe2_blob(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
+        summary = image(tag, img_tensor, dataformats=dataformats)
+        encoded_image_string = summary.value[0].image.encoded_image_string
         self._get_file_writer().add_summary(
-            image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
+            summary, global_step, walltime)
+        self.comet_logger.log_image_encoded(encoded_image_string, tag,
+                                            step=global_step)
 
     def add_images(
             self,
@@ -725,8 +750,12 @@ class SummaryWriter(object):
 
             dataformats = 'N' + dataformats
 
+        summary = image(tag, img_tensor, dataformats=dataformats)
+        encoded_image_string = summary.value[0].image.encoded_image_string
         self._get_file_writer().add_summary(
-            image(tag, img_tensor, dataformats=dataformats), global_step, walltime)
+            summary, global_step, walltime)
+        self.comet_logger.log_image_encoded(encoded_image_string, tag,
+                                            step=global_step)
 
     def add_image_with_boxes(
             self,
@@ -765,8 +794,13 @@ class SummaryWriter(object):
             if len(labels) != box_tensor.shape[0]:
                 logging.warning('Number of labels do not equal to number of box, skip the labels.')
                 labels = None
-        self._get_file_writer().add_summary(image_boxes(
-            tag, img_tensor, box_tensor, dataformats=dataformats, labels=labels, **kwargs), global_step, walltime)
+        summary = image_boxes(
+            tag, img_tensor, box_tensor, dataformats=dataformats, labels=labels, **kwargs)
+        encoded_image_string = summary.value[0].image.encoded_image_string
+        self._get_file_writer().add_summary(
+            summary, global_step, walltime)
+        self.comet_logger.log_image_encoded(encoded_image_string, tag,
+                                            step=global_step)
 
     def add_figure(
             self,
@@ -814,8 +848,12 @@ class SummaryWriter(object):
             vid_tensor: :math:`(N, T, C, H, W)`. The values should lie in [0, 255]
             for type `uint8` or [0, 1] for type `float`.
         """
+        summary = video(tag, vid_tensor, fps, dataformats=dataformats)
+        encoded_image_string = summary.value[0].image.encoded_image_string
         self._get_file_writer().add_summary(
-            video(tag, vid_tensor, fps, dataformats=dataformats), global_step, walltime)
+            summary, global_step, walltime)
+        self.comet_logger.log_image_encoded(encoded_image_string, tag,
+                                            step=global_step)
 
     def add_audio(
             self,
@@ -841,6 +879,8 @@ class SummaryWriter(object):
             snd_tensor = workspace.FetchBlob(snd_tensor)
         self._get_file_writer().add_summary(
             audio(tag, snd_tensor, sample_rate=sample_rate), global_step, walltime)
+        self.comet_logger.log_audio(snd_tensor, sample_rate, tag,
+                                    step=global_step)
 
     def add_text(
             self,
@@ -862,6 +902,7 @@ class SummaryWriter(object):
         """
         self._get_file_writer().add_summary(
             text(tag, text_string), global_step, walltime)
+        self.comet_logger.log_text(text_string, global_step)
 
     def add_onnx_graph(
             self,
@@ -872,6 +913,7 @@ class SummaryWriter(object):
             onnx_model_file (string): The path to the onnx model.
         """
         self._get_file_writer().add_onnx_graph(load_onnx_graph(onnx_model_file))
+        self.comet_logger.log_asset(onnx_model_file)
 
     def add_openvino_graph(
             self,
@@ -882,6 +924,7 @@ class SummaryWriter(object):
             xmlname (string): The path to the openvino model. (the xml file)
         """
         self._get_file_writer().add_openvino_graph(load_openvino_graph(xmlname))
+        self.comet_logger.log_asset(xmlname)
 
     def add_graph(
             self,
@@ -1046,6 +1089,13 @@ class SummaryWriter(object):
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img,
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
+        if tag is not None:
+            template_filename = "%s.json" % tag
+
+        else:
+            template_filename = None
+
+        self.comet_logger.log_embedding(mat, metadata, label_img, template_filename=template_filename)
 
     def add_pr_curve(
             self,
@@ -1089,6 +1139,8 @@ class SummaryWriter(object):
         self._get_file_writer().add_summary(
             pr_curve(tag, labels, predictions, num_thresholds, weights),
             global_step, walltime)
+        self.comet_logger.log_curve(tag, labels, predictions,
+                                    step=global_step)
 
     def add_pr_curve_raw(
             self,
@@ -1125,6 +1177,16 @@ class SummaryWriter(object):
                          weights),
             global_step,
             walltime)
+        self.comet_logger.log_raw_figure(tag, 'pr_curve_raw', global_step,
+                                         true_positive_counts=true_positive_counts,
+                                         false_positive_counts=false_positive_counts,
+                                         true_negative_counts=true_negative_counts,
+                                         false_negative_counts=false_negative_counts,
+                                         precision=precision,
+                                         recall=recall,
+                                         num_thresholds=num_thresholds,
+                                         weights=weights,
+                                         walltime=walltime)
 
     def add_custom_scalars_multilinechart(
             self,
@@ -1226,6 +1288,8 @@ class SummaryWriter(object):
 
         """
         self._get_file_writer().add_summary(mesh(tag, vertices, colors, faces, config_dict), global_step, walltime)
+        self.comet_logger.log_mesh(tag, vertices, colors, faces,
+                                   config_dict, global_step, walltime)
 
     def close(self):
         """Close the current SummaryWriter. This call flushes the unfinished write operation.
@@ -1237,6 +1301,8 @@ class SummaryWriter(object):
             writer.flush()
             writer.close()
         self.file_writer = self.all_writers = None
+        self.comet_logger.end()
+        self.comet_logger = None
 
     def flush(self):
         """Force the data in memory to be flushed to disk. Use this call if tensorboard does not update reqularly.
