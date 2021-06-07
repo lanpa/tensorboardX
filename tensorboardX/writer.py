@@ -400,13 +400,13 @@ class SummaryWriter(object):
             name = str(time.time())
 
         with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
-            w_hp.comet_logger.log_parameters(hparam_dict, step=global_step)
             w_hp.file_writer.add_summary(exp)
             w_hp.file_writer.add_summary(ssi)
             w_hp.file_writer.add_summary(sei)
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
-
+        self.comet_logger.log_parameters(hparam_dict, step=global_step)
+        
     def add_scalar(
             self,
             tag: str,
