@@ -100,6 +100,16 @@ writer.close()
 
 <img src="screenshots/Demo.gif">
 
+## Using TensorboardX with Comet
+
+TensorboardX now supports logging directly to [Comet](https://www.comet.ml/site/data-scientists/?utm_campaign=tensorboardx&utm_source=integrations&utm_medium=colab). Comet is a **free** cloud based solution that allows you to automatically track, compare and explain your experiments. It adds a lot of functionality on top of tensorboard such as dataset management, diffing experiments, seeing the code that generated the results and more.
+
+This works out of the box and just require an additional line of code. See a full code example in this [Colab Notebook](https://colab.research.google.com/drive/1cTO3tgZ03nuJQ8kOjZhEiwbB-45tV4lm?usp=sharing)
+
+<p align="center">
+<img src="screenshots/comet.gif" width="750" height="400">
+</p>
+
 ## Tweaks
 
 To add more ticks for the slider (show more image history), check https://github.com/lanpa/tensorboardX/issues/44 or 
