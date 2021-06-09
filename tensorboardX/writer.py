@@ -40,6 +40,7 @@ except ImportError:
 class DummyFileWriter(object):
     """A fake file writer that writes nothing to the disk.
     """
+
     def __init__(self, logdir):
         self._logdir = logdir
 
@@ -406,7 +407,7 @@ class SummaryWriter(object):
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
         self.comet_logger.log_parameters(hparam_dict, step=global_step)
-        
+
     def add_scalar(
             self,
             tag: str,
