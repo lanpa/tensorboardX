@@ -92,8 +92,8 @@ setup(
 # check the generated tar.gz file 
 # (1. The version number is correct. 2. no *.pyc __pycache__ files)
 # git checkout -b "release x.x"
-# git add setup.py History.rst readme.md
-# git commit -m 'prepare for release' (skip tensorboardX/__init__.py)
+# git add setup.py History.rst readme.md (skip tensorboardX/__init__.py)
+# git commit -m 'prepare for release'
 # add tag
 # twine upload dist/*
 # git push
