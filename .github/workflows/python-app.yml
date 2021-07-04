@@ -9,9 +9,9 @@ on:
   pull_request:
     branches: [ master ]
 
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,6 +42,20 @@ jobs:
         visdom &
         pytest --cov=tensorboardX tests/
 
+
+    - name: Code Coverage Report
+      env: 
+          CODECOV_TOKEN: "26239910-fe4e-463d-aa3d-e662e9bf39ef"
+      run: |
+        codecov
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python 3.9
+    - uses: actions/checkout@v2
+      with:
+        python-version: 3.9
     - name: Run examples
       run: |
         pip install torchvision
@@ -53,8 +67,3 @@ jobs:
         python examples/demo_purge.py
         python examples/demo_matplotlib.py
 
-    - name: Code Coverage Report
-      env: 
-          CODECOV_TOKEN: "26239910-fe4e-463d-aa3d-e662e9bf39ef"
-      run: |
-        codecov
