@@ -31,9 +31,9 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 tensorboardX --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 tensorboardX --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       env:
           MPLBACKEND: Agg
@@ -41,6 +41,16 @@ jobs:
       run: |
         visdom &
         pytest --cov=tensorboardX tests/
+
+    - name: Run examples
+      run: |
+        python examples/demo.py
+        python examples/demo_graph.py
+        python examples/demo_embedding.py
+        python examples/demo_custom_scalars.py
+        python examples/demo_multiple_embedding.py
+        python examples/demo_purge.py
+        python examples/demo_matplotlib.py
 
     - name: Code Coverage Report
       env: 
