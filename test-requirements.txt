@@ -12,3 +12,5 @@ moto
 soundfile
 visdom
 onnx
+pytest-cov
+codecov

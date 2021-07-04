@@ -33,6 +33,15 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+          MPLBACKEND: Agg
+          PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
       run: |
         visdom &
-        ./run_pytest.sh
+        pytest --cov=tensorboardX tests/
+
+    - name: Code Coverage Report
+      env: 
+          CODECOV_TOKEN: "26239910-fe4e-463d-aa3d-e662e9bf39ef"
+      run: |
+        codecov
