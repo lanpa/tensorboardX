@@ -59,7 +59,7 @@ jobs:
         python-version: 3.9
     - name: Run examples
       run: |
-        pip install torchvision six
+        pip install six torchvision==0.10.0 protobuf==3.8 moviepy==1.0.3
         python examples/demo.py
         python examples/demo_graph.py
         python examples/demo_embedding.py
