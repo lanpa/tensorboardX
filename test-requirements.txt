@@ -1,5 +1,6 @@
 pytest
 torch
+chainer==6.5.0
 six
 protobuf==3.8
 numpy==1.18
@@ -9,6 +10,7 @@ boto3
 future
 matplotlib
 moto
+moviepy==0.2.3.2
 soundfile
 visdom
 onnx
