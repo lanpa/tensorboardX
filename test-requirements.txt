@@ -14,4 +14,3 @@ visdom
 onnx
 pytest-cov
 codecov
-moviepy
