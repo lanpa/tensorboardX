@@ -28,7 +28,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
-        python -c "import imageio; imageio.plugins.ffmpeg.download()"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
