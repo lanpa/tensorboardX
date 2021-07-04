@@ -1,6 +1,5 @@
 pytest
 torch
-chainer==6.5.0
 six
 protobuf==3.8
 numpy==1.18
