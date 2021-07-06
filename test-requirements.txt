@@ -9,8 +9,6 @@ boto3
 future
 matplotlib
 moto
-moviepy==1.0.3
-imageio-ffmpeg
 soundfile
 visdom
 onnx
