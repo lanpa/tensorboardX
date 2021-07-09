@@ -1,0 +1,16 @@
+pytest
+torch
+six
+protobuf==3.8
+numpy==1.18
+pillow
+tensorboard
+boto3
+future
+matplotlib
+moto
+soundfile
+visdom
+onnx
+pytest-cov
+codecov
