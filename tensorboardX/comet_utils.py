@@ -1,16 +1,15 @@
 import logging
 import json
 import functools
-from PIL import Image
 from io import BytesIO
 import numpy as np
 from .summary import _clean_tag
 try:
     import comet_ml
     comet_installed = True
+    from PIL import Image
 except ImportError:
     comet_installed = False
-import torch
 
 
 class CometLogger:

@@ -32,7 +32,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = '2.2'
+version_git = version = '2.4'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -92,8 +92,8 @@ setup(
 # check the generated tar.gz file 
 # (1. The version number is correct. 2. no *.pyc __pycache__ files)
 # git checkout -b "release x.x"
-# git add setup.py History.rst readme.md
-# git commit -m 'prepare for release' (skip tensorboardX/__init__.py)
+# git add setup.py History.rst readme.md (skip tensorboardX/__init__.py)
+# git commit -m 'prepare for release'
 # add tag
 # twine upload dist/*
 # git push

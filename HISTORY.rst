@@ -1,5 +1,13 @@
 History
 =======
+2.4 (2021-06-30)
+-----------------
+* Remove a dependency issue. (#631)
+
+2.3 (2021-06-20)
+-----------------
+* Support logging to comet.ml simutaneously.
+
 2.2 (2021-04-03)
 -----------------
 * Support for type hints.
