@@ -93,3 +93,5 @@ writer.add_video('video', vid_tensor=vid)
 writer.add_video('video_1_fps', vid_tensor=vid, fps=1)
 
 writer.close()
+
+writer.add_scalar('implicit reopen writer', 100, 0)
