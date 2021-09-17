@@ -365,6 +365,8 @@ def make_video(tensor, fps):
         print("moviepy is installed, but can't import moviepy.editor.",
               "Some packages could be missing [imageio, requests]")
         return
+
+    import moviepy.version
     import tempfile
 
     t, h, w, c = tensor.shape
@@ -374,12 +376,15 @@ def make_video(tensor, fps):
 
     filename = tempfile.NamedTemporaryFile(suffix='.gif', delete=False).name
 
-    # moviepy >= 1.0.0 use logger=None to suppress output.
-    try:
-        clip.write_gif(filename, verbose=False, logger=None)
-    except TypeError:
+    if moviepy.version.__version__.startswith("0."):
         logging.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
         clip.write_gif(filename, verbose=False)
+    elif moviepy.version.__version__.startswith("1."):
+        # moviepy >= 1.0.0 use logger=None to suppress output.
+        clip.write_gif(filename, verbose=False, logger=None)
+    else:
+        # Moviepy >= 2.0.0.dev1 removed the verbose argument
+        clip.write_gif(filename, logger=None)
 
     with open(filename, 'rb') as f:
         tensor_string = f.read()
