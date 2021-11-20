@@ -32,7 +32,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = '2.4'
+version_git = version = '2.4.1'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -96,5 +96,4 @@ setup(
 # git commit -m 'prepare for release'
 # add tag
 # twine upload dist/*
-# git push
-
+# git push -u origin HEAD
