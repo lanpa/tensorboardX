@@ -71,6 +71,12 @@ class WriterTest(unittest.TestCase):
     def test_auto_close(self):
         pass
 
+    def test_reuse_writer_after_closed(self):
+        w = SummaryWriter()
+        w.close()
+        w.add_text("reuse writer", "dont reuse without creating a new writer", 0)
+
+
     def test_writer(self):
         with SummaryWriter() as writer:
             sample_rate = 44100
