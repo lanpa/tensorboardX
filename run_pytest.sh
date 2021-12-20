@@ -1,11 +1,16 @@
-pip install pytest boto3 moto onnx tensorboard matplotlib flake8==3.8.3
+#!/bin/bash
 
-if [ `ps|grep visdom |wc -l` = "1" ]
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+pip install -r $SCRIPT_DIR/test-requirements.txt
+
+if [ `ps -ef|grep visdom |wc -l` = "1" ]
     then
     echo `ps|grep visdom |wc -l`
     echo "no visdom"
     visdom &
+    # kill visdom when done testing
+    trap "kill -SIGTERM $!" EXIT
 fi
 
 PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python pytest
-
