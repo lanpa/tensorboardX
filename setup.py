@@ -43,6 +43,7 @@ with open('tensorboardX/__init__.py', 'a') as f:
     f.write('\n__version__ = "{}"\n'.format(version_git))
 
 requirements = [
+    'six',
     'numpy',
     'protobuf >= 3.8.0',
 ]
