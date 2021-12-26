@@ -20,7 +20,7 @@ class CometLogger:
         if comet_config["disabled"] is True:
             self._logging = False
         elif comet_config["disabled"] is False and comet_installed is False:
-            raise Exception("Comet not installed. Run 'pip install comet-ml'")
+            raise Exception("Comet and/or Python Image Library not installed. Run 'pip install comet-ml pillow'")
 
     def _requiresComet(method):
         @functools.wraps(method)
