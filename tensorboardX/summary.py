@@ -231,7 +231,7 @@ def make_histogram(values, bins, max_bins=None):
         limits = new_limits
 
     # Find the first and the last bin defining the support of the histogram:
-    cum_counts = np.cumsum(np.greater(counts, 0, dtype=np.int32))
+    cum_counts = np.cumsum(np.greater(counts, 0))
     start, end = np.searchsorted(cum_counts, [0, cum_counts[-1] - 1], side="right")
     start = int(start)
     end = int(end) + 1
@@ -510,7 +510,7 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
 
     # Compute bins of true positives and false positives.
     bucket_indices = np.int32(np.floor(predictions * (num_thresholds - 1)))
-    float_labels = labels.astype(np.float)
+    float_labels = labels.astype(float)
     histogram_range = (0, num_thresholds - 1)
     tp_buckets, _ = np.histogram(
         bucket_indices,
