@@ -69,6 +69,7 @@ class S3RecordWriter(object):
             raise ImportError("boto3 must be installed for S3 support.")
         self.path = path
         self.buffer = io.BytesIO()
+        self.closed = False
 
     def __del__(self):
         if not self.closed:
