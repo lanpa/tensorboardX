@@ -71,7 +71,8 @@ class S3RecordWriter(object):
         self.buffer = io.BytesIO()
 
     def __del__(self):
-        self.close()
+        if not self.closed:
+            self.close()
 
     def bucket_and_path(self):
         path = self.path
@@ -94,6 +95,7 @@ class S3RecordWriter(object):
 
     def close(self):
         self.flush()
+        self.closed = True
 
 
 class S3RecordWriterFactory(object):
