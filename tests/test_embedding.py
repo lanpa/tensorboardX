@@ -86,3 +86,4 @@ class EmbeddingTest(unittest.TestCase):
                         label_img=all_images,
                         metadata_header=['digit', 'dataset'],
                         global_step=2)
+        w.close()
