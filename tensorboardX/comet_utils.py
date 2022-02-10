@@ -300,3 +300,62 @@ class CometLogger:
         file_json = kwargs
         file_json['asset_type'] = asset_type
         self.log_asset_data(file_json, tag, step=step)
+
+    @_requiresComet
+    def log_pr_data(self, tag, summary, num_thresholds, step=None):
+        """Logs a Precision-Recall Curve Data as an asset.
+
+        Args:
+        tag: An identifier for the PR curve
+        summary: TensorboardX Summary Proto.
+        step: step value to record
+        """
+        tensor_proto = summary.value[0].tensor
+        shape = [d.size for d in tensor_proto.tensor_shape.dim]
+
+        values = numpy.fromiter(tensor_proto.float_val, dtype=numpy.float32).reshape(shape)
+        thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), numpy.vsplit(values, values.shape[0]))
+
+        pr_data = {
+            'TP': tp,
+            'FP': fp,
+            'TN': tn,
+            'FN': fn,
+            'precision': precision,
+            'recall': recall,
+            'thresholds': thresholds,
+            'name': tag,
+        }
+
+        self.log_asset_data(pr_data, name=tag, step=step)
+
+    @_requiresComet
+    def log_pr_raw_data(self, tag, true_positive_counts,
+                        false_positive_counts, true_negative_counts,
+                        false_negative_counts, precision, recall,
+                        num_thresholds, weights, step=None):
+        """Logs a Precision-Recall Curve Data as an asset.
+
+        Args:
+        tag: An identifier for the PR curve
+        summary: TensorboardX Summary Proto.
+        step: step value to record
+        """
+        thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(
+        ), [true_positive_counts, false_positive_counts, true_negative_counts, false_negative_counts, precision, recall])
+
+        pr_data = {
+            'TP': tp,
+            'FP': fp,
+            'TN': tn,
+            'FN': fn,
+            'precision': precision,
+            'recall': recall,
+            'thresholds': thresholds,
+            'weights': weights,
+            'name': tag,
+        }
+
+        self.log_asset_data(pr_data, name=tag, step=step)
