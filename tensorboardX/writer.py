@@ -1136,10 +1136,13 @@ class SummaryWriter(object):
         """
         from .x2num import make_np
         labels, predictions = make_np(labels), make_np(predictions)
+
+        summary = pr_curve(tag, labels, predictions, num_thresholds, weights)
         self._get_file_writer().add_summary(
-            pr_curve(tag, labels, predictions, num_thresholds, weights),
+            summary,
             global_step, walltime)
-        self._get_comet_logger().log_curve(tag, labels, predictions, step=global_step)
+
+        self._get_comet_logger().log_pr_data(tag, summary, num_thresholds, step=global_step)
 
     def add_pr_curve_raw(
             self,
@@ -1176,16 +1179,15 @@ class SummaryWriter(object):
                          weights),
             global_step,
             walltime)
-        self._get_comet_logger().log_raw_figure(tag, 'pr_curve_raw', global_step,
-                                                true_positive_counts=true_positive_counts,
-                                                false_positive_counts=false_positive_counts,
-                                                true_negative_counts=true_negative_counts,
-                                                false_negative_counts=false_negative_counts,
-                                                precision=precision,
-                                                recall=recall,
-                                                num_thresholds=num_thresholds,
-                                                weights=weights,
-                                                walltime=walltime)
+        self._get_comet_logger().log_pr_raw_data(tag, step=global_step,
+                                                 true_positive_counts=true_positive_counts,
+                                                 false_positive_counts=false_positive_counts,
+                                                 true_negative_counts=true_negative_counts,
+                                                 false_negative_counts=false_negative_counts,
+                                                 precision=precision,
+                                                 recall=recall,
+                                                 num_thresholds=num_thresholds,
+                                                 weights=weights)
 
     def add_custom_scalars_multilinechart(
             self,
