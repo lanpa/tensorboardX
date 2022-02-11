@@ -161,9 +161,9 @@ class CometLogger:
         """Log Raw Histogram Data to Comet as an Asset.
 
         Args:
-            tag (str): Name given to the logged asset
-            summary (proto.summary_pb2.Summary): A Summary protocol buffer containing histogram data
-            step (int, optional): The Global Step for this experiment run. Defaults to None.
+            tag: Name given to the logged asset
+            summary: TensorboardX Summary protocol buffer with histogram data
+            step: The Global Step for this experiment run. Defaults to None.
         """
 
         histogram_proto = summary.value[0].histo
