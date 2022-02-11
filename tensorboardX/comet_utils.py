@@ -324,7 +324,7 @@ class CometLogger:
 
         Args:
         tag: An identifier for the PR curve
-        summary: TensorboardX Summary Proto.
+        summary: TensorboardX Summary protocol buffer.
         step: step value to record
         """
         tensor_proto = summary.value[0].tensor
@@ -356,7 +356,7 @@ class CometLogger:
 
         Args:
         tag: An identifier for the PR curve
-        summary: TensorboardX Summary Proto.
+        summary: TensorboardX Summary protocol buffer.
         step: step value to record
         """
         thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
