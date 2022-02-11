@@ -615,25 +615,19 @@ class SummaryWriter(object):
         """
         if len(bucket_limits) != len(bucket_counts):
             raise ValueError('len(bucket_limits) != len(bucket_counts), see the document.')
+        summary = histogram_raw(tag,
+                                min,
+                                max,
+                                num,
+                                sum,
+                                sum_squares,
+                                bucket_limits,
+                                bucket_counts)
         self._get_file_writer().add_summary(
-            histogram_raw(tag,
-                          min,
-                          max,
-                          num,
-                          sum,
-                          sum_squares,
-                          bucket_limits,
-                          bucket_counts),
+            summary,
             global_step,
             walltime)
-        self._get_comet_logger().log_raw_figure(tag, 'histogram_raw', global_step,
-                                                min=min,
-                                                max=max,
-                                                num=num,
-                                                sum=sum,
-                                                sum_squares=sum_squares,
-                                                bucket_limits=bucket_limits,
-                                                bucket_counts=bucket_counts)
+        self._get_comet_logger().log_histogram_raw(tag, summary, step=global_step)
 
     def add_image(
             self,

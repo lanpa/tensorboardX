@@ -156,6 +156,22 @@ class CometLogger:
                                           **kwargs)
 
     @_requiresComet
+    def log_histogram_raw(self, tag, summary, step=None):
+        """Log Raw Histogram Data to Comet as an Asset.
+
+        Args:
+            tag (str): Name given to the logged asset
+            summary (proto.summary_pb2.Summary): A Summary protocol buffer containing histogram data
+            step (int, optional): The Global Step for this experiment run. Defaults to None.
+        """
+
+        histogram_proto = summary.value[0].histo
+        histogram_raw_data = MessageToJson(histogram_proto)
+        histogram_raw_data['name'] = tag
+
+        self.log_asset_data(data=histogram_raw_data, name=tag, step=step)
+
+    @_requiresComet
     def log_curve(self, name, x, y, overwrite=False, step=None):
         """Log timeseries data.
 
