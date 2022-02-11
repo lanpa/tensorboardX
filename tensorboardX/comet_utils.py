@@ -2,6 +2,7 @@ import logging
 import json
 import functools
 from io import BytesIO
+from google.protobuf.json_format import MessageToJson
 import numpy as np
 from .summary import _clean_tag
 try:
@@ -329,9 +330,9 @@ class CometLogger:
         tensor_proto = summary.value[0].tensor
         shape = [d.size for d in tensor_proto.tensor_shape.dim]
 
-        values = numpy.fromiter(tensor_proto.float_val, dtype=numpy.float32).reshape(shape)
+        values = np.fromiter(tensor_proto.float_val, dtype=np.float32).reshape(shape)
         thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
-        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), numpy.vsplit(values, values.shape[0]))
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), np.vsplit(values, values.shape[0]))
 
         pr_data = {
             'TP': tp,
