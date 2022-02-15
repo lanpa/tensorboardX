@@ -360,8 +360,13 @@ class CometLogger:
         step: step value to record
         """
         thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
-        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(
-        ), [true_positive_counts, false_positive_counts, true_negative_counts, false_negative_counts, precision, recall])
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), [
+            true_positive_counts,
+            false_positive_counts,
+            true_negative_counts,
+            false_negative_counts,
+            precision,
+            recall])
 
         pr_data = {
             'TP': tp,
