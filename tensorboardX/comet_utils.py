@@ -2,6 +2,7 @@ import logging
 import json
 import functools
 from io import BytesIO
+from google.protobuf.json_format import MessageToJson
 import numpy as np
 from .summary import _clean_tag
 try:
@@ -156,6 +157,22 @@ class CometLogger:
                                           **kwargs)
 
     @_requiresComet
+    def log_histogram_raw(self, tag, summary, step=None):
+        """Log Raw Histogram Data to Comet as an Asset.
+
+        Args:
+            tag: Name given to the logged asset
+            summary: TensorboardX Summary protocol buffer with histogram data
+            step: The Global Step for this experiment run. Defaults to None.
+        """
+
+        histogram_proto = summary.value[0].histo
+        histogram_raw_data = MessageToJson(histogram_proto)
+        histogram_raw_data['name'] = tag
+
+        self.log_asset_data(data=histogram_raw_data, name=tag, step=step)
+
+    @_requiresComet
     def log_curve(self, name, x, y, overwrite=False, step=None):
         """Log timeseries data.
 
@@ -300,3 +317,67 @@ class CometLogger:
         file_json = kwargs
         file_json['asset_type'] = asset_type
         self.log_asset_data(file_json, tag, step=step)
+
+    @_requiresComet
+    def log_pr_data(self, tag, summary, num_thresholds, step=None):
+        """Logs a Precision-Recall Curve Data as an asset.
+
+        Args:
+        tag: An identifier for the PR curve
+        summary: TensorboardX Summary protocol buffer.
+        step: step value to record
+        """
+        tensor_proto = summary.value[0].tensor
+        shape = [d.size for d in tensor_proto.tensor_shape.dim]
+
+        values = np.fromiter(tensor_proto.float_val, dtype=np.float32).reshape(shape)
+        thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), np.vsplit(values, values.shape[0]))
+
+        pr_data = {
+            'TP': tp,
+            'FP': fp,
+            'TN': tn,
+            'FN': fn,
+            'precision': precision,
+            'recall': recall,
+            'thresholds': thresholds,
+            'name': tag,
+        }
+
+        self.log_asset_data(pr_data, name=tag, step=step)
+
+    @_requiresComet
+    def log_pr_raw_data(self, tag, true_positive_counts,
+                        false_positive_counts, true_negative_counts,
+                        false_negative_counts, precision, recall,
+                        num_thresholds, weights, step=None):
+        """Logs a Precision-Recall Curve Data as an asset.
+
+        Args:
+        tag: An identifier for the PR curve
+        summary: TensorboardX Summary protocol buffer.
+        step: step value to record
+        """
+        thresholds = [1.0 / num_thresholds * i for i in range(num_thresholds)]
+        tp, fp, tn, fn, precision, recall = map(lambda x: x.flatten().tolist(), [
+            true_positive_counts,
+            false_positive_counts,
+            true_negative_counts,
+            false_negative_counts,
+            precision,
+            recall])
+
+        pr_data = {
+            'TP': tp,
+            'FP': fp,
+            'TN': tn,
+            'FN': fn,
+            'precision': precision,
+            'recall': recall,
+            'thresholds': thresholds,
+            'weights': weights,
+            'name': tag,
+        }
+
+        self.log_asset_data(pr_data, name=tag, step=step)
