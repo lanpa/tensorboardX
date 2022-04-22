@@ -6,12 +6,13 @@ from __future__ import print_function
 import logging
 import numpy as np
 import six
+logger = logging.getLogger(__name__)
 
 
 def check_nan(array):
     tmp = np.sum(array)
     if np.isnan(tmp) or np.isinf(tmp):
-        logging.warning('NaN or Inf found in input tensor.')
+        logger.warning('NaN or Inf found in input tensor.')
     return array
 
 

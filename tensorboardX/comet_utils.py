@@ -11,6 +11,7 @@ try:
     from PIL import Image
 except ImportError:
     comet_installed = False
+logger = logging.getLogger(__name__)
 
 
 class CometLogger:
@@ -34,14 +35,14 @@ class CometLogger:
                     if 'api_key' not in self._comet_config.keys():
                         comet_ml.init()
                     if comet_ml.get_global_experiment() is not None:
-                        logging.warning("You have already created a comet \
+                        logger.warning("You have already created a comet \
                                         experiment manually, which might \
                                         cause clashes")
                     self._experiment = comet_ml.Experiment(**self._comet_config)
                     self._logging = True
                     self._experiment.log_other("Created from", "tensorboardX")
                 except Exception as e:
-                    logging.warning(e)
+                    logger.warning(e)
 
             if self._logging is True:
                 return method(*args, **kwargs)

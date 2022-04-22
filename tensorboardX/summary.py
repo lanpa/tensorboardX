@@ -21,6 +21,7 @@ from .proto.plugin_mesh_pb2 import MeshPluginData
 from .proto import layout_pb2
 from .x2num import make_np
 from .utils import _prepare_video, convert_to_HWC, convert_to_NTCHW
+logger = logging.getLogger(__name__)
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
 
@@ -37,7 +38,7 @@ def _clean_tag(name):
         new_name = _INVALID_TAG_CHARACTERS.sub('_', name)
         new_name = new_name.lstrip('/')  # Remove leading slashes
         if new_name != name:
-            logging.info(
+            logger.info(
                 'Summary name %s is illegal; using %s instead.' % (name, new_name))
             name = new_name
     return name
@@ -377,7 +378,7 @@ def make_video(tensor, fps):
     filename = tempfile.NamedTemporaryFile(suffix='.gif', delete=False).name
 
     if moviepy.version.__version__.startswith("0."):
-        logging.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
+        logger.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
         clip.write_gif(filename, verbose=False)
     elif moviepy.version.__version__.startswith("1."):
         # moviepy >= 1.0.0 use logger=None to suppress output.
@@ -392,7 +393,7 @@ def make_video(tensor, fps):
     try:
         os.remove(filename)
     except OSError:
-        logging.warning('The temporary file used by moviepy cannot be deleted.')
+        logger.warning('The temporary file used by moviepy cannot be deleted.')
 
     return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 

@@ -16,6 +16,7 @@ from caffe2.python import core, workspace
 from .proto.graph_pb2 import GraphDef
 from .proto.node_def_pb2 import NodeDef
 from .proto.tensor_shape_pb2 import TensorShapeProto
+logger = logging.getLogger(__name__)
 
 
 def _make_unique_name(seen, name, min_version=0):
@@ -753,7 +754,7 @@ def _try_get_shapes(nets):
         shapes, _ = workspace.InferShapesAndTypes(nets)
         return shapes
     except Exception as e:
-        logging.warning('Failed to compute shapes: %s', e)
+        logger.warning('Failed to compute shapes: %s', e)
         return {}
 
 
