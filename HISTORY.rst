@@ -1,5 +1,10 @@
 History
 =======
+2.5 (2022-02-22)
+-----------------
+* Fix deprecation warnings
+* Comet integration improvements (#658)
+
 2.4.1 (2021-11-20)
 -------------------
 * Fix a comet plugin bug if writer is reused. (#639)
