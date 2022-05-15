@@ -28,6 +28,7 @@ from .summary import (
     scalar, histogram, histogram_raw, image, audio, text,
     pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh, hparams
 )
+logger = logging.getLogger(__name__)
 
 numpy_compatible = numpy.ndarray
 try:
@@ -789,7 +790,7 @@ class SummaryWriter(object):
             if isinstance(labels, str):
                 labels = [labels]
             if len(labels) != box_tensor.shape[0]:
-                logging.warning('Number of labels do not equal to number of box, skip the labels.')
+                logger.warning('Number of labels do not equal to number of box, skip the labels.')
                 labels = None
         summary = image_boxes(
             tag, img_tensor, box_tensor, dataformats=dataformats, labels=labels, **kwargs)

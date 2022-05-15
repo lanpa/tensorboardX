@@ -8,6 +8,7 @@ from .proto.step_stats_pb2 import RunMetadata, StepStats, DeviceStepStats, NodeE
 from .proto.tensor_shape_pb2 import TensorShapeProto
 from .proto.versions_pb2 import VersionDef
 from .proto_graph import node_proto
+logger = logging.getLogger(__name__)
 
 methods_OP = ['attributeNames', 'hasMultipleOutputs', 'hasUses', 'inputs',
               'kind', 'outputs', 'outputsSize', 'scopeName']
@@ -246,7 +247,7 @@ class GraphPy(object):
                                   memory=[AllocatorMemoryUsed(allocator_name="unknown",
                                                               total_bytes=int(np.prod(v.tensor_size)) * 4)]))
         if should_show_warning:
-            logging.warning('time cost for node is the sum of CPU + GPU.')
+            logger.warning('time cost for node is the sum of CPU + GPU.')
 
         return nodes, node_stats
 
