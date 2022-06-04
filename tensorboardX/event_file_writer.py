@@ -23,7 +23,7 @@ import socket
 import threading
 import time
 import multiprocessing
-import six
+import queue
 
 from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check
@@ -207,7 +207,7 @@ class _EventLoggerThread(threading.Thread):
                     return
                 self._record_writer.write_event(data)
                 self._has_pending_data = True
-            except six.moves.queue.Empty:
+            except queue.Empty:
                 pass
 
             now = time.time()

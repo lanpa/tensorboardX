@@ -43,17 +43,10 @@ with open('tensorboardX/__init__.py', 'a') as f:
     f.write('\n__version__ = "{}"\n'.format(version_git))
 
 requirements = [
-    'six',
     'numpy',
-    'protobuf >= 3.8.0',
+    'protobuf >= 3.8.0, <=3.20.1',
 ]
 
-test_requirements = [
-    'future'
-    'pytest',
-    'matplotlib',
-    'crc32c',
-]
 
 setup(
     name='tensorboardX',
@@ -74,16 +67,14 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
-    test_suite='tests',
-    tests_require=test_requirements
 )
 
 
