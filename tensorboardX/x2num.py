@@ -5,7 +5,6 @@ from __future__ import print_function
 
 import logging
 import numpy as np
-import six
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +20,7 @@ def make_np(x):
         return check_nan(np.array(x))
     if isinstance(x, np.ndarray):
         return check_nan(x)
-    if isinstance(x, six.string_types):  # Caffe2 will pass name of blob(s) to fetch
+    if isinstance(x, str):  # Caffe2 will pass name of blob(s) to fetch
         return check_nan(prepare_caffe2(x))
     if np.isscalar(x):
         return check_nan(np.array([x]))

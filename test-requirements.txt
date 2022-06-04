@@ -1,13 +1,11 @@
 flake8
 pytest
 torch
-six
-protobuf==3.15
+torchvision
+protobuf==3.20.1
 numpy==1.21.0
-pillow
 tensorboard
 boto3
-future
 matplotlib
 moto
 soundfile

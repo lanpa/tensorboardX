@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import gc
-import six
 import time
 
 from functools import wraps
@@ -43,9 +42,9 @@ class TorchVis:
             gc.collect()
 
     def __getattr__(self, attr):
-        for _, subscriber in six.iteritems(self.subscribers):
+        for _, subscriber in self.subscribers.items():
             def wrapper(*args, **kwargs):
-                for _, subscriber in six.iteritems(self.subscribers):
+                for _, subscriber in self.subscribers.items():
                     if hasattr(subscriber, attr):
                         getattr(subscriber, attr)(*args, **kwargs)
             return wrapper
@@ -53,5 +52,5 @@ class TorchVis:
 
     # Handle writer management (open/close) for the user
     def __del__(self):
-        for _, subscriber in six.iteritems(self.subscribers):
+        for _, subscriber in self.subscribers.items():
             subscriber.close()

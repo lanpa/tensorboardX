@@ -8,7 +8,6 @@ import os
 import re as _re
 
 # pylint: disable=unused-import
-from six.moves import range
 
 from .proto.summary_pb2 import Summary
 from .proto.summary_pb2 import HistogramProto
@@ -70,7 +69,6 @@ def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', 
 def hparams(hparam_dict=None, metric_dict=None):
     from tensorboardX.proto.plugin_hparams_pb2 import HParamsPluginData, SessionEndInfo, SessionStartInfo
     from tensorboardX.proto.api_pb2 import Experiment, HParamInfo, MetricInfo, MetricName, Status, DataType
-    from six import string_types
 
     PLUGIN_NAME = 'hparams'
     PLUGIN_DATA_VERSION = 0
@@ -91,7 +89,7 @@ def hparams(hparam_dict=None, metric_dict=None):
         if v is None:
             continue
 
-        if isinstance(v, string_types):
+        if isinstance(v, str):
             ssi.hparams[k].string_value = v
             hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_STRING")))
             continue
