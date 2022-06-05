@@ -7,7 +7,7 @@
 
 Write TensorBoard events with simple function call.
 
-The current release (v2.3) is tested on anaconda3, with PyTorch 1.8.1 / torchvision 0.9.1 / tensorboard 2.5.0.
+The current release (v2.5) is tested on anaconda3, with PyTorch 1.11.0 / torchvision 0.12 / tensorboard 2.9.0.
 
 * Support `scalar`, `image`, `figure`, `histogram`, `audio`, `text`, `graph`, `onnx_graph`, `embedding`, `pr_curve`, `mesh`, `hyper-parameters`
   and `video` summaries.

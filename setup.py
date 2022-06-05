@@ -19,20 +19,19 @@ class PostDevelopCommand(develop):
         compileProtoBuf()
         develop.run(self)
 
-
 class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
         compileProtoBuf()
-        import os
-        os.system("pip install protobuf numpy")
+        for r in requirements:
+            subprocess.run(f"pip install '{r}'", shell=True)
         install.run(self)
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = '2.5'
+version_git = version = '2.5.1'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -44,7 +43,7 @@ with open('tensorboardX/__init__.py', 'a') as f:
 
 requirements = [
     'numpy',
-    'protobuf >= 3.8.0, <=3.20.1',
+    'protobuf>=3.8.0,<=3.20.1',
 ]
 
 
