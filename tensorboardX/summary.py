@@ -149,7 +149,7 @@ def scalar(name, scalar, display_name="", summary_description=""):
     """
     name = _clean_tag(name)
     scalar = make_np(scalar)
-    assert(scalar.squeeze().ndim == 0), 'scalar should be 0D'
+    assert scalar.squeeze().ndim == 0, 'scalar should be 0D'
     scalar = float(scalar)
     if display_name == "" and summary_description == "":
         return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
@@ -411,7 +411,7 @@ def audio(tag, tensor, sample_rate=44100):
     if tensor.ndim == 1:  # old API, which expects single channel audio
         tensor = np.expand_dims(tensor, axis=1)
 
-    assert(tensor.ndim == 2), 'Input tensor should be 2 dimensional.'
+    assert tensor.ndim == 2, 'Input tensor should be 2 dimensional.'
     length_frames, num_channels = tensor.shape
     assert num_channels == 1 or num_channels == 2, 'The second dimension should be 1 or 2.'
 

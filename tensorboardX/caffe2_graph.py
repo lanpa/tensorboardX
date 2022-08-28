@@ -292,7 +292,7 @@ def _fill_missing_operator_names(ops):
             name = os.path.join(scope, op.type)
         else:
             name = op.type
-        assert(name)
+        assert name
         op.name = _make_unique_name(seen, name)
 
 
@@ -449,7 +449,7 @@ def _operator_to_node_simp(op, inter_blobs, seen):
             name_list = [name for name in outputs]
             scope = os.path.commonprefix(name_list)
             name = os.path.join(scope, op.type)
-        assert(name)
+        assert name
         op.name = _make_unique_name(seen, name)
         device = _tf_device(op.device_option)
 
