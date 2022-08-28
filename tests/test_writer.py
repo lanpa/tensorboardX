@@ -116,3 +116,4 @@ class WriterTest(unittest.TestCase):
                 imgs.append(np.ones((3, 100, 110)))
             with SummaryWriter() as w:
                 w.add_images('img_list', imgs, dataformats='CHW')
+
