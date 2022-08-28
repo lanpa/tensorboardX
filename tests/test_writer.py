@@ -1,7 +1,7 @@
 from tensorboardX import SummaryWriter
 from tensorboard.compat.tensorflow_stub.pywrap_tensorflow import PyRecordReader_New
 from tensorboardX.proto import event_pb2
-
+import os
 import numpy as np
 import pytest
 import unittest
@@ -110,6 +110,7 @@ class WriterTest(unittest.TestCase):
                                     recall, n_iter)
             # export scalar data to JSON for external processing
             writer.export_scalars_to_json("./all_scalars.json")
+            os.remove("./all_scalars.json")
             imgs = []
             for i in range(5):
                 imgs.append(np.ones((3, 100, 110)))
