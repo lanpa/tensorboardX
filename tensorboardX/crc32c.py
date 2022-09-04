@@ -5,7 +5,7 @@ import os
 try:
     if os.environ.get('CRC32C_SW_MODE', None) is None:
         os.environ['CRC32C_SW_MODE'] = 'auto'
-    from crc32c import crc32 as _crc32c_native
+    from crc32c import crc32c as _crc32c_native
 except ImportError:
     _crc32c_native = None
 
