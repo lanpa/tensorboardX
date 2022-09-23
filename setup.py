@@ -43,7 +43,7 @@ with open('tensorboardX/__init__.py', 'a') as f:
 
 requirements = [
     'numpy',
-    'protobuf>=3.8.0,<=3.20.1',
+    'protobuf>=3.8.0,<3.20.3',
 ]
 
 
