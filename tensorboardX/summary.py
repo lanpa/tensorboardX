@@ -320,14 +320,20 @@ def draw_boxes(disp_image, boxes, labels=None):
 
 def make_image(tensor, rescale=1, rois=None, labels=None):
     """Convert an numpy representation image to Image protobuf"""
+    import PIL
     from PIL import Image
+    from packaging.version import parse
     height, width, channel = tensor.shape
     scaled_height = int(height * rescale)
     scaled_width = int(width * rescale)
     image = Image.fromarray(tensor)
     if rois is not None:
         image = draw_boxes(image, rois, labels=labels)
-    image = image.resize((scaled_width, scaled_height), Image.ANTIALIAS)
+    if parse(PIL.__version__) >= parse('9.1.0'):
+        image = image.resize((scaled_width, scaled_height), Image.Resampling.LANCZOS)
+    else:
+        image = image.resize((scaled_width, scaled_height), Image.LANCZOS)
+
     import io
     output = io.BytesIO()
     image.save(output, format='PNG')
