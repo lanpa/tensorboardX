@@ -2,7 +2,7 @@ flake8
 pytest
 torch
 torchvision
-protobuf==3.20.1
+protobuf==3.20.3
 numpy==1.21.0
 tensorboard
 boto3
