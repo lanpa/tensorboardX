@@ -3,7 +3,7 @@ pytest
 torch
 torchvision
 protobuf==3.20.3
-numpy==1.21.0
+numpy==1.22.0
 tensorboard
 boto3
 matplotlib
