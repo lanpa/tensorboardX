@@ -2,9 +2,10 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Build and upload python package to test site
-on: push
-  branches:
-    - 'releases/**'
+on:
+  push:
+    branches:
+      - 'releases/**'
 jobs: 
   upload-test:
     name: Publish a Python distribution to PyPI test site
@@ -35,9 +36,10 @@ jobs:
         repository_url: https://test.pypi.org/legacy/
 
 name: Build and upload python package to production site
-on: push
-  tags:
-    - 'v*'
+on:
+  push:
+    tags:
+      - 'v*'
 jobs: 
   test-of-test:
     name: Download package from test site
