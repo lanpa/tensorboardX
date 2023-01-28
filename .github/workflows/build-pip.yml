@@ -8,7 +8,7 @@ on:
       - 'releases/**'
 jobs: 
   build:
-    name: Publish a Python distribution to PyPI test site
+    name: Build Wheel from source
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -30,8 +30,8 @@ jobs:
         python setup.py -q sdist bdist_wheel --universal
 
   test-the-wheel:
-    if: startsWith('github.ref', 'refs/tags/v')
-    name: Download package from test site
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Get sample code
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -42,6 +42,12 @@ jobs:
 
     - name: Install tensorboardX
       run: pip install -i https://test.pypi.org/simple/ tensorboardX
+
+    - name: Run examples
+      run: |
+        cd examples
+        python demo.py
+
 
         #  upload:
         #    if: startsWith('github.ref', 'refs/tags/v')
