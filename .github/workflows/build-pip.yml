@@ -7,7 +7,7 @@ on:
     branches:
       - 'releases/**'
 jobs: 
-  upload-test:
+  build:
     name: Publish a Python distribution to PyPI test site
     runs-on: ubuntu-latest
     steps:
@@ -29,13 +29,7 @@ jobs:
         echo `pwd`
         python setup.py -q sdist bdist_wheel --universal
 
-    - name: Publish to Test PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TESTSITE }}
-        repository_url: https://test.pypi.org/legacy/
-
-  test-of-test:
+  test-the-wheel:
     if: startsWith('github.ref', 'refs/tags/v')
     name: Download package from test site
     runs-on: ubuntu-latest
@@ -49,28 +43,35 @@ jobs:
     - name: Install tensorboardX
       run: pip install -i https://test.pypi.org/simple/ tensorboardX
 
-  upload:
-    if: startsWith('github.ref', 'refs/tags/v')
-    name: Publish a Python distribution to PyPI test site
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
+        #  upload:
+        #    if: startsWith('github.ref', 'refs/tags/v')
+        #    name: Publish a Python distribution to PyPI test site
+        #    runs-on: ubuntu-latest
+        #    steps:
+        #    - uses: actions/checkout@v2
+        #    - name: Set up Python 3.9
+        #      uses: actions/setup-python@v2
+        #      with:
+        #        python-version: 3.9
+        #
+        #    - name: Install pypa/build
+        #      run: >-
+        #        python -m
+        #        pip install
+        #        build wheel
+        #        --user
+        #
+        #    - name: Build a binary wheel and a source tarball
+        #      run: |
+        #        echo `pwd`
+        #        python setup.py -q sdist bdist_wheel --universal
+        #
+        #    - name: Publish to Test PyPI
+        #      uses: pypa/gh-action-pypi-publish@release/v1
+        #      with:
+        #        password: ${{ secrets.PYPI_API_TESTSITE }}
+        #        repository_url: https://test.pypi.org/legacy/
 
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build wheel
-        --user
-
-    - name: Build a binary wheel and a source tarball
-      run: |
-        echo `pwd`
-        python setup.py -q sdist bdist_wheel --universal
 
         #    - name: Publish to Test PyPI
         #      uses: pypa/gh-action-pypi-publish@release/v1
