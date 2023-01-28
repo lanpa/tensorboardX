@@ -35,13 +35,8 @@ jobs:
         password: ${{ secrets.PYPI_API_TESTSITE }}
         repository_url: https://test.pypi.org/legacy/
 
-name: Build and upload python package to production site
-on:
-  push:
-    tags:
-      - 'v*'
-jobs: 
   test-of-test:
+    if: startsWith('github.ref', 'refs/tags/v')
     name: Download package from test site
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +50,7 @@ jobs:
       run: pip install -i https://test.pypi.org/simple/ tensorboardX
 
   upload:
+    if: startsWith('github.ref', 'refs/tags/v')
     name: Publish a Python distribution to PyPI test site
     runs-on: ubuntu-latest
     steps:
