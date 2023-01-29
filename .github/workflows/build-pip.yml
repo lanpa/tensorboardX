@@ -30,10 +30,13 @@ jobs:
         python setup.py -q sdist bdist_wheel --universal
 
   test-the-wheel:
-    if: startsWith(github.ref, 'refs/tags/v')
-    name: Get sample code
+    #if: startsWith(github.ref, 'refs/tags/v')
+    name: Debug env...
     runs-on: ubuntu-latest
     steps:
+    - name: Dump GitHub context
+      id: github_context_step
+      run: echo '${{ toJSON(github) }}'
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
