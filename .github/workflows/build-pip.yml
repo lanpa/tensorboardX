@@ -68,6 +68,13 @@ jobs:
         cd examples
         python demo.py
 
+    - name: Archive demo artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: demo-results
+        path: |
+          examples/runs
+
 
         #  upload:
         #    if: startsWith('github.ref', 'refs/tags/v')
