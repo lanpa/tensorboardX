@@ -29,6 +29,13 @@ jobs:
         echo `pwd`
         python setup.py -q sdist bdist_wheel --universal
 
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-pip-whl
+        path: |
+          dist
+
   test-the-wheel:
     #if: startsWith(github.ref, 'refs/tags/v')
     name: Debug env...
@@ -43,6 +50,11 @@ jobs:
       with:
         python-version: 3.9
 
+    - name: Download a single artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: dist
+      
     - name: Install tensorboardX
       run: pip install -i https://test.pypi.org/simple/ tensorboardX
 
