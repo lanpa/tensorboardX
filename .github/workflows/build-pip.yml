@@ -40,6 +40,7 @@ jobs:
   test-the-wheel:
     #if: startsWith(github.ref, 'refs/tags/v')
     name: Debug env...
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context
