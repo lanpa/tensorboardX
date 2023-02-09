@@ -60,6 +60,9 @@ jobs:
     - name: Install tensorboardX
       run: pip install tensorboardX*.whl
 
+    - name: Install torch torchvision for demo
+      run: pip install torch torchvision
+
     - name: Run examples
       run: |
         cd examples
