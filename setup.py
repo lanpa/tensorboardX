@@ -31,7 +31,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = subprocess.check_output(['git', 'descrive']).decode('ascii').strip()#'2.5.1'
+version_git = version = subprocess.check_output(['git', 'describe']).decode('ascii').strip()#'2.5.1'
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
