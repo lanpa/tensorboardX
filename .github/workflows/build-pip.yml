@@ -54,10 +54,10 @@ jobs:
     - name: Download a single artifact
       uses: actions/download-artifact@v3
       with:
-        name: dist
+        name: dist-pip-whl
       
     - name: Install tensorboardX
-      run: pip install -i https://test.pypi.org/simple/ tensorboardX
+      run: pip install -i dist/tensorboardX*.whl
 
     - name: Run examples
       run: |
