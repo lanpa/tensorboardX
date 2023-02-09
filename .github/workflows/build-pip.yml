@@ -58,7 +58,7 @@ jobs:
         name: dist-pip-whl
       
     - name: Install tensorboardX
-      run: pip install -i dist/tensorboardX*.whl
+      run: pip install dist/tensorboardX*.whl
 
     - name: Run examples
       run: |
