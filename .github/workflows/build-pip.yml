@@ -75,6 +75,15 @@ jobs:
         path: |
           examples/runs
 
+  upload-to-pypi:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Upload to pypi if tagged with version
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dump GitHub context
+      id: github_context_step
+      run: echo '${{ toJSON(github) }}'
 
         #  upload:
         #    if: startsWith('github.ref', 'refs/tags/v')
