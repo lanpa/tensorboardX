@@ -46,16 +46,16 @@ jobs:
       id: github_context_step
       run: echo '${{ toJSON(github) }}'
 
-    - name: Download the whl
-      uses: actions/download-artifact@v3
-      with:
-        name: dist-pip-whl
-
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+
+    - name: Download the whl
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-pip-whl
 
     - name: Install tensorboardX from whl
       run: pip install tensorboardX*.whl
