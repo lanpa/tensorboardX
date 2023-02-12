@@ -16,7 +16,6 @@ jobs:
 
   upload-to-pypi:
     name: Publish to PyPI test site
-    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context
