@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch:
+    inputs:
+      publish_version:
+        required: true
+        type: string
+
+jobs:
+  log-the-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "target version: ${{ github.event.inputs.publish_version }}"
+        env:
+          VERSION: ${{ github.event.inputs.publish_version }}
+
