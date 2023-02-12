@@ -54,3 +54,9 @@ jobs:
         password: ${{ secrets.PYPI_API_TESTSITE }}
         repository_url: https://test.pypi.org/legacy/
 
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        #password: ${{ secrets.PYPI_API }}
+        repository_url: https://upload.pypi.org/legacy/
+
