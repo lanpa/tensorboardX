@@ -33,6 +33,14 @@ with open('HISTORY.rst') as history_file:
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
 version_git = version = subprocess.check_output(['git', 'describe', '--always']).decode('ascii').strip()
 
+# pass version without using argparse
+# format example: v1.2.3
+publish_version = sys.argv[-1]
+if publish_version[0] == 'v':
+    version_git = publish_version[1:]
+    sys.argv = sys.argv[:-1]
+print(version_git)
+
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
         sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
