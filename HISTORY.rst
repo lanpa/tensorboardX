@@ -1,5 +1,10 @@
 History
 =======
+2.6 (2023-02-12)
+-------------------
+* Fixed several deprecation warnings
+* Update dependencies
+
 2.5.1 (2022-06-05)
 -------------------
 * Enforce protobuf's version upper bound
