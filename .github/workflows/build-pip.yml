@@ -50,14 +50,20 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: dist-pip-whl
-      
+
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
     - name: Install tensorboardX from whl
       run: pip install tensorboardX*.whl
 
     - name: Install torch torchvision for demo
       run: pip install torch torchvision
 
-    - name: Run examples
+    - name: Print version
       run: python -c "import tensorboardX; print(tensorboardX.__version__)"
 
     - name: Run examples
