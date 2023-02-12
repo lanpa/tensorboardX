@@ -42,9 +42,15 @@ jobs:
         echo `pwd`
         python setup.py -q sdist bdist_wheel --universal ${{ github.event.inputs.publish_version }}
 
-        #    - name: Publish to Test PyPI
-        #      uses: pypa/gh-action-pypi-publish@release/v1
-        #      with:
-        #        password: ${{ secrets.PYPI_API_TESTSITE }}
-        #        repository_url: https://test.pypi.org/legacy/
+    - name: Install tensorboardX from whl
+      run: pip install dist/tensorboardX*.whl
+
+    - name: Print version
+      run: python -c "import tensorboardX; print(tensorboardX.__version__)"
+
+    - name: Publish to Test PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TESTSITE }}
+        repository_url: https://test.pypi.org/legacy/
 
