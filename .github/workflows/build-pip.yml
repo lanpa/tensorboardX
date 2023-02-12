@@ -1,14 +1,14 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Build and upload python package to test site
+name: Build and test the python package
 on:
   push:
     branches:
       - 'releases/**'
 jobs: 
   build:
-    name: Build Wheel from source
+    name: Build whl from source
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -38,30 +38,27 @@ jobs:
           dist
 
   test-the-wheel:
-    #if: startsWith(github.ref, 'refs/tags/v')
-    name: Debug env...
+    name: Install whl and run demo
     needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context
       id: github_context_step
       run: echo '${{ toJSON(github) }}'
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
 
-    - name: Download a single artifact
+    - name: Download the whl
       uses: actions/download-artifact@v3
       with:
         name: dist-pip-whl
       
-    - name: Install tensorboardX
+    - name: Install tensorboardX from whl
       run: pip install tensorboardX*.whl
 
     - name: Install torch torchvision for demo
       run: pip install torch torchvision
+
+    - name: Run examples
+      run: python -c "import tensorboardX; print(tensorboardX.__version__)"
 
     - name: Run examples
       run: |
