@@ -40,7 +40,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         echo `pwd`
-        python setup.py -q sdist bdist_wheel --universal
+        python setup.py -q sdist bdist_wheel --universal ${{ github.event.inputs.publish_version }}
 
         #    - name: Publish to Test PyPI
         #      uses: pypa/gh-action-pypi-publish@release/v1
