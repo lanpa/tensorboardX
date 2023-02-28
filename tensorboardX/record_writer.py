@@ -149,7 +149,10 @@ class GCSRecordWriter(object):
         upload_buffer = copy.copy(self.buffer)
         upload_buffer.seek(0)
 
-        self.blob.upload_from_string(upload_buffer.getvalue())
+        # work with blob generation, so that uploading will automatically retry in case of connection errors
+        blob_generation = self.blob.generation
+        self.blob.upload_from_string(data=upload_buffer.getvalue(),
+                                     if_generation_match=blob_generation)
 
     def close(self):
         self.flush()
