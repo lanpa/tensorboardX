@@ -31,7 +31,15 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = '2.5.1'
+version_git = version = subprocess.check_output(['git', 'describe', '--always']).decode('ascii').strip()
+
+# pass version without using argparse
+# format example: v1.2.3
+publish_version = sys.argv[-1]
+if publish_version[0] == 'v':
+    version_git = publish_version[1:]
+    sys.argv = sys.argv[:-1]
+print(version_git)
 
 if not preparing_PyPI_package:
     if os.path.exists('.git'):
@@ -43,6 +51,7 @@ with open('tensorboardX/__init__.py', 'a') as f:
 
 requirements = [
     'numpy',
+    'packaging',
     'protobuf>=3.8.0,<4',
 ]
 
