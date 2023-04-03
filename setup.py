@@ -31,7 +31,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = subprocess.check_output(['git', 'describe', '--always']).decode('ascii').strip()
+version_git = version = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode('ascii').strip()
 
 # pass version without using argparse
 # format example: v1.2.3
