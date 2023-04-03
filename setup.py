@@ -6,7 +6,6 @@ import sys
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-from setuptools_scm import get_version
 
 # Dynamically compile protos
 def compileProtoBuf():
@@ -32,11 +31,6 @@ with open('HISTORY.rst') as history_file:
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
 
-version = get_version()
-print(version)
-with open('tensorboardX/__init__.py', 'a') as f:
-    f.write('\n__version__ = "{}"\n'.format(version))
-
 requirements = [
     'numpy',
     'packaging',
@@ -47,7 +41,6 @@ requirements = [
 setup(
     name='tensorboardX',
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
-    version=version,
     long_description=history,
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
@@ -55,7 +48,9 @@ setup(
     packages=['tensorboardX'],
     include_package_data=True,
     install_requires=requirements,
-    use_scm_version=True,
+    use_scm_version={
+        'write_to': "tensorboardX/_version.py",
+    },
     setup_requires=['setuptools_scm'],
     license='MIT license',
     zip_safe=False,
