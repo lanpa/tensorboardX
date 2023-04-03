@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+from setuptools_scm import get_version
 
 # Dynamically compile protos
 def compileProtoBuf():
@@ -31,23 +31,11 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-version_git = version = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode('ascii').strip()
 
-# pass version without using argparse
-# format example: v1.2.3
-publish_version = sys.argv[-1]
-if publish_version[0] == 'v':
-    version_git = publish_version[1:]
-    sys.argv = sys.argv[:-1]
-print(version_git)
-
-if not preparing_PyPI_package:
-    if os.path.exists('.git'):
-        sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-        version_git = version_git + '+' + sha[:7]
-
+version = get_version()
+print(version)
 with open('tensorboardX/__init__.py', 'a') as f:
-    f.write('\n__version__ = "{}"\n'.format(version_git))
+    f.write('\n__version__ = "{}"\n'.format(version))
 
 requirements = [
     'numpy',
@@ -58,8 +46,8 @@ requirements = [
 
 setup(
     name='tensorboardX',
-    version=version_git,
     description='TensorBoardX lets you watch Tensors Flow without Tensorflow',
+    version=version,
     long_description=history,
     author='Tzu-Wei Huang',
     author_email='huang.dexter@gmail.com',
@@ -67,6 +55,8 @@ setup(
     packages=['tensorboardX'],
     include_package_data=True,
     install_requires=requirements,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     license='MIT license',
     zip_safe=False,
     classifiers=[
