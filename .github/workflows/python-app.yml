@@ -42,12 +42,8 @@ jobs:
         visdom &
         pytest --cov=tensorboardX tests/
 
-
-    - name: Code Coverage Report
-      env: 
-          CODECOV_TOKEN: "26239910-fe4e-463d-aa3d-e662e9bf39ef"
-      run: |
-        codecov
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
 
   test:
     needs: build

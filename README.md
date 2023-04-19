@@ -1,9 +1,8 @@
 # tensorboardX
 
-[![Build Status](https://travis-ci.org/lanpa/tensorboardX.svg?branch=master)](https://travis-ci.org/lanpa/tensorboardX)
 [![PyPI version](https://badge.fury.io/py/tensorboardX.svg)](https://badge.fury.io/py/tensorboardX)
 [![Documentation Status](https://readthedocs.org/projects/tensorboardx/badge/?version=latest)](https://tensorboardx.readthedocs.io/en/latest/?badge=latest)
-[![Documentation Status](https://codecov.io/gh/lanpa/tensorboardX/branch/master/graph/badge.svg)](https://codecov.io/gh/lanpa/tensorboardX/)
+[![Coverage Status](https://codecov.io/gh/lanpa/tensorboardX/branch/master/graph/badge.svg)](https://codecov.io/gh/lanpa/tensorboardX/)
 
 Write TensorBoard events with simple function call.
 
