@@ -923,7 +923,8 @@ class SummaryWriter(object):
             self,
             model,
             input_to_model=None,
-            verbose=False):
+            verbose=False,
+            use_strict_trace=True):
         """Add graph data to summary. The graph is actually processed by `torch.utils.tensorboard.add_graph()`
 
         Args:
@@ -931,10 +932,12 @@ class SummaryWriter(object):
             input_to_model (torch.Tensor or list of torch.Tensor): A variable or a tuple of
                 variables to be fed.
             verbose (bool): Whether to print graph structure in console.
-
+            use_strict_trace (bool): Whether to pass keyword argument `strict` to
+                `torch.jit.trace`. Pass False when you want the tracer to
+                record your mutable container types (list, dict)
         """
         from torch.utils.tensorboard._pytorch_graph import graph
-        self._get_file_writer().add_graph(graph(model, input_to_model, verbose))
+        self._get_file_writer().add_graph(graph(model, input_to_model, verbose, use_strict_trace=use_strict_trace))
 
     @staticmethod
     def _encode(rawstr):
