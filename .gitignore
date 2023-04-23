@@ -9,3 +9,4 @@ dist
 runs/*
 *.pyc
 mnist
+tensorboardX/_version.py
