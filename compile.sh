@@ -3,7 +3,7 @@
 # Exit on error
 # set -e
 
-DESIRED_PROTO_VERSION="3.8.0"
+DESIRED_PROTO_VERSION="22.3"
 
 # call protoc direclty, if version is not the desired one, download the desired vesrion.
 
