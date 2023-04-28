@@ -1,6 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+import importlib
 import os
 import sys
+
+import google.protobuf.text_format as text_format
+from google.protobuf.message import Message
 
 
 def removeWhiteChar(string):
@@ -18,10 +22,27 @@ def compare_proto(str_to_compare, function_ptr):
     assert os.path.exists(expected_file)
     with open(expected_file) as f:
         expected = f.read()
-    str_to_compare = str(str_to_compare)
-    print("str_to_compare:", removeWhiteChar(str_to_compare))
-    print("expected:", removeWhiteChar(expected))
-    assert removeWhiteChar(str_to_compare) == removeWhiteChar(expected)
+
+    if isinstance(str_to_compare, Message):
+
+        proto_msg_module_name = str_to_compare.__class__.__module__
+        proto_msg_class_name = str_to_compare.__class__.__name__
+
+        proto_msg_module = importlib.import_module(proto_msg_module_name)
+        ProtoMessage = getattr(proto_msg_module, proto_msg_class_name)
+
+        expected_proto = ProtoMessage()
+        text_format.Parse(expected, expected_proto)
+
+        assert expected_proto == str_to_compare
+
+    else:
+        # TODO refactor tests to not compare tuple of protobuf messages in string
+        # representation but protobuf messages themselves
+        str_to_compare = str(str_to_compare)
+        print("str_to_compare:", removeWhiteChar(str_to_compare))
+        print("expected:", removeWhiteChar(expected))
+        assert removeWhiteChar(str_to_compare) == removeWhiteChar(expected)
 
 
 def write_proto(str_to_compare, function_ptr):
