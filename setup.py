@@ -34,7 +34,7 @@ preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
 requirements = [
     'numpy',
     'packaging',
-    'protobuf>=4.22.3,<5',
+    'protobuf>=4.22.3',
 ]
 
 
