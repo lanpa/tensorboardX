@@ -40,7 +40,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         echo `pwd`
-        python setup.py -q sdist bdist_wheel --universal ${{ github.event.inputs.publish_version }}
+        python setup.py -q sdist bdist_wheel --universal
 
     - name: Install tensorboardX from whl
       run: pip install dist/tensorboardX*.whl

@@ -29,8 +29,6 @@ class PostInstallCommand(install):
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-preparing_PyPI_package = 'sdist' in sys.argv or 'bdist_wheel' in sys.argv
-
 requirements = [
     'numpy',
     'packaging',
@@ -71,14 +69,9 @@ setup(
 )
 
 
-# checklist: update History.rst readme.md
-# update the version number in this file (setup.py).
-# python setup.py sdist bdist_wheel --universal
-# check the generated tar.gz file 
-# (1. The version number is correct. 2. no *.pyc __pycache__ files)
-# git checkout -b "release x.x"
-# git add setup.py History.rst readme.md (skip tensorboardX/__init__.py)
-# git commit -m 'prepare for release'
-# add tag
-# twine upload dist/*
-# git push -u origin HEAD
+# pypi checklist: 
+# update History.rst readme.md
+# git tag -a v1.0.0 -m "version 1.0.0"
+# git push -u origin HEAD --tags
+# go github actions, enter version number v1.0.0 then publish
+
