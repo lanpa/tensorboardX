@@ -15,13 +15,11 @@ def compileProtoBuf():
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
     def run(self):
-        compileProtoBuf()
         develop.run(self)
 
 class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
-        compileProtoBuf()
         for r in requirements:
             subprocess.run(f"pip install '{r}'", shell=True)
         install.run(self)
