@@ -9,6 +9,7 @@ import pytest
 import unittest
 import time
 
+mp.set_start_method('fork')
 
 class GlobalWriterTest(unittest.TestCase):
     def test_flush(self):
@@ -88,4 +89,5 @@ class GlobalWriterTest(unittest.TestCase):
         collected_values = sorted(collected_values)
         for i in range(TEST_LEN):
             for j in range(N_PROC):
-                assert collected_values[i*N_PROC+j] == i 
+                assert collected_values[i*N_PROC+j] == i
+
