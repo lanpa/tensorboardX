@@ -320,7 +320,7 @@ class SummaryWriter(object):
         if tag not in self.scalar_dict.keys():
             self.scalar_dict[tag] = []
         self.scalar_dict[tag].append(
-            [timestamp, global_step, float(make_np(scalar_value)[0])])
+            [timestamp, global_step, float(make_np(scalar_value).squeeze())])
 
     def _check_caffe2_blob(self, item):
         """

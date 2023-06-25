@@ -150,7 +150,7 @@ def scalar(name, scalar, display_name="", summary_description=""):
     name = _clean_tag(name)
     scalar = make_np(scalar)
     assert scalar.squeeze().ndim == 0, 'scalar should be 0D'
-    scalar = float(scalar[0])
+    scalar = float(scalar.squeeze())
     if display_name == "" and summary_description == "":
         return Summary(value=[Summary.Value(tag=name, simple_value=scalar)])
 
