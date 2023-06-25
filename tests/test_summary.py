@@ -4,6 +4,7 @@ from .expect_reader import compare_proto, write_proto
 import numpy as np
 import pytest
 import unittest
+import torch
 # compare_proto = write_proto  # massive update expect
 
 def tensor_N(shape, dtype=float):
@@ -38,6 +39,14 @@ class SummaryTest(unittest.TestCase):
     def test_list_input(self):
         with pytest.raises(Exception):
             summary.histogram('dummy', [1, 3, 4, 5, 6], 'tensorflow')
+
+    def test_0d_input(self):
+        x = torch.rand(1)
+        summary.scalar('0d', x[0])
+
+    def test_1d_input(self):
+        x = torch.rand(1)
+        summary.scalar('0d', x)
 
     def test_empty_input(self):
         print('expect error here:')
