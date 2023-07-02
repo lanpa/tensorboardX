@@ -2,7 +2,7 @@ flake8
 pytest
 torch
 torchvision
-protobuf==3.20.3
+protobuf==4.22.3
 numpy
 tensorboard
 boto3
@@ -12,4 +12,5 @@ soundfile
 visdom
 onnx
 pytest-cov
+imageio==2.27
 
