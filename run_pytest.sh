@@ -13,4 +13,4 @@ if [ `ps -ef|grep visdom |wc -l` = "1" ]
     trap "kill -SIGTERM $!" EXIT
 fi
 
-PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python pytest
+pytest
