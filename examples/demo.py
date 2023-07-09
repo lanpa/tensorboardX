@@ -12,7 +12,7 @@ try:
 except ImportError:
     skip_audio = True
 
-resnet18 = models.resnet18(False)
+resnet18 = models.resnet18(weights=None)
 writer = SummaryWriter()
 sample_rate = 44100
 freqs = [262, 294, 330, 349, 392, 440, 440, 440, 440, 440, 440]
