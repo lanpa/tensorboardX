@@ -53,7 +53,8 @@ def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', 
     if display_str:
         text_bottom = bottom
         # Reverse list and print from bottom to top.
-        text_width, text_height = font.getsize(display_str)
+        l, t, r, b = font.getbbox(display_str)
+        text_width, text_height = r - l, b - t
         margin = np.ceil(0.05 * text_height)
         draw.rectangle(
             [(left, text_bottom - text_height - 2 * margin),

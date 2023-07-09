@@ -12,5 +12,5 @@ soundfile
 visdom
 onnx
 pytest-cov
-imageio==2.27
+imageio==2.27  # moviepy bug
 
