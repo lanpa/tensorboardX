@@ -17,8 +17,9 @@ class NumpyTest(unittest.TestCase):
         assert isinstance(res, np.ndarray) and res.shape == (1,)
         res = x2num.make_np(np.float16(1.00000087))
         assert isinstance(res, np.ndarray) and res.shape == (1,)
-        res = x2num.make_np(np.float128(1.00008 + 9))
-        assert isinstance(res, np.ndarray) and res.shape == (1,)
+        if hasattr(np, 'float128'):
+            res = x2num.make_np(np.float128(1.00008 + 9))
+            assert isinstance(res, np.ndarray) and res.shape == (1,)
         res = x2num.make_np(np.int64(100000000000))
         assert isinstance(res, np.ndarray) and res.shape == (1,)
 
