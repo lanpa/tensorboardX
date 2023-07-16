@@ -1,4 +1,5 @@
 from tensorboardX import SummaryWriter
+import tempfile
 import unittest
 
 
@@ -9,9 +10,10 @@ class SummaryWriterTest(unittest.TestCase):
             writer.add_scalar('test', 1)
         assert writer.file_writer is None
 
-    def test_summary_writer_backcomapt(self):
-        with SummaryWriter(log_dir='/tmp/tbxtest') as writer:
-            writer.add_scalar('test', 1)
+    def test_summary_writer_backcompat(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with SummaryWriter(log_dir=tmp_dir) as writer:
+                writer.add_scalar('test', 1)
 
     def test_summary_writer_close(self):
         # Opening and closing SummaryWriter a lot should not run into
