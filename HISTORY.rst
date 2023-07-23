@@ -1,16 +1,8 @@
 History
 =======
-2.6.1 (2023-06-18)
+2.5.2 (2023-07-23)
 -------------------
-* Expose use_strict_trace parameter in add_graph (#694)
-* Upgrade to protobuf 4
-* Fix git based package versioning
-* Fix GCS Connection Error #606 (#686)
-
-2.6 (2023-02-12)
--------------------
-* Fixed several deprecation warnings
-* Update dependencies
+* Relax protobuf's version upper bound to < 4
 
 2.5.1 (2022-06-05)
 -------------------
