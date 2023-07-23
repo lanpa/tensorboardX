@@ -1,5 +1,9 @@
 History
 =======
+2.5.2 (2023-07-23)
+-------------------
+* Update protobuf's version upper bound to < 4 (#709)
+
 2.5.1 (2022-06-05)
 -------------------
 * Enforce protobuf's version upper bound
