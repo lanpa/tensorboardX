@@ -28,9 +28,9 @@ import numpy as np
 
 # from tensorboard.plugins.beholder import im_util
 # from . import im_util
-from .file_system_tools import read_pickle,\
+from .file_system_tools import read_pickle, \
     write_pickle, write_file
-from .shared_config import PLUGIN_NAME, TAG_NAME,\
+from .shared_config import PLUGIN_NAME, TAG_NAME, \
     SUMMARY_FILENAME, DEFAULT_CONFIG, CONFIG_FILENAME, SUMMARY_COLLECTION_KEY_NAME, SECTION_INFO_FILENAME
 from . import video_writing
 # from .visualizer import Visualizer
