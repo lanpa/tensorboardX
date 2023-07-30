@@ -29,6 +29,7 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
+        ref: ${{ github.event.inputs.publish_version }}
 
     - name: Install pypa/build
       run: >-
