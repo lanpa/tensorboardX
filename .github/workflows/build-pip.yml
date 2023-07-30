@@ -18,6 +18,9 @@ jobs:
         python-version: 3.9
         fetch-depth: 0
 
+    - name: Get tags
+        run: git fetch --tags origin
+
     - name: Install pypa/build
       run: >-
         python -m
