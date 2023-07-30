@@ -1,5 +1,9 @@
 History
 =======
+2.6.2 (2023-07-30)
+-------------------
+* Removed version limit for protobuf
+
 2.6.1 (2023-06-18)
 -------------------
 * Expose use_strict_trace parameter in add_graph (#694)

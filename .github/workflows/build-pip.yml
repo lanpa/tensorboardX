@@ -17,6 +17,9 @@ jobs:
       with:
         python-version: 3.9
 
+    - name: Get tags
+      run: git fetch --tags origin
+
     - name: Install pypa/build
       run: >-
         python -m
@@ -27,7 +30,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         echo `pwd`
-        echo `git log|head -n 50`
+        echo `git describe --tags`
         python setup.py -q sdist bdist_wheel --universal
 
     - name: Archive production artifacts
