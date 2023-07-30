@@ -79,7 +79,7 @@ jobs:
         python-version: 3.11
     - name: Run examples
       run: |
-        pip install protobuf==${{ matrix.protobuf-version }}
+        pip install numpy protobuf==${{ matrix.protobuf-version }}
         python -c "import tensorboardX"
 
  
