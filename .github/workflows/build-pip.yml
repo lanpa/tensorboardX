@@ -16,6 +16,7 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
+        fetch-depth: 0
 
     - name: Install pypa/build
       run: >-
