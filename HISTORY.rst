@@ -1,5 +1,9 @@
 History
 =======
+2.6.2.1 (2023-08-20)
+---------------------
+* Added protobuf's lower bound version (>=3.20)
+
 2.6.2 (2023-07-30)
 -------------------
 * Removed version limit for protobuf
