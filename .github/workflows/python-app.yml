@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        protobuf-version: ["3.19", "3.20", "4.21", "4.22", "4.23"]
+        protobuf-version: ["3.20", "4.21", "4.22", "4.23"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.11
