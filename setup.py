@@ -70,6 +70,7 @@ setup(
 
 # pypi checklist: 
 # update History.rst readme.md
+# git commit -m "release version ..."
 # git tag -a v1.0.0 -m "version 1.0.0"
 # git push -u origin HEAD --tags
 # go github actions, enter version number v1.0.0 then publish
