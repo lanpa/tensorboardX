@@ -634,7 +634,7 @@ class SummaryWriter(object):
             img_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
-            dataformats: Optional[str] = 'CHW'):
+            dataformats: Optional[str] = None):
         """Add image data to summary.
 
         Note that this requires the ``pillow`` package.
@@ -694,7 +694,7 @@ class SummaryWriter(object):
             img_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
-            dataformats: Optional[str] = 'NCHW'):
+            dataformats: Optional[str] = None):
         """Add batched (4D) image data to summary.
         Besides passing 4D (NCHW) tensor, you can also pass a list of tensors of the same size.
         In this case, the ``dataformats`` should be `CHW` or `HWC`.
@@ -734,10 +734,6 @@ class SummaryWriter(object):
         if self._check_caffe2_blob(img_tensor):
             img_tensor = workspace.FetchBlob(img_tensor)
         if isinstance(img_tensor, list):  # a list of tensors in CHW or HWC
-            if dataformats.upper() != 'CHW' and dataformats.upper() != 'HWC':
-                print('A list of image is passed, but the dataformat is neither CHW nor HWC.')
-                print('Nothing is written.')
-                return
             import torch
             try:
                 img_tensor = torch.stack(img_tensor, 0)
@@ -745,7 +741,8 @@ class SummaryWriter(object):
                 import numpy as np
                 img_tensor = np.stack(img_tensor, 0)
 
-            dataformats = 'N' + dataformats
+            if dataformats is not None and len(dataformats) == 3:
+                dataformats = 'N' + dataformats
 
         summary = image(tag, img_tensor, dataformats=dataformats)
         encoded_image_string = summary.value[0].image.encoded_image_string
@@ -760,7 +757,7 @@ class SummaryWriter(object):
             box_tensor: numpy_compatible,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
-            dataformats: Optional[str] = 'CHW',
+            dataformats: Optional[str] = None,
             labels: Optional[List[str]] = None,
             **kwargs):
         """Add image and draw bounding boxes on the image.
@@ -827,7 +824,7 @@ class SummaryWriter(object):
             global_step: Optional[int] = None,
             fps: Optional[Union[int, float]] = 4,
             walltime: Optional[float] = None,
-            dataformats: Optional[str] = 'NTCHW'):
+            dataformats: Optional[str] = None):
         """Add video data to summary.
 
         Note that this requires the ``moviepy`` package.

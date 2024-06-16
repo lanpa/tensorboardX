@@ -19,7 +19,7 @@ from .proto.plugin_text_pb2 import TextPluginData
 from .proto.plugin_mesh_pb2 import MeshPluginData
 from .proto import layout_pb2
 from .x2num import make_np
-from .utils import _prepare_video, convert_to_HWC, convert_to_NTCHW
+from .utils import _prepare_video, convert_to_HWC, convert_to_NTCHW, infer_image_format
 logger = logging.getLogger(__name__)
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -257,7 +257,7 @@ def make_histogram(values, bins, max_bins=None):
                           bucket=counts.tolist())
 
 
-def image(tag, tensor, rescale=1, dataformats='CHW'):
+def image(tag, tensor, rescale=1, dataformats=None):
     """Outputs a `Summary` protocol buffer with images.
     The summary has up to `max_images` summary values containing images. The
     images are built from `tensor` which must be 3-D with shape `[height, width,
@@ -280,6 +280,7 @@ def image(tag, tensor, rescale=1, dataformats='CHW'):
     """
     tag = _clean_tag(tag)
     tensor = make_np(tensor)
+    dataformats = dataformats or infer_image_format(tensor)
     tensor = convert_to_HWC(tensor, dataformats)
     # Do not assume that user passes in values in [0, 255], use data type to detect
     if tensor.dtype != np.uint8:
@@ -289,9 +290,10 @@ def image(tag, tensor, rescale=1, dataformats='CHW'):
     return Summary(value=[Summary.Value(tag=tag, image=image)])
 
 
-def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW', labels=None):
+def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats=None, labels=None):
     '''Outputs a `Summary` protocol buffer with images.'''
     tensor_image = make_np(tensor_image)
+    dataformats = dataformats or infer_image_format(tensor)
     tensor_image = convert_to_HWC(tensor_image, dataformats)
     tensor_boxes = make_np(tensor_boxes)
 
@@ -346,9 +348,10 @@ def make_image(tensor, rescale=1, rois=None, labels=None):
                          encoded_image_string=image_string)
 
 
-def video(tag, tensor, fps=4, dataformats="NTCHW"):
+def video(tag, tensor, fps=4, dataformats=None):
     tag = _clean_tag(tag)
     tensor = make_np(tensor)
+    dataformats = dataformats or infer_image_format(tensor)
     tensor = convert_to_NTCHW(tensor, input_format=dataformats)
     tensor = _prepare_video(tensor)
     # If user passes in uint8, then we don't need to rescale by 255
