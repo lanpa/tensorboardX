@@ -130,11 +130,12 @@ def convert_to_HWC(tensor, input_format):  # tensor: numpy array
         tensor = np.stack([tensor, tensor, tensor], 2)
         return tensor
 
+
 def infer_image_format(tensor):
     """
     Attempt to infer the image format from the data.
 
-    This function can really only detect the color channel, and assumes that 
+    This function can really only detect the color channel, and assumes that
     all other channels are in the order NTHW (if present).
     """
     import numpy as np
@@ -143,14 +144,14 @@ def infer_image_format(tensor):
         return "HW"
     elif tensor.ndim == 3:
         # Hopefully we can determine that exactly one of these is the channel
-        C_first = tensor.shape[0] in [1,3,4] 
-        C_last = tensor.shape[2] in [1,3,4] 
+        C_first = tensor.shape[0] in [1, 3, 4]
+        C_last = tensor.shape[2] in [1, 3, 4]
         assert C_first != C_last, "Could not uniquely determine the color channel index: \
             you must spedicify the format yourself"
         return "CHW" if C_first else "HWC"
     elif tensor.ndim == 4:
-        return 'N'+ infer_image_format(tensor[0])
+        return 'N' + infer_image_format(tensor[0])
     elif tensor.ndim == 5:
-        return 'NT'+ infer_image_format(tensor[0,0])
+        return 'NT' + infer_image_format(tensor[0, 0])
     else:
         raise NotImplementedError("Unable to infer image format for arrays with <2 or >5 dimensions.")
