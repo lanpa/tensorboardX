@@ -7,7 +7,7 @@ numpy
 tensorboard
 boto3
 matplotlib
-moto
+moto<5
 soundfile
 visdom
 onnx
