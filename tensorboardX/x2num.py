@@ -32,6 +32,8 @@ def make_np(x):
         return check_nan(prepare_mxnet(x))
     if 'jax' in str(type(x)):
         return check_nan(np.array(x))
+    if 'paddle' in str(type(x)):
+        return check_nan(np.array(x))
     raise NotImplementedError(
         'Got {}, but expected numpy array or torch tensor.'.format(type(x)))
 
