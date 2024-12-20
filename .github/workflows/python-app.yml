@@ -34,6 +34,7 @@ jobs:
         # debug
         uv pip list
         pwd
+        source .venv/bin/activate
         python --version
         which python
         which flake8
