@@ -1,0 +1,35 @@
+[project]
+name = "tensorboardx"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=6.0.0",
+    "pytest>=8.3.4",
+    "protobuf==4.22.3",
+    "flake8>=7.1.1",
+    "torch>=2.5.1",
+    "torchvision>=0.20.1",
+    "numpy>=2.0.2",
+    "tensorboard>=2.18.0",
+    "boto3>=1.35.81",
+    "matplotlib>=3.9.4",
+    "moto<5",
+    "soundfile>=0.12.1",
+    "visdom>=0.2.4",
+    "onnx>=1.17.0",
+    "imageio==2.27",
+]
+
