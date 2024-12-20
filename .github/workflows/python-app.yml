@@ -40,10 +40,13 @@ jobs:
       run: |
         source .venv/bin/activate
         visdom &
-        pytest --cov=tensorboardX tests/
+        pytest --cov=tensorboardX --junitxml=junit.xml -o junit_family=legacy tests/
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     needs: build
