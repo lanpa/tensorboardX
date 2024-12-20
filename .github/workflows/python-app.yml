@@ -33,6 +33,9 @@ jobs:
       run: |
         # debug
         uv pip list
+        pwd
+        ls -la
+        cat .venv/bin/activate
         which flake8
         which pytest
         python --version
