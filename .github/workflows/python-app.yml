@@ -18,18 +18,17 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install dependencies and activate venv
       run: |
-        sudo apt install libsndfile1
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
+        sudo apt-get install libsndfile1
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        uv venv --python ${{ matrix.python-version }}
+        source .venv/bin/activate
+        uv sync
     - name: Lint with flake8
       run: |
+        source .venv/bin/activate
+        
         # stop the build if there are Python syntax errors or undefined names
         flake8 tensorboardX --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -39,6 +38,7 @@ jobs:
           MPLBACKEND: Agg
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
       run: |
+        source .venv/bin/activate
         visdom &
         pytest --cov=tensorboardX tests/
 
@@ -50,13 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
     - name: Run examples
       run: |
-        pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        uv venv --python 3.9
+        source .venv/bin/activate
+        uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
         python examples/demo.py
         python examples/demo_graph.py
         python examples/demo_embedding.py
@@ -73,13 +72,14 @@ jobs:
         protobuf-version: ["3.20", "4.21", "4.22", "4.23"]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
-    - name: Run examples
+    - name: Install python 3.11
       run: |
-        pip install numpy protobuf==${{ matrix.protobuf-version }}
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        uv venv --python 3.11
+ 
+    - name: Run basic import check
+      run: |
+        source .venv/bin/activate
+        uv pip install numpy protobuf==${{ matrix.protobuf-version }}
         python -c "import tensorboardX"
-
  
