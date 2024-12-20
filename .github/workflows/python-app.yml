@@ -56,6 +56,7 @@ jobs:
       #        python-version: 3.9
     - name: Run examples
       run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
         uv venv --python 3.9
         source .venv/bin/activate
         uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
