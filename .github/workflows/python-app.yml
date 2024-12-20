@@ -18,14 +18,15 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      #    - name: Set up Python ${{ matrix.python-version }}
+      #      uses: actions/setup-python@v2
+      #      with:
+      #        python-version: ${{ matrix.python-version }}
     - name: Install dependencies and activate venv
       run: |
-        sudo apt install libsndfile1
+        sudo apt-get install libsndfile1
         curl -LsSf https://astral.sh/uv/install.sh | sh
+        uv venv --python ${{ matrix.python-version }}
         source .venv/bin/activate
         uv sync
     - name: Lint with flake8
