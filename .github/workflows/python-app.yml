@@ -22,10 +22,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install dependencies and activate venv
       run: |
         sudo apt install libsndfile1
         curl -LsSf https://astral.sh/uv/install.sh | sh
+        source .venv/bin/activate
         uv sync
     - name: Lint with flake8
       run: |
