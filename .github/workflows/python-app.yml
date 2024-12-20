@@ -43,7 +43,7 @@ jobs:
         pytest --cov=tensorboardX --junitxml=junit.xml -o junit_family=legacy tests/
 
     - name: Upload coverage to Codecov
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() }} && ${{ matrix.python-version == "3.11" }}
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
