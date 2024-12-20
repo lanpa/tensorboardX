@@ -18,10 +18,6 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v2
-      #    - name: Set up Python ${{ matrix.python-version }}
-      #      uses: actions/setup-python@v2
-      #      with:
-      #        python-version: ${{ matrix.python-version }}
     - name: Install dependencies and activate venv
       run: |
         sudo apt-get install libsndfile1
@@ -54,13 +50,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
+      #    - name: Set up Python 3.9
+      #      uses: actions/setup-python@v2
+      #      with:
+      #        python-version: 3.9
     - name: Run examples
       run: |
-        pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
+        uv venv --python 3.9
+        source .venv/bin/activate
+        uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
         python examples/demo.py
         python examples/demo_graph.py
         python examples/demo_embedding.py
