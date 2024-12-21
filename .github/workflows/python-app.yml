@@ -40,7 +40,7 @@ jobs:
       run: |
         source .venv/bin/activate
         visdom &
-        pytest --cov=tensorboardX tests/
+        pytest --cov=tensorboardX --cov-report=xml tests/
         ls -la
 
     - name: Upload coverage to Codecov
