@@ -8,3 +8,5 @@ coverage:
     patch:
       default:
         enabled: no
+codecov:
+  bot: lanpa
