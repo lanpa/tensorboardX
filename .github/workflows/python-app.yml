@@ -41,10 +41,12 @@ jobs:
         source .venv/bin/activate
         visdom &
         pytest --cov=tensorboardX tests/
+        ls -la
 
     - name: Upload coverage to Codecov
       if: ${{ !cancelled() && matrix.python-version == '3.11' }}
       run: |
+        ls -la
         curl -Os https://cli.codecov.io/latest/linux/codecov
         chmod +x codecov
         ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage.xml
