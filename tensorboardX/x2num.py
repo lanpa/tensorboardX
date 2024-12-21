@@ -20,8 +20,6 @@ def make_np(x):
         return check_nan(np.array(x))
     if isinstance(x, np.ndarray):
         return check_nan(x)
-    if isinstance(x, str):  # Caffe2 will pass name of blob(s) to fetch
-        return check_nan(prepare_caffe2(x))
     if np.isscalar(x):
         return check_nan(np.array([x]))
     if 'torch' in str(type(x)):
@@ -47,12 +45,6 @@ def prepare_pytorch(x):
 def prepare_theano(x):
     import theano
     pass
-
-
-def prepare_caffe2(x):
-    from caffe2.python import workspace
-    x = workspace.FetchBlob(x)
-    return x
 
 
 def prepare_mxnet(x):

@@ -322,21 +322,6 @@ class SummaryWriter(object):
         self.scalar_dict[tag].append(
             [timestamp, global_step, float(make_np(scalar_value).squeeze())])
 
-    def _check_caffe2_blob(self, item):
-        """
-        Caffe2 users have the option of passing a string representing the name of
-        a blob in the workspace instead of passing the actual Tensor/array containing
-        the numeric values. Thus, we need to check if we received a string as input
-        instead of an actual Tensor/array, and if so, we need to fetch the Blob
-        from the workspace corresponding to that name. Fetching can be done with the
-        following:
-
-        from caffe2.python import workspace (if not already imported)
-        workspace.FetchBlob(blob_name)
-        workspace.FetchBlobs([blob_name1, blob_name2, ...])
-        """
-        return isinstance(item, str)
-
     def _get_file_writer(self):
         """Returns the default FileWriter instance. Recreates it if closed."""
         if not self._write_to_disk:
@@ -424,8 +409,7 @@ class SummaryWriter(object):
 
         Args:
             tag: Data identifier
-            scalar_value: Value to save, if string is passed, it will be treated
-                as caffe blob name.
+            scalar_value: Value to be logged in tensorboard
             global_step: Global step value to record
             walltime: Optional override default walltime (time.time()) of event
             display_name: The title of the plot. If empty string is passed,
@@ -447,11 +431,6 @@ class SummaryWriter(object):
            :scale: 50 %
 
         """
-        if self._check_caffe2_blob(scalar_value):
-            if 'workspace' in globals():
-                scalar_value = workspace.FetchBlob(scalar_value)
-            else:
-                raise TypeError("Input value: \"{}\" is not a scalar".format(scalar_value))
         self._get_file_writer().add_summary(
             scalar(tag, scalar_value, display_name, summary_description), global_step, walltime)
         self._get_comet_logger().log_metric(tag, display_name, scalar_value, global_step)
@@ -500,8 +479,6 @@ class SummaryWriter(object):
             else:
                 fw = FileWriter(logdir=fw_tag)
                 self.all_writers[fw_tag] = fw
-            if self._check_caffe2_blob(scalar_value):
-                scalar_value = workspace.FetchBlob(scalar_value)
             fw.add_summary(scalar(main_tag, scalar_value),
                            global_step, walltime)
             self.__append_to_scalar_dict(
@@ -554,8 +531,6 @@ class SummaryWriter(object):
            :scale: 50 %
 
         """
-        if self._check_caffe2_blob(values):
-            values = workspace.FetchBlob(values)
         if isinstance(bins, str) and bins == 'tensorflow':
             bins = self.default_bins
         self._get_file_writer().add_summary(
@@ -680,8 +655,6 @@ class SummaryWriter(object):
            :scale: 50 %
 
         """
-        if self._check_caffe2_blob(img_tensor):
-            img_tensor = workspace.FetchBlob(img_tensor)
         summary = image(tag, img_tensor, dataformats=dataformats)
         encoded_image_string = summary.value[0].image.encoded_image_string
         self._get_file_writer().add_summary(
@@ -731,8 +704,6 @@ class SummaryWriter(object):
            :scale: 30 %
 
         """
-        if self._check_caffe2_blob(img_tensor):
-            img_tensor = workspace.FetchBlob(img_tensor)
         if isinstance(img_tensor, list):  # a list of tensors in CHW or HWC
             if dataformats.upper() != 'CHW' and dataformats.upper() != 'HWC':
                 print('A list of image is passed, but the dataformat is neither CHW nor HWC.')
@@ -780,10 +751,6 @@ class SummaryWriter(object):
             box_tensor: (torch.Tensor, numpy.array, or string/blobname): NX4,  where N is the number of
             boxes and each 4 elements in a row represents (xmin, ymin, xmax, ymax).
         """
-        if self._check_caffe2_blob(img_tensor):
-            img_tensor = workspace.FetchBlob(img_tensor)
-        if self._check_caffe2_blob(box_tensor):
-            box_tensor = workspace.FetchBlob(box_tensor)
         if labels is not None:
             if isinstance(labels, str):
                 labels = [labels]
@@ -869,8 +836,6 @@ class SummaryWriter(object):
             Where `L` is the number of audio frames and `C` is the channel. Set
             channel equals to 2 for stereo.
         """
-        if self._check_caffe2_blob(snd_tensor):
-            snd_tensor = workspace.FetchBlob(snd_tensor)
         self._get_file_writer().add_summary(
             audio(tag, snd_tensor, sample_rate=sample_rate), global_step, walltime)
         self._get_comet_logger().log_audio(snd_tensor, sample_rate, tag, step=global_step)
