@@ -32,6 +32,5 @@ formats:
 # See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
 python:
   install:
-    - path: sphinx-rtd-theme
-#    - requirements: docs/requirements.txt
+    - requirements: docs/requirements.txt
 
