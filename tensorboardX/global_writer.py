@@ -1,6 +1,7 @@
-from .writer import SummaryWriter
-from multiprocessing import Value
 import multiprocessing as mp
+from multiprocessing import Value
+
+from .writer import SummaryWriter
 
 global _writer
 _writer = None

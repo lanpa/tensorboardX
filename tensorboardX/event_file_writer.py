@@ -14,16 +14,14 @@
 # ==============================================================================
 """Writes events to disk in a logdir."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
+import multiprocessing
 import os
+import queue
 import socket
 import threading
 import time
-import multiprocessing
-import queue
 
 from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check

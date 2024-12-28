@@ -1,10 +1,10 @@
 """A module for visualization with tensorboard
 """
 
+from .global_writer import GlobalSummaryWriter
 from .record_writer import RecordWriter
 from .torchvis import TorchVis
 from .writer import FileWriter, SummaryWriter
-from .global_writer import GlobalSummaryWriter
 
 try:
     from ._version import __version__

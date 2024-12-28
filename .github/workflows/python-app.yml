@@ -25,14 +25,10 @@ jobs:
         uv venv --python ${{ matrix.python-version }}
         source .venv/bin/activate
         uv sync
-    - name: Lint with flake8
+    - name: Lint with ruff
       run: |
         source .venv/bin/activate
-        
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 tensorboardX --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 tensorboardX --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        ruff check tensorboardX/
     - name: Test with pytest
       env:
           MPLBACKEND: Agg
