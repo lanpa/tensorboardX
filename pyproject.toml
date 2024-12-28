@@ -56,7 +56,7 @@ select = [
     # flake8-simplify
 #    "SIM",
     # isort
-#    "I",
+    "I",
 ]
 ignore = ["F401", "E501", "E721", "E741"]
 
