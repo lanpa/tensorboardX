@@ -44,14 +44,9 @@ def make_tsv(metadata, save_path, metadata_header=None):
 
     named_path = os.path.join(save_path, 'metadata.tsv')
 
-    if sys.version_info[0] == 3:
-        with open(named_path, 'w', encoding='utf8') as f:
-            for x in metadata:
-                f.write(x + '\n')
-    else:
-        with open(named_path, 'wb') as f:
-            for x in metadata:
-                f.write((x + '\n').encode('utf-8'))
+    with open(named_path, 'w', encoding='utf8') as f:
+        for x in metadata:
+            f.write(x + '\n')
     maybe_upload_file(named_path)
 
 
@@ -97,8 +92,7 @@ def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
     with open(named_path, 'a') as f:
         # step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
-        f.write('tensor_name: "{}:{}"\n'.format(
-            tag, str(global_step).zfill(5)))
+        f.write(f'tensor_name: "{tag}:{str(global_step).zfill(5)}"\n')
         f.write('tensor_path: "{}"\n'.format(join(subdir, 'tensors.tsv')))
         if metadata is not None:
             f.write('metadata_path: "{}"\n'.format(
@@ -106,8 +100,8 @@ def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
         if label_img is not None:
             f.write('sprite {\n')
             f.write('image_path: "{}"\n'.format(join(subdir, 'sprite.png')))
-            f.write('single_image_dim: {}\n'.format(label_img.shape[3]))
-            f.write('single_image_dim: {}\n'.format(label_img.shape[2]))
+            f.write(f'single_image_dim: {label_img.shape[3]}\n')
+            f.write(f'single_image_dim: {label_img.shape[2]}\n')
             f.write('}\n')
         f.write('}\n')
     maybe_upload_file(named_path)

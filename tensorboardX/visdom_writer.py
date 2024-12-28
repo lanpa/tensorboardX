@@ -61,7 +61,7 @@ class VisdomWriter:
         exists = self.scalar_dict[main_tag].get(tag) is not None
         self.scalar_dict[main_tag][tag] = self.scalar_dict[main_tag][tag] + \
             [scalar_value] if exists else [scalar_value]
-        plot_name = '{}-{}'.format(main_tag, tag)
+        plot_name = f'{main_tag}-{tag}'
         # If there is no global_step provided, follow sequential order
         x_val = len(self.scalar_dict[main_tag][tag]
                     ) if not global_step else global_step
@@ -283,7 +283,7 @@ class VisdomWriter:
             Y=precision,
             name=tag,
             opts={
-                'title': 'PR Curve for {}'.format(tag),
+                'title': f'PR Curve for {tag}',
                 'xlabel': 'recall',
                 'ylabel': 'precision',
             },
@@ -316,7 +316,7 @@ class VisdomWriter:
             Y=precision,
             name=tag,
             opts={
-                'title': 'PR Curve for {}'.format(tag),
+                'title': f'PR Curve for {tag}',
                 'xlabel': 'recall',
                 'ylabel': 'precision',
             },

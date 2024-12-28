@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 
 import logging
 import os
@@ -36,7 +35,7 @@ def _clean_tag(name):
         new_name = new_name.lstrip('/')  # Remove leading slashes
         if new_name != name:
             logger.info(
-                'Summary name %s is illegal; using %s instead.' % (name, new_name))
+                f'Summary name {name} is illegal; using {new_name} instead.')
             name = new_name
     return name
 
@@ -570,7 +569,7 @@ def _get_tensor_summary(tag, tensor, content_type, json_config):
                              TensorShapeProto.Dim(size=tensor.shape[2]),
                          ]))
     tensor_summary = Summary.Value(
-        tag='{}_{}'.format(tag, content_type),
+        tag=f'{tag}_{content_type}',
         tensor=tensor,
         metadata=smd,
     )

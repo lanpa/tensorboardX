@@ -1,14 +1,13 @@
 """Provides an API for writing protocol buffers to event files to be
 consumed by TensorBoard for visualization."""
 
-from __future__ import absolute_import, division, print_function
 
 import atexit
 import json
 import logging
 import os
 import time
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 import numpy
 
@@ -46,7 +45,7 @@ except ImportError:
     pass
 
 
-class DummyFileWriter(object):
+class DummyFileWriter:
     """A fake file writer that writes nothing to the disk.
     """
 
@@ -79,7 +78,7 @@ class DummyFileWriter(object):
         return
 
 
-class FileWriter(object):
+class FileWriter:
     """Writes protocol buffers to event files to be consumed by TensorBoard.
 
     The `FileWriter` class provides a mechanism to create an event file in a
@@ -216,7 +215,7 @@ class FileWriter(object):
         self.event_writer.reopen()
 
 
-class SummaryWriter(object):
+class SummaryWriter:
     """Writes entries directly to event files in the logdir to be
     consumed by TensorBoard.
 
@@ -361,8 +360,8 @@ class SummaryWriter(object):
 
     def add_hparams(
             self,
-            hparam_dict: Dict[str, Union[bool, str, float, int]],
-            metric_dict: Dict[str, float],
+            hparam_dict: dict[str, Union[bool, str, float, int]],
+            metric_dict: dict[str, float],
             name: Optional[str] = None,
             global_step: Optional[int] = None):
         """Add a set of hyperparameters to be compared in tensorboard.
@@ -448,7 +447,7 @@ class SummaryWriter(object):
     def add_scalars(
             self,
             main_tag: str,
-            tag_scalar_dict: Dict[str, float],
+            tag_scalar_dict: dict[str, float],
             global_step: Optional[int] = None,
             walltime: Optional[float] = None):
         """Adds many scalar data to summary.
@@ -742,7 +741,7 @@ class SummaryWriter(object):
             global_step: Optional[int] = None,
             walltime: Optional[float] = None,
             dataformats: Optional[str] = 'CHW',
-            labels: Optional[List[str]] = None,
+            labels: Optional[list[str]] = None,
             **kwargs):
         """Add image and draw bounding boxes on the image.
 
@@ -918,9 +917,9 @@ class SummaryWriter(object):
     def _encode(rawstr):
         # I'd use urllib but, I'm unsure about the differences from python3 to python2, etc.
         retval = rawstr
-        retval = retval.replace("%", "%%%02x" % (ord("%")))
-        retval = retval.replace("/", "%%%02x" % (ord("/")))
-        retval = retval.replace("\\", "%%%02x" % (ord("\\")))
+        retval = retval.replace("%", "%{:02x}".format(ord("%")))
+        retval = retval.replace("/", "%{:02x}".format(ord("/")))
+        retval = retval.replace("\\", "%{:02x}".format(ord("\\")))
         return retval
 
     def add_embedding(
@@ -982,7 +981,7 @@ class SummaryWriter(object):
             # clear pbtxt?
         # Maybe we should encode the tag so slashes don't trip us up?
         # I don't think this will mess us up, but better safe than sorry.
-        subdir = "%s/%s" % (str(global_step).zfill(5), self._encode(tag))
+        subdir = f"{str(global_step).zfill(5)}/{self._encode(tag)}"
         save_path = os.path.join(self._get_file_writer().get_logdir(), subdir)
         try:
             os.makedirs(save_path)
@@ -1003,7 +1002,7 @@ class SummaryWriter(object):
         append_pbtxt(metadata, label_img,
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
         if tag is not None:
-            template_filename = "%s.json" % tag
+            template_filename = f"{tag}.json"
 
         else:
             template_filename = None
@@ -1104,7 +1103,7 @@ class SummaryWriter(object):
 
     def add_custom_scalars_multilinechart(
             self,
-            tags: List[str],
+            tags: list[str],
             category: str = 'default',
             title: str = 'untitled'):
         """Shorthand for creating multilinechart. Similar to ``add_custom_scalars()``, but the only necessary argument
@@ -1122,7 +1121,7 @@ class SummaryWriter(object):
 
     def add_custom_scalars_marginchart(
             self,
-            tags: List[str],
+            tags: list[str],
             category: str = 'default',
             title: str = 'untitled'):
         """Shorthand for creating marginchart. Similar to ``add_custom_scalars()``, but the only necessary argument
@@ -1141,7 +1140,7 @@ class SummaryWriter(object):
 
     def add_custom_scalars(
             self,
-            layout: Dict[str, Dict[str, List]]):
+            layout: dict[str, dict[str, list]]):
         """Create special chart by collecting charts tags in 'scalars'. Note that this function can only be called once
         for each SummaryWriter() object. Because it only provides metadata to tensorboard, the function can be called
         before or after the training loop. See ``examples/demo_custom_scalars.py`` for more.
