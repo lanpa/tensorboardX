@@ -435,9 +435,7 @@ def audio(tag, tensor, sample_rate=44100):
 
 
 def custom_scalars(layout):
-    categoriesnames = layout.keys()
     categories = []
-    layouts = []
     for k, v in layout.items():
         charts = []
         for chart_name, chart_meatadata in v.items():

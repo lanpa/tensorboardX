@@ -20,7 +20,6 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
     "protobuf==4.22.3",
-    "flake8>=7.1.1",
     "torch>=2.5.1",
     "torchvision>=0.20.1",
     "numpy>=2.0.2",
@@ -32,5 +31,32 @@ dev = [
     "visdom>=0.2.4",
     "onnx>=1.17.0",
     "imageio==2.27",
+    "ruff>=0.8.4",
 ]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    "proto",
+]
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+#    "UP",
+    # flake8-bugbear
+#    "B",
+    # flake8-simplify
+#    "SIM",
+    # isort
+#    "I",
+]
+ignore = ["F401", "E501", "E721", "E741"]
 

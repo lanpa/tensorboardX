@@ -712,7 +712,7 @@ class SummaryWriter(object):
             import torch
             try:
                 img_tensor = torch.stack(img_tensor, 0)
-            except TypeError as e:
+            except TypeError:
                 import numpy as np
                 img_tensor = np.stack(img_tensor, 0)
 
