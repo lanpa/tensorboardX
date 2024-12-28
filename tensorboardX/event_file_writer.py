@@ -14,7 +14,6 @@
 # ==============================================================================
 """Writes events to disk in a logdir."""
 
-from __future__ import absolute_import, division, print_function
 
 import multiprocessing
 import os
@@ -27,7 +26,7 @@ from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check
 
 
-class EventsWriter(object):
+class EventsWriter:
     '''Writes `Event` protocol buffers to an event file.'''
 
     def __init__(self, file_prefix, filename_suffix=''):
@@ -75,7 +74,7 @@ class EventsWriter(object):
         return return_value
 
 
-class EventFileWriter(object):
+class EventFileWriter:
     """Writes `Event` protocol buffers to an event file.
 
     The `EventFileWriter` class creates an event file in the specified directory,

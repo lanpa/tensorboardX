@@ -1,5 +1,4 @@
 # DO NOT alter/distruct/free input object !
-from __future__ import absolute_import, division, print_function
 
 import logging
 
@@ -31,7 +30,7 @@ def make_np(x):
     if 'jax' in str(type(x)):
         return check_nan(np.array(x))
     raise NotImplementedError(
-        'Got {}, but expected numpy array or torch tensor.'.format(type(x)))
+        f'Got {type(x)}, but expected numpy array or torch tensor.')
 
 
 def prepare_pytorch(x):

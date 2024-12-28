@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 
 import logging
 import os
@@ -570,7 +569,7 @@ def _get_tensor_summary(tag, tensor, content_type, json_config):
                              TensorShapeProto.Dim(size=tensor.shape[2]),
                          ]))
     tensor_summary = Summary.Value(
-        tag='{}_{}'.format(tag, content_type),
+        tag=f'{tag}_{content_type}',
         tensor=tensor,
         metadata=smd,
     )

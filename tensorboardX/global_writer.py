@@ -7,7 +7,7 @@ global _writer
 _writer = None
 
 
-class GlobalSummaryWriter(object):
+class GlobalSummaryWriter:
     """A class that implements an event writer that supports concurrent logging and global logging across
     different modules.
 
