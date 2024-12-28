@@ -1,10 +1,13 @@
-import logging
-import json
 import functools
+import json
+import logging
 from io import BytesIO
-from google.protobuf.json_format import MessageToJson
+
 import numpy as np
+from google.protobuf.json_format import MessageToJson
+
 from .summary import _clean_tag
+
 try:
     import comet_ml
     comet_installed = True

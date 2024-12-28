@@ -1,8 +1,9 @@
 import gc
-import numpy as np
-import math
 import json
+import math
 import time
+
+import numpy as np
 
 from .summary import compute_curve
 from .utils import figure_to_image

@@ -1,25 +1,23 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 import logging
-import numpy as np
 import os
 import re as _re
 
-# pylint: disable=unused-import
+import numpy as np
 
-from .proto.summary_pb2 import Summary
-from .proto.summary_pb2 import HistogramProto
-from .proto.summary_pb2 import SummaryMetadata
-from .proto.tensor_pb2 import TensorProto
-from .proto.tensor_shape_pb2 import TensorShapeProto
+from .proto import layout_pb2
+from .proto.plugin_mesh_pb2 import MeshPluginData
 from .proto.plugin_pr_curve_pb2 import PrCurvePluginData
 from .proto.plugin_text_pb2 import TextPluginData
-from .proto.plugin_mesh_pb2 import MeshPluginData
-from .proto import layout_pb2
-from .x2num import make_np
+
+# pylint: disable=unused-import
+from .proto.summary_pb2 import HistogramProto, Summary, SummaryMetadata
+from .proto.tensor_pb2 import TensorProto
+from .proto.tensor_shape_pb2 import TensorShapeProto
 from .utils import _prepare_video, convert_to_HWC, convert_to_NTCHW
+from .x2num import make_np
+
 logger = logging.getLogger(__name__)
 
 _INVALID_TAG_CHARACTERS = _re.compile(r'[^-/\w\.]')
@@ -68,8 +66,19 @@ def _draw_single_box(image, xmin, ymin, xmax, ymax, display_str, color='black', 
 
 
 def hparams(hparam_dict=None, metric_dict=None):
-    from tensorboardX.proto.plugin_hparams_pb2 import HParamsPluginData, SessionEndInfo, SessionStartInfo
-    from tensorboardX.proto.api_pb2 import Experiment, HParamInfo, MetricInfo, MetricName, Status, DataType
+    from tensorboardX.proto.api_pb2 import (
+        DataType,
+        Experiment,
+        HParamInfo,
+        MetricInfo,
+        MetricName,
+        Status,
+    )
+    from tensorboardX.proto.plugin_hparams_pb2 import (
+        HParamsPluginData,
+        SessionEndInfo,
+        SessionStartInfo,
+    )
 
     PLUGIN_NAME = 'hparams'
     PLUGIN_DATA_VERSION = 0
@@ -322,8 +331,8 @@ def draw_boxes(disp_image, boxes, labels=None):
 def make_image(tensor, rescale=1, rois=None, labels=None):
     """Convert an numpy representation image to Image protobuf"""
     import PIL
-    from PIL import Image
     from packaging.version import parse
+    from PIL import Image
     height, width, channel = tensor.shape
     scaled_height = int(height * rescale)
     scaled_width = int(width * rescale)
@@ -372,8 +381,9 @@ def make_video(tensor, fps):
               "Some packages could be missing [imageio, requests]")
         return
 
-    import moviepy.version
     import tempfile
+
+    import moviepy.version
 
     t, h, w, c = tensor.shape
 
@@ -410,6 +420,7 @@ def audio(tag, tensor, sample_rate=44100):
         The values should between [-1, 1]. We also accepts 1-D tensor.
     """
     import io
+
     import soundfile
     tensor = make_np(tensor)
     if abs(tensor).max() > 1:

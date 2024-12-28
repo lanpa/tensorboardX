@@ -1,15 +1,11 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import gc
 import time
-
 from functools import wraps
-from .writer import SummaryWriter
-from .visdom_writer import VisdomWriter
 
+from .visdom_writer import VisdomWriter
+from .writer import SummaryWriter
 
 # Supports both TensorBoard and Visdom (no embedding or graph visualization with Visdom)
 vis_formats = {'tensorboard': SummaryWriter, 'visdom': VisdomWriter}

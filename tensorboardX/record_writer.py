@@ -3,12 +3,13 @@ To write tf_record into file. Here we use it for tensorboard's event writting.
 The code was borrowed from https://github.com/TeamHG-Memex/tensorboard_logger
 """
 
-import os
 import copy
 import io
+import os
 import os.path
 import re
 import struct
+
 try:
     import boto3
     S3_ENABLED = True
@@ -21,7 +22,6 @@ except ImportError:
     GCS_ENABLED = False
 
 from .crc32c import crc32c
-
 
 _VALID_OP_NAME_START = re.compile('^[A-Za-z0-9.]')
 _VALID_OP_NAME_PART = re.compile('[A-Za-z0-9_.\\-/]+')

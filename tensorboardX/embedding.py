@@ -58,10 +58,12 @@ def make_tsv(metadata, save_path, metadata_header=None):
 # https://github.com/tensorflow/tensorboard/issues/44 image label will be squared
 def make_sprite(label_img, save_path):
     import math
+
     import numpy as np
-    from .x2num import make_np
-    from .utils import make_grid
     from PIL import Image
+
+    from .utils import make_grid
+    from .x2num import make_np
     # this ensures the sprite image has correct dimension as described in
     # https://www.tensorflow.org/get_started/embedding_viz
     # There are some constraints for the sprite image:

@@ -13,8 +13,8 @@ def figure_to_image(figures, close=True):
     """
     import numpy as np
     try:
-        import matplotlib.pyplot as plt
         import matplotlib.backends.backend_agg as plt_backend_agg
+        import matplotlib.pyplot as plt
     except ModuleNotFoundError:
         print('please install matplotlib')
 

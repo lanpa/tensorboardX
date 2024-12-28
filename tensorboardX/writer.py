@@ -1,31 +1,41 @@
 """Provides an API for writing protocol buffers to event files to be
 consumed by TensorBoard for visualization."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
-import json
-import os
-import numpy
-import time
-import logging
 import atexit
-from typing import Union, Optional, Dict, List
+import json
+import logging
+import os
+import time
+from typing import Dict, List, Optional, Union
+
+import numpy
 
 from .comet_utils import CometLogger
-from .embedding import make_mat, make_sprite, make_tsv, append_pbtxt
+from .embedding import append_pbtxt, make_mat, make_sprite, make_tsv
 from .event_file_writer import EventFileWriter
 from .onnx_graph import load_onnx_graph
 from .openvino_graph import load_openvino_graph
-from .proto import event_pb2
-from .proto import summary_pb2
-from .proto.event_pb2 import SessionLog, Event
-from .utils import figure_to_image
+from .proto import event_pb2, summary_pb2
+from .proto.event_pb2 import Event, SessionLog
 from .summary import (
-    scalar, histogram, histogram_raw, image, audio, text,
-    pr_curve, pr_curve_raw, video, custom_scalars, image_boxes, mesh, hparams
+    audio,
+    custom_scalars,
+    histogram,
+    histogram_raw,
+    hparams,
+    image,
+    image_boxes,
+    mesh,
+    pr_curve,
+    pr_curve_raw,
+    scalar,
+    text,
+    video,
 )
+from .utils import figure_to_image
+
 logger = logging.getLogger(__name__)
 
 numpy_compatible = numpy.ndarray
