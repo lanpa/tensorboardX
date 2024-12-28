@@ -51,7 +51,7 @@ class EventsWriter:
         # Check if event is of type event_pb2.Event proto.
         if not isinstance(event, event_pb2.Event):
             raise TypeError("Expected an event_pb2.Event proto, "
-                            " but got %s" % type(event))
+                            f" but got {type(event)}")
         return self._write_serialized_event(event.SerializeToString())
 
     def _write_serialized_event(self, event_str):

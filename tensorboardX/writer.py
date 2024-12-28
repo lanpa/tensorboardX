@@ -917,9 +917,9 @@ class SummaryWriter:
     def _encode(rawstr):
         # I'd use urllib but, I'm unsure about the differences from python3 to python2, etc.
         retval = rawstr
-        retval = retval.replace("%", "%%%02x" % (ord("%")))
-        retval = retval.replace("/", "%%%02x" % (ord("/")))
-        retval = retval.replace("\\", "%%%02x" % (ord("\\")))
+        retval = retval.replace("%", "%{:02x}".format(ord("%")))
+        retval = retval.replace("/", "%{:02x}".format(ord("/")))
+        retval = retval.replace("\\", "%{:02x}".format(ord("\\")))
         return retval
 
     def add_embedding(
@@ -981,7 +981,7 @@ class SummaryWriter:
             # clear pbtxt?
         # Maybe we should encode the tag so slashes don't trip us up?
         # I don't think this will mess us up, but better safe than sorry.
-        subdir = "%s/%s" % (str(global_step).zfill(5), self._encode(tag))
+        subdir = f"{str(global_step).zfill(5)}/{self._encode(tag)}"
         save_path = os.path.join(self._get_file_writer().get_logdir(), subdir)
         try:
             os.makedirs(save_path)
@@ -1002,7 +1002,7 @@ class SummaryWriter:
         append_pbtxt(metadata, label_img,
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
         if tag is not None:
-            template_filename = "%s.json" % tag
+            template_filename = f"{tag}.json"
 
         else:
             template_filename = None
