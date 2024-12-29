@@ -35,7 +35,7 @@ class CometLogger:
             if self._logging is None and comet_installed:
                 self._logging = False
                 try:
-                    if 'api_key' not in self._comet_config.keys():
+                    if 'api_key' not in self._comet_config:
                         comet_ml.init()
                     if comet_ml.get_global_experiment() is not None:
                         logger.warning("You have already created a comet \
