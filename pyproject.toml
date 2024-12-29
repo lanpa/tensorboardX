@@ -54,7 +54,7 @@ select = [
     # flake8-bugbear
 #    "B",
     # flake8-simplify
-#    "SIM",
+    "SIM",
     # isort
     "I",
 ]

@@ -25,9 +25,9 @@ class TorchVis:
 
     def register(self, *args, **init_kwargs):
         # Sets tensorboard as the default visualization format if not specified
-        formats = ['tensorboard'] if not args else args
+        formats = args if args else ['tensorboard']
         for format in formats:
-            if self.subscribers.get(format) is None and format in vis_formats.keys():
+            if self.subscribers.get(format) is None and format in vis_formats:
                 self.subscribers[format] = vis_formats[format](**init_kwargs.get(format, {}))
 
     def unregister(self, *args):

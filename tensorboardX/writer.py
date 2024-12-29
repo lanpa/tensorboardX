@@ -326,7 +326,7 @@ class SummaryWriter:
         {writer_id : [[timestamp, step, value], ...], ...}.
         """
         from .x2num import make_np
-        if tag not in self.scalar_dict.keys():
+        if tag not in self.scalar_dict:
             self.scalar_dict[tag] = []
         self.scalar_dict[tag].append(
             [timestamp, global_step, float(make_np(scalar_value).squeeze())])
@@ -483,7 +483,7 @@ class SummaryWriter:
         fw_logdir = self._get_file_writer().get_logdir()
         for tag, scalar_value in tag_scalar_dict.items():
             fw_tag = os.path.join(str(fw_logdir), main_tag, tag)
-            if fw_tag in self.all_writers.keys():
+            if fw_tag in self.all_writers:
                 fw = self.all_writers[fw_tag]
             else:
                 fw = FileWriter(logdir=fw_tag)
@@ -1001,11 +1001,7 @@ class SummaryWriter:
         # new funcion to append to the config file a new embedding
         append_pbtxt(metadata, label_img,
                      self._get_file_writer().get_logdir(), subdir, global_step, tag)
-        if tag is not None:
-            template_filename = f"{tag}.json"
-
-        else:
-            template_filename = None
+        template_filename = f'{tag}.json' if tag is not None else None
 
         self._get_comet_logger().log_embedding(mat, metadata, label_img, template_filename=template_filename)
 

@@ -63,8 +63,7 @@ class VisdomWriter:
             [scalar_value] if exists else [scalar_value]
         plot_name = f'{main_tag}-{tag}'
         # If there is no global_step provided, follow sequential order
-        x_val = len(self.scalar_dict[main_tag][tag]
-                    ) if not global_step else global_step
+        x_val = global_step if global_step else len(self.scalar_dict[main_tag][tag])
         if exists:
             # Update our existing Visdom window
             self.vis.line(
@@ -110,7 +109,7 @@ class VisdomWriter:
                 'run_14h-arctanx'
             with the corresponding values.
         """
-        for key in tag_scalar_dict.keys():
+        for key in tag_scalar_dict:
             self.add_scalar(key, tag_scalar_dict[key], global_step, main_tag)
 
     @_check_connection
