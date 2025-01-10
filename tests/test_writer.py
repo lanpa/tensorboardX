@@ -103,3 +103,33 @@ class WriterTest(unittest.TestCase):
             with SummaryWriter() as w:
                 w.add_images('img_list', imgs, dataformats='CHW')
 
+    def test_writer_with_default_metadata(self, write_to_disk):
+        step = 17
+        walltime = 13.0
+
+        with (
+            unittest.mock.patch("tensorboardX.event_file_writer.EventFileWriter.add_event") as fn,
+            SummaryWriter(write_to_disk=write_to_disk) as writer,
+        ):
+            # Check defaults are used unless explicitly specified.
+            with writer.use_metadata(global_step=step, walltime=walltime):
+                writer.add_scalar('data/scalar_defaults', 0.1)
+                event = fn.call_args[0][0]
+                assert event.wall_time == walltime
+                assert event.step == step
+
+                writer.add_scalar('data/scalar_default_with_step', 0.2, global_step=7)
+                event = fn.call_args[0][0]
+                assert event.wall_time == walltime
+                assert event.step == 7
+
+                writer.add_scalar('data/scalar_default_with_walltime', 0.3, walltime=18.0)
+                event = fn.call_args[0][0]
+                assert event.wall_time == 18.0
+                assert event.step == step
+
+            # Check default behavior outside the context.
+            writer.add_scalar('data/standard_behavior', 0.4)
+            event = fn.call_args[0][0]
+            assert time.time() - event.wall_time < 1
+            assert event.step == 0
