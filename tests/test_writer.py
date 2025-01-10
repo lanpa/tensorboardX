@@ -103,13 +103,13 @@ class WriterTest(unittest.TestCase):
             with SummaryWriter() as w:
                 w.add_images('img_list', imgs, dataformats='CHW')
 
-    def test_writer_with_default_metadata(self, write_to_disk):
+    def test_writer_with_default_metadata(self):
         step = 17
         walltime = 13.0
 
         with (
             unittest.mock.patch("tensorboardX.event_file_writer.EventFileWriter.add_event") as fn,
-            SummaryWriter(write_to_disk=write_to_disk) as writer,
+            SummaryWriter() as writer,
         ):
             # Check defaults are used unless explicitly specified.
             with writer.use_metadata(global_step=step, walltime=walltime):
