@@ -11,4 +11,5 @@ runs/*
 mnist
 tensorboardX/_version.py
 s3:
+.coverage
 .vscode
