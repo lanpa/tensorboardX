@@ -55,19 +55,6 @@ class WriterTest(unittest.TestCase):
         for _ in range(N_TEST):  # all of the data should be flushed
             r.GetNext()
 
-    def test_flush(self):
-        N_TEST = 5
-        w = SummaryWriter(flush_secs=20)
-        f = w.file_writer.event_writer._ev_writer._file_name
-        for i in range(N_TEST):
-            w.add_scalar('a', i)
-            time.sleep(2)
-        w.flush()
-        r = PyRecordReader_New(f)
-        r.GetNext()  # meta data, so skip
-        for _ in range(N_TEST):  # all of the data should be flushed
-            r.GetNext()
-
     def test_auto_close(self):
         pass
 
@@ -75,7 +62,6 @@ class WriterTest(unittest.TestCase):
         w = SummaryWriter()
         w.close()
         w.add_text("reuse writer", "dont reuse without creating a new writer", 0)
-
 
     def test_writer(self):
         with SummaryWriter() as writer:
