@@ -137,11 +137,13 @@ class FileWriter:
           walltime: float. Optional walltime to override the default (current)
             walltime (from time.time())
         """
-        event.wall_time = (
+        walltime = (
             self._default_metadata.get("walltime", time.time())
             if walltime is None
             else walltime
         )
+        if walltime is not None:
+            event.wall_time = walltime
         step = self._default_metadata.get("global_step") if step is None else step
         if step is not None:
             # Make sure step is converted from numpy or other formats
