@@ -865,7 +865,7 @@ class SummaryWriter:
             self,
             tag: str,
             snd_tensor: numpy_compatible,
-            global_step: Optional[int],
+            global_step: Optional[int] = None,
             sample_rate: Optional[int] = 44100,
             walltime: Optional[float] = None):
         """Add audio data to summary.
