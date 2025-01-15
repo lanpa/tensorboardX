@@ -1,4 +1,3 @@
-
 import logging
 import os
 import re as _re
@@ -374,11 +373,24 @@ def make_video(tensor, fps):
         print('add_video needs package moviepy')
         return
     try:
-        from moviepy import editor as mpy
+        # moviepy v2+
+        from moviepy import ImageSequenceClip
     except ImportError:
-        print("moviepy is installed, but can't import moviepy.editor.",
-              "Some packages could be missing [imageio, requests]")
-        return
+        try:
+            # Fallback for all moviepy versions
+            from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+        except ImportError as e:
+            if "imageio" in str(e):
+                print(
+                    "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip.",
+                    "imageio is missing",
+                )
+            else:
+                print(
+                    "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip.",
+                    "Some packages could be missing [imageio, requests]",
+                )
+            return
 
     import tempfile
 
@@ -387,7 +399,7 @@ def make_video(tensor, fps):
     t, h, w, c = tensor.shape
 
     # encode sequence of images into gif string
-    clip = mpy.ImageSequenceClip(list(tensor), fps=fps)
+    clip = ImageSequenceClip(list(tensor), fps=fps)
     with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as fp:
         filename = fp.name
 
