@@ -395,9 +395,17 @@ def make_video(tensor, fps):
     import tempfile
 
     import moviepy.version
+    import imageio
+    from packaging.version import Version
 
     t, h, w, c = tensor.shape
 
+    # Convert to RGB if moviepy v2/imageio>2.27 is used; 1-channel input is not supported.
+    if c == 1 and (
+        Version(moviepy.version.__version__) >= Version("2")
+        or Version(imageio.__version__) > Version("2.27")
+    ):
+        tensor = np.repeat(tensor, 3, axis=-1)
     # encode sequence of images into gif string
     clip = ImageSequenceClip(list(tensor), fps=fps)
     with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as fp:
