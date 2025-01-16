@@ -394,8 +394,8 @@ def make_video(tensor, fps):
 
     import tempfile
 
-    import moviepy.version
     import imageio
+    import moviepy.version
     from packaging.version import Version
 
     t, h, w, c = tensor.shape
