@@ -43,7 +43,7 @@ jobs:
       run: |
         curl -Os https://cli.codecov.io/latest/linux/codecov
         chmod +x codecov
-        ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage.xml
+        ./codecov --verbose upload-process --fail-on-error -n 'service'-${{ github.run_id }} -F service -f coverage.xml
 
   test:
     needs: build
