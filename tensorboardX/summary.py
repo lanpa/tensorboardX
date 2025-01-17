@@ -368,7 +368,7 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
 
 def make_video(tensor, fps):
     try:
-        import moviepy  # noqa: F401
+        import moviepy
     except ImportError:
         print('add_video needs package moviepy')
         return
@@ -379,17 +379,17 @@ def make_video(tensor, fps):
         try:
             # Fallback for all moviepy versions
             from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+        except ModuleNotFoundError as e:
+            logger.error(
+                "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip due to missing module: %s",
+                e,
+            )
+            return
         except ImportError as e:
-            if "imageio" in str(e):
-                print(
-                    "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip.",
-                    "imageio is missing",
-                )
-            else:
-                print(
-                    "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip.",
-                    "Some packages could be missing [imageio, requests]",
-                )
+            logger.error(
+                "moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip due to %r",
+                e,
+            )
             return
 
     import tempfile
