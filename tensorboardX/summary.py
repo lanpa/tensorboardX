@@ -391,13 +391,22 @@ def make_video(tensor, fps):
     import imageio
     import moviepy.version
     from packaging.version import Version
+    moviepy_version = Version(moviepy.version.__version__)
+    imageio_version = Version(imageio.__version__)
 
     t, h, w, c = tensor.shape
+    # Warn about movipy and imageio incompatibility
+    if moviepy_version >= Version("2") and imageio_version < Version("2.29"):
+        logger.error(
+            "You are using moviepy >= 2.0.0 and imageio < 2.29.0. "
+            "This combination is known to cause issues when writing videos. "
+            "Please upgrade imageio to 2.29 or later or use moviepy < 2.0.0."
+        )
 
     # Convert to RGB if moviepy v2/imageio>2.27 is used; 1-channel input is not supported.
     if c == 1 and (
-        Version(moviepy.version.__version__) >= Version("2")
-        or Version(imageio.__version__) > Version("2.27")
+        moviepy_version >= Version("2")
+        or imageio_version > Version("2.27")
     ):
         tensor = np.repeat(tensor, 3, axis=-1)
     # encode sequence of images into gif string
