@@ -1,10 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 from tensorboardX import summary
 from .expect_reader import compare_proto, write_proto
 import numpy as np
 import pytest
 import unittest
 import torch
+
+from PIL import Image, ImageSequence
 # compare_proto = write_proto  # massive update expect
 
 def tensor_N(shape, dtype=float):
@@ -78,9 +82,6 @@ class SummaryTest(unittest.TestCase):
 
     @staticmethod
     def _iter_gif(encoded_image):
-        import io
-
-        from PIL import Image, ImageSequence
         image_io = io.BytesIO(encoded_image)
         im = Image.open(image_io, )
         for frame in ImageSequence.Iterator(im):
@@ -88,7 +89,6 @@ class SummaryTest(unittest.TestCase):
 
     @staticmethod
     def _load_expected_test_video():
-        from PIL import Image, ImageSequence
         with Image.open("tests/expect/test_summary.test_video.expect.gif") as im:
             return list(ImageSequence.Iterator(im))
 
