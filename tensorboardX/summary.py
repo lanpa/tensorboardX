@@ -367,11 +367,17 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
 
 
 def make_video(tensor, fps):
+    import tempfile
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as get_version
+
+    from packaging.version import Version
     try:
-        import moviepy
-    except ImportError as e:
-        logger.error("Cannot import moviepy: %r", e)
+        moviepy_version = Version(get_version("moviepy"))
+    except PackageNotFoundError:
+        logger.error("moviepy is not installed.")
         return
+
     try:
         # moviepy v2+
         from moviepy import ImageSequenceClip
@@ -386,22 +392,15 @@ def make_video(tensor, fps):
             )
             return
 
-    import tempfile
-
-    import imageio
-    import moviepy.version
-    from packaging.version import Version
-    moviepy_version = Version(moviepy.version.__version__)
-    imageio_version = Version(imageio.__version__)
-
-    t, h, w, c = tensor.shape
-    # Warn about movipy and imageio incompatibility
+    # Warn about potential moviepy and imageio version incompatibility
+    imageio_version = Version(get_version("imageio"))
     if moviepy_version >= Version("2") and imageio_version < Version("2.29"):
         logger.error(
             "You are using moviepy >= 2.0.0 and imageio < 2.29.0. "
             "This combination is known to cause issues when writing videos. "
-            "Please upgrade imageio to 2.29 or later or use moviepy < 2.0.0."
+            "Please upgrade imageio to 2.29 or later, or use moviepy < 2.0.0."
         )
+    t, h, w, c = tensor.shape
 
     # Convert to RGB if moviepy v2/imageio>2.27 is used; 1-channel input is not supported.
     if c == 1 and (
@@ -414,10 +413,10 @@ def make_video(tensor, fps):
     with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as fp:
         filename = fp.name
 
-        if moviepy.version.__version__.startswith("0."):
+        if moviepy_version < Version("1.0.0"):
             logger.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
             clip.write_gif(filename, verbose=False)
-        elif moviepy.version.__version__.startswith("1."):
+        elif moviepy_version < Version("2.0.0dev1"):
             # moviepy >= 1.0.0 use logger=None to suppress output.
             clip.write_gif(filename, verbose=False, logger=None)
         else:
