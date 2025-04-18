@@ -10,3 +10,6 @@ runs/*
 *.pyc
 mnist
 tensorboardX/_version.py
+s3:
+.coverage
+.vscode

@@ -26,43 +26,44 @@ recall = [1.0, 0.8533334, 0.28, 0.0666667, 0.0]
 
 
 for n_iter in range(100):
-    s1 = torch.rand(1)  # value to keep
-    s2 = torch.rand(1)
-    # data grouping by `slash`
-    writer.add_scalar('data/scalar_systemtime', s1[0], n_iter, summary_description="# markdown is supported!")
-    # data grouping by `slash`
-    writer.add_scalar('data/scalar_customtime', s1[0], n_iter, walltime=n_iter, display_name="dudubird")
-    writer.add_scalars('data/scalar_group', {"xsinx": n_iter * np.sin(n_iter),
-                                             "xcosx": n_iter * np.cos(n_iter),
-                                             "arctanx": np.arctan(n_iter)}, n_iter)
-    x = torch.rand(32, 3, 64, 64)  # output from network
-    if n_iter % 10 == 0:
-        x = vutils.make_grid(x, normalize=True, scale_each=True)
-        writer.add_image('Image', x, n_iter)  # Tensor
-        writer.add_image_with_boxes('imagebox_label', torch.ones(3, 240, 240) * 0.5,
-             torch.Tensor([[10, 10, 100, 100], [101, 101, 200, 200]]),
-             n_iter, 
-             labels=['abcde' + str(n_iter), 'fgh' + str(n_iter)])
-        if not skip_audio:
-            x = torch.zeros(sample_rate * 2)
-            for i in range(x.size(0)):
-                # sound amplitude should in [-1, 1]
-                x[i] = np.cos(freqs[n_iter // 10] * np.pi *
-                            float(i) / float(sample_rate))
-            writer.add_audio('myAudio', x, n_iter)
-        writer.add_text('Text', 'text logged at step:' + str(n_iter), n_iter)
-        writer.add_text('markdown Text', '''a|b\n-|-\nc|d''', n_iter)
-        for name, param in resnet18.named_parameters():
-            if 'bn' not in name:
-                writer.add_histogram(name, param, n_iter)
-        writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(
-            100), n_iter)  # needs tensorboard 0.4RC or later
-        writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts,
-                                false_positive_counts,
-                                true_negative_counts,
-                                false_negative_counts,
-                                precision,
-                                recall, n_iter)
+    with writer.use_metadata(global_step=n_iter):
+        s1 = torch.rand(1)  # value to keep
+        s2 = torch.rand(1)
+        # data grouping by `slash`
+        writer.add_scalar('data/scalar_systemtime', s1[0], summary_description="# markdown is supported!")
+        # data grouping by `slash`
+        writer.add_scalar('data/scalar_customtime', s1[0], walltime=n_iter, display_name="dudubird")
+        writer.add_scalars('data/scalar_group', {"xsinx": n_iter * np.sin(n_iter),
+                                                 "xcosx": n_iter * np.cos(n_iter),
+                                                 "arctanx": np.arctan(n_iter)})
+        x = torch.rand(32, 3, 64, 64)  # output from network
+        if n_iter % 10 == 0:
+            x = vutils.make_grid(x, normalize=True, scale_each=True)
+            writer.add_image('Image', x)  # Tensor
+            writer.add_image_with_boxes(
+                'imagebox_label', torch.ones(3, 240, 240) * 0.5,
+                torch.Tensor([[10, 10, 100, 100], [101, 101, 200, 200]]),
+                labels=['abcde' + str(n_iter), 'fgh' + str(n_iter)])
+            if not skip_audio:
+                x = torch.zeros(sample_rate * 2)
+                for i in range(x.size(0)):
+                    # sound amplitude should in [-1, 1]
+                    x[i] = np.cos(freqs[n_iter // 10] * np.pi *
+                                  float(i) / float(sample_rate))
+                writer.add_audio('myAudio', x)
+            writer.add_text('Text', 'text logged at step:' + str(n_iter))
+            writer.add_text('markdown Text', '''a|b\n-|-\nc|d''')
+            for name, param in resnet18.named_parameters():
+                if 'bn' not in name:
+                    writer.add_histogram(name, param)
+            writer.add_pr_curve('xoxo', np.random.randint(2, size=100), np.random.rand(
+                100))  # needs tensorboard 0.4RC or later
+            writer.add_pr_curve_raw('prcurve with raw data', true_positive_counts,
+                                    false_positive_counts,
+                                    true_negative_counts,
+                                    false_negative_counts,
+                                    precision,
+                                    recall)
 # export scalar data to JSON for external processing
 writer.export_scalars_to_json("./all_scalars.json")
 

@@ -3,6 +3,7 @@ consumed by TensorBoard for visualization."""
 
 
 import atexit
+import contextlib
 import json
 import logging
 import os
@@ -77,6 +78,10 @@ class DummyFileWriter:
     def reopen(self):
         return
 
+    @contextlib.contextmanager
+    def use_metadata(self, *, global_step=None, walltime=None):
+        yield self
+
 
 class FileWriter:
     """Writes protocol buffers to event files to be consumed by TensorBoard.
@@ -117,6 +122,7 @@ class FileWriter:
             self.event_writer.close()
 
         atexit.register(cleanup)
+        self._default_metadata = {}
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
@@ -131,7 +137,14 @@ class FileWriter:
           walltime: float. Optional walltime to override the default (current)
             walltime (from time.time())
         """
-        event.wall_time = time.time() if walltime is None else walltime
+        walltime = (
+            self._default_metadata.get("walltime", time.time())
+            if walltime is None
+            else walltime
+        )
+        if walltime is not None:
+            event.wall_time = walltime
+        step = self._default_metadata.get("global_step") if step is None else step
         if step is not None:
             # Make sure step is converted from numpy or other formats
             # since protobuf might not convert depending on version
@@ -213,6 +226,28 @@ class FileWriter:
         Does nothing if the EventFileWriter was not closed.
         """
         self.event_writer.reopen()
+
+    @contextlib.contextmanager
+    def use_metadata(self, *, global_step=None, walltime=None):
+        """Context manager to temporarily set default metadata for all enclosed :meth:`add_event`
+        calls.
+
+        Args:
+            global_step: Global step value to record
+            walltime: Walltime to record (defaults to time.time())
+
+        Examples::
+
+            with writer.use_metadata(global_step=10):
+                writer.add_event(event)
+        """
+        assert not self._default_metadata, "Default metadata is already set."
+        assert (
+            global_step is not None or walltime is not None
+        ), "At least one of `global_step` or `walltime` must be provided."
+        self._default_metadata = {"global_step": global_step, "walltime": walltime}
+        yield self
+        self._default_metadata = {}
 
 
 class SummaryWriter:
@@ -319,6 +354,7 @@ class SummaryWriter:
         self.default_bins = neg_buckets[::-1] + [0] + buckets
 
         self.scalar_dict = {}
+        self._default_metadata = {}
 
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
                                 timestamp):
@@ -829,7 +865,7 @@ class SummaryWriter:
             self,
             tag: str,
             snd_tensor: numpy_compatible,
-            global_step: Optional[int],
+            global_step: Optional[int] = None,
             sample_rate: Optional[int] = 44100,
             walltime: Optional[float] = None):
         """Add audio data to summary.
@@ -1227,3 +1263,19 @@ class SummaryWriter:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+    @contextlib.contextmanager
+    def use_metadata(self, *, global_step=None, walltime=None):
+        """Context manager to temporarily set default metadata for all enclosed :meth:`add_*` calls.
+
+        Args:
+            global_step: Global step value to record
+            walltime: Walltime to record (defaults to time.time())
+
+        Examples::
+
+            with writer.use_metadata(global_step=10):
+                writer.add_scalar("loss", 3.0)
+        """
+        with self._get_file_writer().use_metadata(global_step=global_step, walltime=walltime):
+            yield self

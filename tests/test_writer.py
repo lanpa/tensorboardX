@@ -55,19 +55,6 @@ class WriterTest(unittest.TestCase):
         for _ in range(N_TEST):  # all of the data should be flushed
             r.GetNext()
 
-    def test_flush(self):
-        N_TEST = 5
-        w = SummaryWriter(flush_secs=20)
-        f = w.file_writer.event_writer._ev_writer._file_name
-        for i in range(N_TEST):
-            w.add_scalar('a', i)
-            time.sleep(2)
-        w.flush()
-        r = PyRecordReader_New(f)
-        r.GetNext()  # meta data, so skip
-        for _ in range(N_TEST):  # all of the data should be flushed
-            r.GetNext()
-
     def test_auto_close(self):
         pass
 
@@ -75,7 +62,6 @@ class WriterTest(unittest.TestCase):
         w = SummaryWriter()
         w.close()
         w.add_text("reuse writer", "dont reuse without creating a new writer", 0)
-
 
     def test_writer(self):
         with SummaryWriter() as writer:
@@ -117,3 +103,33 @@ class WriterTest(unittest.TestCase):
             with SummaryWriter() as w:
                 w.add_images('img_list', imgs, dataformats='CHW')
 
+    def test_writer_with_default_metadata(self):
+        step = 17
+        walltime = 13.0
+
+        with (
+            unittest.mock.patch("tensorboardX.event_file_writer.EventFileWriter.add_event") as fn,
+            SummaryWriter() as writer,
+        ):
+            # Check defaults are used unless explicitly specified.
+            with writer.use_metadata(global_step=step, walltime=walltime):
+                writer.add_scalar('data/scalar_defaults', 0.1)
+                event = fn.call_args[0][0]
+                assert event.wall_time == walltime
+                assert event.step == step
+
+                writer.add_scalar('data/scalar_default_with_step', 0.2, global_step=7)
+                event = fn.call_args[0][0]
+                assert event.wall_time == walltime
+                assert event.step == 7
+
+                writer.add_scalar('data/scalar_default_with_walltime', 0.3, walltime=18.0)
+                event = fn.call_args[0][0]
+                assert event.wall_time == 18.0
+                assert event.step == step
+
+            # Check default behavior outside the context.
+            writer.add_scalar('data/standard_behavior', 0.4)
+            event = fn.call_args[0][0]
+            assert time.time() - event.wall_time < 1
+            assert event.step == 0
