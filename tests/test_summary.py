@@ -1,10 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 from tensorboardX import summary
 from .expect_reader import compare_proto, write_proto
 import numpy as np
 import pytest
 import unittest
 import torch
+
+from PIL import Image, ImageSequence
 # compare_proto = write_proto  # massive update expect
 
 def tensor_N(shape, dtype=float):
@@ -76,12 +80,40 @@ class SummaryTest(unittest.TestCase):
     def test_image_without_channel(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(8, 8)), dataformats='HW'), self)
 
+    @staticmethod
+    def _iter_gif(encoded_image):
+        image_io = io.BytesIO(encoded_image)
+        im = Image.open(image_io, )
+        for frame in ImageSequence.Iterator(im):
+            yield frame.getchannel(0)
+
+    @staticmethod
+    def _load_expected_test_video():
+        with Image.open("tests/expect/test_summary.test_video.expect.gif") as im:
+            return list(ImageSequence.Iterator(im))
+
+    def assert_grayscale(self, image) -> None:
+        channels = image.split()
+        c0colors = channels[0].getcolors()
+        for c in channels[1:]:
+            self.assertEqual(c0colors, c.getcolors())
+
     def test_video(self):
         try:
             import moviepy
         except ImportError:
-            return
-        compare_proto(summary.video('dummy', tensor_N(shape=(4, 3, 1, 8, 8))), self)
+            self.skipTest('moviepy not installed')
+        t1 = tensor_N(shape=(4, 3, 1, 8, 8))
+        v1 = summary.video("dummy", t1)
+        frames = list(self._iter_gif(v1.value[0].image.encoded_image_string))
+        self.assertEqual(len(frames), 3)
+        prepared = self._load_expected_test_video()
+        for image, expected in zip(frames, prepared):
+            self.assert_grayscale(image)
+            self.assert_grayscale(expected)
+            self.assertEqual(
+                image.getchannel(0).getcolors(), expected.getchannel(0).getcolors()
+            )
         summary.video('dummy', tensor_N(shape=(16, 48, 1, 28, 28)))
         summary.video('dummy', tensor_N(shape=(20, 7, 1, 8, 8)))
 

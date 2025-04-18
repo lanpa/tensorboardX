@@ -1,4 +1,3 @@
-
 import logging
 import os
 import re as _re
@@ -368,33 +367,56 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
 
 
 def make_video(tensor, fps):
-    try:
-        import moviepy  # noqa: F401
-    except ImportError:
-        print('add_video needs package moviepy')
-        return
-    try:
-        from moviepy import editor as mpy
-    except ImportError:
-        print("moviepy is installed, but can't import moviepy.editor.",
-              "Some packages could be missing [imageio, requests]")
-        return
-
     import tempfile
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as get_version
 
-    import moviepy.version
+    from packaging.version import Version
+    try:
+        moviepy_version = Version(get_version("moviepy"))
+    except PackageNotFoundError:
+        logger.error("moviepy is not installed.")
+        return
 
+    try:
+        # moviepy v2+
+        from moviepy import ImageSequenceClip
+    except ImportError:
+        try:
+            # Fallback for all moviepy versions
+            from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+        except ImportError as e:
+            logger.error(
+                "Can't create video. moviepy is installed, but can't import moviepy.video.io.ImageSequenceClip due to %r",
+                e,
+            )
+            return
+
+    # Warn about potential moviepy and imageio version incompatibility
+    imageio_version = Version(get_version("imageio"))
+    if moviepy_version >= Version("2") and imageio_version < Version("2.29"):
+        logger.error(
+            "You are using moviepy >= 2.0.0 and imageio < 2.29.0. "
+            "This combination is known to cause issues when writing videos. "
+            "Please upgrade imageio to 2.29 or later, or use moviepy < 2.0.0."
+        )
     t, h, w, c = tensor.shape
 
+    # Convert to RGB if moviepy v2/imageio>2.27 is used; 1-channel input is not supported.
+    if c == 1 and (
+        moviepy_version >= Version("2")
+        or imageio_version > Version("2.27")
+    ):
+        tensor = np.repeat(tensor, 3, axis=-1)
     # encode sequence of images into gif string
-    clip = mpy.ImageSequenceClip(list(tensor), fps=fps)
+    clip = ImageSequenceClip(list(tensor), fps=fps)
     with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as fp:
         filename = fp.name
 
-        if moviepy.version.__version__.startswith("0."):
+        if moviepy_version < Version("1.0.0"):
             logger.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
             clip.write_gif(filename, verbose=False)
-        elif moviepy.version.__version__.startswith("1."):
+        elif moviepy_version < Version("2.0.0dev1"):
             # moviepy >= 1.0.0 use logger=None to suppress output.
             clip.write_gif(filename, verbose=False, logger=None)
         else:
