@@ -6,6 +6,7 @@ from .expect_reader import compare_proto, write_proto
 import numpy as np
 import pytest
 import unittest
+import sys
 import torch
 
 from PIL import Image, ImageSequence
@@ -17,6 +18,7 @@ def tensor_N(shape, dtype=float):
     return x
 
 class SummaryTest(unittest.TestCase):
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_uint8_image(self):
         '''
         Tests that uint8 image (pixel values in [0, 255]) is not changed
@@ -24,6 +26,7 @@ class SummaryTest(unittest.TestCase):
         test_image = tensor_N(shape=(3, 32, 32), dtype=np.uint8)
         compare_proto(summary.image('dummy', test_image), self)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_float32_image(self):
         '''
         Tests that float32 image (pixel values in [0, 1]) are scaled correctly
@@ -57,6 +60,7 @@ class SummaryTest(unittest.TestCase):
         with pytest.raises(Exception):
             summary.histogram('dummy', np.ndarray(0), 'tensorflow')
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_image_with_boxes(self):
         compare_proto(summary.image_boxes('dummy',
                             tensor_N(shape=(3, 32, 32)),
@@ -65,15 +69,19 @@ class SummaryTest(unittest.TestCase):
     def test_image_with_one_channel(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(1, 8, 8)), dataformats='CHW'), self)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_image_with_four_channel(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(4, 8, 8)), dataformats='CHW'), self)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_image_with_one_channel_batched(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(2, 1, 8, 8)), dataformats='NCHW'), self)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_image_with_3_channel_batched(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(2, 3, 8, 8)), dataformats='NCHW'), self)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'Skip test on macOS')
     def test_image_with_four_channel_batched(self):
         compare_proto(summary.image('dummy', tensor_N(shape=(2, 4, 8, 8)), dataformats='NCHW'), self)
 

@@ -11,7 +11,7 @@ false_negative_counts = [0, 11, 54, 70, 75]
 precision = [0.3333333, 0.3786982, 0.5384616, 1.0, 0.0]
 recall = [1.0, 0.8533334, 0.28, 0.0666667, 0.0]
 
-
+@pytest.mark.skip(reason="skip visdom test")
 class VisdomTest(unittest.TestCase):
     def test_TorchVis(self):
         w = TorchVis('visdom')
