@@ -32,6 +32,7 @@ dev = [
     "onnx>=1.17.0",
     "imageio==2.27",
     "ruff>=0.8.4",
+    "pillow==11.0.0",
 ]
 
 [tool.ruff]
