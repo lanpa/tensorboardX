@@ -1,9 +1,14 @@
 History
 =======
+2.6.3 (2025-04-24)
+---------------------
+* Support PaddlePaddle tensors
+* Added a use_metadata context manager
+* MoviePy version 2 support
+
 2.6.2.2 (2023-08-20)
 ---------------------
 * Added protobuf's lower bound version (>=3.20)
-
 
 2.6.2.1 (2023-08-20)
 ---------------------
