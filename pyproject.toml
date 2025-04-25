@@ -1,10 +1,45 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "tensorboardx"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+name = "tensorboardX"
+dynamic = ["version", "readme"]
+description = "TensorBoardX lets you watch Tensors Flow without Tensorflow"
 requires-python = ">=3.9"
-dependencies = []
+license ="MIT"
+authors = [
+    {name = "Tzu-Wei Huang", email = "huang.dexter@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy",
+    "packaging",
+    "protobuf>=3.20",
+]
+
+[project.urls]
+Homepage = "https://github.com/lanpa/tensorboardX"
+Repository = "https://github.com/lanpa/tensorboardX"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["tensorboardX"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["HISTORY.rst"]}
+
+[tool.setuptools_scm]
+write_to = "tensorboardX/_version.py"
 
 [tool.uv.sources]
 torch = { index = "pytorch-cpu" }

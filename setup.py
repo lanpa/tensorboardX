@@ -43,17 +43,15 @@ setup(
     url='https://github.com/lanpa/tensorboardX',
     packages=['tensorboardX'],
     include_package_data=True,
-    install_requires=requirements,
-    use_scm_version={
-        'write_to': "tensorboardX/_version.py",
-    },
-    setup_requires=['setuptools_scm'],
+    # use_scm_version={
+        # 'write_to': "tensorboardX/_version.py",
+    # },
+    # setup_requires=['setuptools_scm'],
     license='MIT license',
     zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
