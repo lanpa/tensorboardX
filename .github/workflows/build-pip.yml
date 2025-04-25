@@ -61,7 +61,7 @@ jobs:
         name: dist-pip-whl
 
     - name: Install tensorboardX from whl
-      run: pip install tensorboardX*.whl
+      run: pip install tensorboardx*.whl
 
     - name: Install torch torchvision for demo
       run: pip install torch torchvision

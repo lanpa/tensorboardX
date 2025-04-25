@@ -48,7 +48,7 @@ jobs:
         python setup.py -q sdist bdist_wheel --universal
 
     - name: Install tensorboardX from whl
-      run: pip install dist/tensorboardX*.whl
+      run: pip install dist/tensorboardx*.whl
 
     - name: Print version
       run: python -c "import tensorboardX; print(tensorboardX.__version__)"
