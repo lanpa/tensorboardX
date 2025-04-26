@@ -29,11 +29,12 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/lanpa/tensorboardX"
-Repository = "https://github.com/lanpa/tensorboardX"
+Repository = "https://github.com/lanpa/tensorboardX.git"
 
 [tool.setuptools]
 include-package-data = true
 packages = ["tensorboardX"]
+zip-safe = false
 
 [tool.setuptools.dynamic]
 readme = {file = ["HISTORY.rst"]}
