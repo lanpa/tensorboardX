@@ -40,7 +40,7 @@ zip-safe = false
 readme = {file = ["HISTORY.rst"]}
 
 [tool.setuptools_scm]
-write_to = "tensorboardX/_version.py"
+version_file = "tensorboardX/_version.py"
 
 [tool.uv.sources]
 torch = { index = "pytorch-cpu" }
