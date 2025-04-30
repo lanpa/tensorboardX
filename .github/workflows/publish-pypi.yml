@@ -33,7 +33,7 @@ jobs:
     - name: Get tags and checkout target version
       run: |
         git fetch --tags origin
-        git checkout ${{ github.event.inputs.publish_version }}
+        git tag ${{ github.event.inputs.publish_version }}
 
     - name: Install pypa/build
       run: >-
