@@ -13,3 +13,5 @@ tensorboardX/_version.py
 s3:
 .coverage
 .vscode
+.DS_store
+uv.lock

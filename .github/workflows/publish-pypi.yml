@@ -33,7 +33,7 @@ jobs:
     - name: Get tags and checkout target version
       run: |
         git fetch --tags origin
-        git checkout ${{ github.event.inputs.publish_version }}
+        git tag ${{ github.event.inputs.publish_version }}
 
     - name: Install pypa/build
       run: >-
@@ -45,10 +45,10 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         echo `pwd`
-        python setup.py -q sdist bdist_wheel --universal
+        python -m build --wheel --sdist
 
     - name: Install tensorboardX from whl
-      run: pip install dist/tensorboardX*.whl
+      run: pip install dist/tensorboardx*.whl
 
     - name: Print version
       run: python -c "import tensorboardX; print(tensorboardX.__version__)"
@@ -57,11 +57,12 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TESTSITE }}
-        repository_url: https://test.pypi.org/legacy/
+        repository-url: https://test.pypi.org/legacy/
+        attestations: false
 
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API }}
-        repository_url: https://upload.pypi.org/legacy/
+    # - name: Publish to PyPI
+    #   uses: pypa/gh-action-pypi-publish@release/v1
+    #   with:
+    #     password: ${{ secrets.PYPI_API }}
+    #     repository_url: https://upload.pypi.org/legacy/
 
