@@ -30,38 +30,49 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Get tags and checkout target version
+    - name: Fetch git tags and create version tag
       run: |
         git fetch --tags origin
-        git checkout ${{ github.event.inputs.publish_version }}
+        git tag ${{ github.event.inputs.publish_version }}
 
-    - name: Install pypa/build
+    - name: Install build and wheel packages
       run: >-
         python -m
         pip install
         build wheel
         --user
 
-    - name: Build a binary wheel and a source tarball
+    - name: Build wheel and source distribution
       run: |
         echo `pwd`
-        python setup.py -q sdist bdist_wheel --universal
+        python -m build --wheel --sdist
 
-    - name: Install tensorboardX from whl
-      run: pip install dist/tensorboardX*.whl
+    - name: Install tensorboardX from wheel
+      run: pip install dist/tensorboardx*.whl
 
     - name: Print version
       run: python -c "import tensorboardX; print(tensorboardX.__version__)"
+
+    - name: Check version matches publish_version
+      run: |
+        VERSION=$(python -c "import tensorboardX; print(tensorboardX.__version__)")
+        if [ "$VERSION" != "${{ github.event.inputs.publish_version }}" ]; then
+          echo "Version mismatch: $VERSION does not match ${{ github.event.inputs.publish_version }}"
+          exit 1
+        fi
 
     - name: Publish to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TESTSITE }}
-        repository_url: https://test.pypi.org/legacy/
+        repository-url: https://test.pypi.org/legacy/
+        attestations: false
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API }}
         repository_url: https://upload.pypi.org/legacy/
+        attestations: false
+
 
