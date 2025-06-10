@@ -17,6 +17,9 @@ jobs:
       with:
         python-version: 3.9
 
+    - name: Display Branch Name
+      run: echo "Current Branch: ${{ github.ref }}"
+
     - name: Fetch git tags from origin
       run: git fetch --tags origin
 
