@@ -18,7 +18,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies and activate venv
+    - name: Install system dependencies and setup Python environment
       run: |
         sudo apt-get install libsndfile1
         curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Run examples
+    - name: Install dependencies and run examples
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         uv venv --python 3.9
@@ -72,7 +72,7 @@ jobs:
         protobuf-version: ["3.20", "4.21", "4.22", "4.23"]
     steps:
     - uses: actions/checkout@v2
-    - name: Install python 3.11
+    - name: Install python 3.11 and setup environment
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         uv venv --python 3.11
