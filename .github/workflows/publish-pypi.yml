@@ -56,7 +56,7 @@ jobs:
     - name: Check version matches publish_version
       run: |
         VERSION=$(python -c "import tensorboardX; print(tensorboardX.__version__)")
-        if [ "$VERSION" != "${{ github.event.inputs.publish_version }}" ]; then
+        if [ "v$VERSION" != "${{ github.event.inputs.publish_version }}" ]; then
           echo "Version mismatch: $VERSION does not match ${{ github.event.inputs.publish_version }}"
           exit 1
         fi
