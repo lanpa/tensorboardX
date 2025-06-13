@@ -30,6 +30,13 @@ jobs:
       with:
         python-version: 3.9
 
+    - name: Make sure the branch name is "refs/heads/releases/*"
+      run: |
+        if [[ "${{ github.ref }}" != refs/heads/releases/* ]]; then
+          echo "This workflow only runs on branches matching 'releases/*'. Current branch: ${{ github.ref }}"
+          exit 1
+        fi
+
     - name: Fetch git tags and create version tag
       run: |
         git fetch --tags origin
