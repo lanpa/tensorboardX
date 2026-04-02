@@ -55,7 +55,7 @@ explicit = true
 dev = [
     "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
-    "protobuf==4.22.3",
+    "protobuf==5.29.6",
     "torch>=2.5.1",
     "torchvision==0.20.1",
     "numpy>=2.0.2",
