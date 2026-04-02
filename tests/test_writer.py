@@ -103,6 +103,20 @@ class WriterTest(unittest.TestCase):
             with SummaryWriter() as w:
                 w.add_images('img_list', imgs, dataformats='CHW')
 
+    def test_write_to_disk_false(self):
+        import shutil
+        logdir = 'test_write_to_disk_false'
+        if os.path.exists(logdir):
+            shutil.rmtree(logdir)
+        try:
+            with SummaryWriter(logdir, write_to_disk=False) as writer:
+                writer.add_scalar('data/scalar', 0.1, 0)
+                writer.add_scalars('data/scalars', {'a': 0.1, 'b': 0.2}, 0)
+            assert not os.path.exists(logdir)
+        finally:
+            if os.path.exists(logdir):
+                shutil.rmtree(logdir)
+
     def test_writer_with_default_metadata(self):
         step = 17
         walltime = 13.0
