@@ -64,7 +64,7 @@ dev = [
     "matplotlib>=3.9.4",
     "moto<5",
     "soundfile>=0.12.1",
-    "visdom>=0.2.4",
+
     "onnx>=1.17.0",
     "imageio==2.27",
     "ruff>=0.8.4",
