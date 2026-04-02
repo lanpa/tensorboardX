@@ -12,16 +12,16 @@ from tensorboardX import x2num
 class NumpyTest(unittest.TestCase):
     def test_scalar(self):
         res = x2num.make_np(1.1)
-        assert isinstance(res, np.ndarray) and res.shape == (1,)
+        assert isinstance(res, np.ndarray) and res.shape == ()
         res = x2num.make_np(1 << 64 - 1)  # uint64_max
-        assert isinstance(res, np.ndarray) and res.shape == (1,)
+        assert isinstance(res, np.ndarray) and res.shape == ()
         res = x2num.make_np(np.float16(1.00000087))
-        assert isinstance(res, np.ndarray) and res.shape == (1,)
+        assert isinstance(res, np.ndarray) and res.shape == ()
         if hasattr(np, 'float128'):
             res = x2num.make_np(np.float128(1.00008 + 9))
-            assert isinstance(res, np.ndarray) and res.shape == (1,)
+            assert isinstance(res, np.ndarray) and res.shape == ()
         res = x2num.make_np(np.int64(100000000000))
-        assert isinstance(res, np.ndarray) and res.shape == (1,)
+        assert isinstance(res, np.ndarray) and res.shape == ()
 
     def test_make_grid(self):
         pass

@@ -108,7 +108,7 @@ def hparams(hparam_dict=None, metric_dict=None):
             continue
 
         if isinstance(v, (int, float)):
-            v = make_np(v)[0]
+            v = float(make_np(v))
             ssi.hparams[k].number_value = v
             hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_FLOAT64")))
             continue

@@ -20,7 +20,7 @@ def make_np(x):
     if isinstance(x, np.ndarray):
         return check_nan(x)
     if np.isscalar(x):
-        return check_nan(np.array([x]))
+        return check_nan(np.array(x))
     if 'torch' in str(type(x)):
         return check_nan(prepare_pytorch(x))
     if 'chainer' in str(type(x)):
