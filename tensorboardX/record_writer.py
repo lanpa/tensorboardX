@@ -191,6 +191,7 @@ class RecordWriter:
 
     def flush(self):
         self._writer.flush()
+        os.fsync(self._writer.fileno())
 
     def close(self):
         self._writer.close()
