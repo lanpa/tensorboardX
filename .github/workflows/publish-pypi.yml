@@ -40,7 +40,13 @@ jobs:
     - name: Fetch git tags and create version tag
       run: |
         git fetch --tags origin
-        git tag v${{ github.event.inputs.publish_version }}
+        PUBLISH_VERSION=${{ github.event.inputs.publish_version }}
+        if [[ $PUBLISH_VERSION == v* ]]; then
+          TAG_VERSION=$PUBLISH_VERSION
+        else
+          TAG_VERSION="v$PUBLISH_VERSION"
+        fi
+        git tag $TAG_VERSION
 
     - name: Install build and wheel packages
       run: >-
@@ -62,9 +68,13 @@ jobs:
 
     - name: Check version matches publish_version
       run: |
+        EXPECTED_VERSION=${{ github.event.inputs.publish_version }}
+        if [[ $EXPECTED_VERSION == v* ]]; then
+          EXPECTED_VERSION=${EXPECTED_VERSION#v}
+        fi
         VERSION=$(python -c "import tensorboardX; print(tensorboardX.__version__)")
-        if [ "$VERSION" != "${{ github.event.inputs.publish_version }}" ]; then
-          echo "Version mismatch: $VERSION does not match ${{ github.event.inputs.publish_version }}"
+        if [ "$VERSION" != "$EXPECTED_VERSION" ]; then
+          echo "Version mismatch: $VERSION does not match $EXPECTED_VERSION"
           exit 1
         fi
 
