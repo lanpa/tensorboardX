@@ -522,7 +522,12 @@ class SummaryWriter:
             if fw_tag in self.all_writers:
                 fw = self.all_writers[fw_tag]
             else:
-                fw = FileWriter(logdir=fw_tag)
+                if self._write_to_disk:
+                    fw = FileWriter(logdir=fw_tag, max_queue=self._max_queue,
+                                    flush_secs=self._flush_secs,
+                                    filename_suffix=self._filename_suffix)
+                else:
+                    fw = DummyFileWriter(logdir=fw_tag)
                 self.all_writers[fw_tag] = fw
             fw.add_summary(scalar(main_tag, scalar_value),
                            global_step, walltime)
