@@ -40,7 +40,7 @@ jobs:
     - name: Fetch git tags and create version tag
       run: |
         git fetch --tags origin
-        git tag ${{ github.event.inputs.publish_version }}
+        git tag v${{ github.event.inputs.publish_version }}
 
     - name: Install build and wheel packages
       run: >-
