@@ -1,5 +1,14 @@
 History
 =======
+2.6.5 (2026-04-03)
+-------------------
+* Fix SummaryWriter writing to disk when write_to_disk=False in add_scalars (#748)
+* Fix os.fsync call for non-file writers (S3, GCS) (#731, #764)
+* Bump protobuf dependency to >=5.29.6 (#762)
+* Fix CI: remove visdom dependency and use positional args in np.reshape (#763)
+* Fix scalar to 0D array conversion for NumPy 1.25+ compatibility (#760)
+* GitHub Actions workflow improvements (#755)
+
 2.6.3 (2025-04-24)
 ---------------------
 * Support PaddlePaddle tensors
