@@ -91,6 +91,7 @@ jobs:
         password: ${{ secrets.PYPI_API_TESTSITE }}
         repository-url: https://test.pypi.org/legacy/
         attestations: false
+        skip-existing: true
 
     - name: Publish to PyPI
       if: github.event.inputs.publish_to_real_pypi == 'true'
@@ -99,6 +100,7 @@ jobs:
         password: ${{ secrets.PYPI_API }}
         repository_url: https://upload.pypi.org/legacy/
         attestations: false
+        skip-existing: true
 
     - name: Create GitHub Release
       if: github.event.inputs.publish_to_real_pypi == 'true'
