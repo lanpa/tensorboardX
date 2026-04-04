@@ -2,8 +2,14 @@ on:
   workflow_dispatch:
     inputs:
       publish_version:
+        description: 'Version to publish (e.g., 2.6.5)'
         required: true
         type: string
+      publish_to_real_pypi:
+        description: 'Actually publish to the real PyPI (not just test site)?'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   log-the-inputs:
@@ -11,11 +17,12 @@ jobs:
     steps:
       - run: |
           echo "target version: ${{ github.event.inputs.publish_version }}"
+          echo "publish to real pypi: ${{ github.event.inputs.publish_to_real_pypi }}"
         env:
           VERSION: ${{ github.event.inputs.publish_version }}
 
-  upload-to-pypi:
-    name: Publish to PyPI test site
+  build-and-publish:
+    name: Build and Publish
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context
@@ -86,10 +93,22 @@ jobs:
         attestations: false
 
     - name: Publish to PyPI
+      if: github.event.inputs.publish_to_real_pypi == 'true'
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API }}
         repository_url: https://upload.pypi.org/legacy/
         attestations: false
+
+    - name: Create GitHub Release
+      if: github.event.inputs.publish_to_real_pypi == 'true'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ github.event.inputs.publish_version }}
+        name: Release Version ${{ github.event.inputs.publish_version }}
+        files: dist/*
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
