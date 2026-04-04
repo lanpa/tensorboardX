@@ -9,6 +9,10 @@ History
 * Fix scalar to 0D array conversion for NumPy 1.25+ compatibility (#760)
 * GitHub Actions workflow improvements (#755)
 
+2.6.4 (2025-06-13)
+-------------------
+* GitHub Actions workflow improvements
+
 2.6.3 (2025-04-24)
 ---------------------
 * Support PaddlePaddle tensors
