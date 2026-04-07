@@ -53,4 +53,4 @@ clean:
 	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .coverage coverage.xml
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
-	rm -f debug_output.gif debug_video.py check_proto_output.py
+	rm -f debug_output.gif debug_video.py
