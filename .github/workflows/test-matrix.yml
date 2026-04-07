@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies and setup Python environment
@@ -53,9 +53,9 @@ jobs:
     - name: Install dependencies and run examples
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
-        uv venv --python 3.9
+        uv venv --python 3.10
         source .venv/bin/activate
-        uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy==1.0.3 imageio==2.27
+        uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy>=2.0.0 imageio>=2.29.0
         python examples/demo.py
         python examples/demo_graph.py
         python examples/demo_embedding.py

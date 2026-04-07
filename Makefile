@@ -19,7 +19,7 @@ help:
 
 # Environment Setup
 init:
-	uv venv --python 3.9
+	uv venv --python 3.10
 	uv pip install -e ".[dev]"
 	uv pip install "setuptools==81.0.0"
 	@echo "Environment initialized. Run 'source .venv/bin/activate' to use it."
