@@ -293,7 +293,8 @@ def image(tag, tensor, rescale=1, dataformats='CHW'):
         tensor = (tensor * 255.0).astype(np.uint8)
 
     image = make_image(tensor, rescale=rescale)
-    return Summary(value=[Summary.Value(tag=tag, image=image)])
+    smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name='images'))
+    return Summary(value=[Summary.Value(tag=tag, image=image, metadata=smd)])
 
 
 def image_boxes(tag, tensor_image, tensor_boxes, rescale=1, dataformats='CHW', labels=None):
@@ -363,7 +364,8 @@ def video(tag, tensor, fps=4, dataformats="NTCHW"):
         tensor = (tensor * 255.0).astype(np.uint8)
 
     video = make_video(tensor, fps)
-    return Summary(value=[Summary.Value(tag=tag, image=video)])
+    smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name='images'))
+    return Summary(value=[Summary.Value(tag=tag, image=video, metadata=smd)])
 
 
 def make_video(tensor, fps):
@@ -463,7 +465,8 @@ def audio(tag, tensor, sample_rate=44100):
                           length_frames=length_frames,
                           encoded_audio_string=audio_string,
                           content_type='audio/wav')
-    return Summary(value=[Summary.Value(tag=tag, audio=audio)])
+    smd = SummaryMetadata(plugin_data=SummaryMetadata.PluginData(plugin_name='audio'))
+    return Summary(value=[Summary.Value(tag=tag, audio=audio, metadata=smd)])
 
 
 def custom_scalars(layout):

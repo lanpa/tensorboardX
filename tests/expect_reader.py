@@ -37,9 +37,11 @@ def compare_proto(str_to_compare, function_ptr):
         assert expected_proto == str_to_compare
 
     else:
-        # TODO refactor tests to not compare tuple of protobuf messages in string
-        # representation but protobuf messages themselves
-        str_to_compare = str(str_to_compare)
+        if isinstance(str_to_compare, (list, tuple)):
+            str_to_compare = "(" + ", ".join(text_format.MessageToString(m) for m in str_to_compare) + ")"
+        else:
+            str_to_compare = str(str_to_compare)
+        
         print("str_to_compare:", removeWhiteChar(str_to_compare))
         print("expected:", removeWhiteChar(expected))
         assert removeWhiteChar(str_to_compare) == removeWhiteChar(expected)
@@ -54,4 +56,8 @@ def write_proto(str_to_compare, function_ptr):
                     module_id.split('.')[-1] + '.' + functionName + ".expect")
     print(expected_file)
     with open(expected_file, 'w') as f:
-        f.write(str(str_to_compare))
+        if isinstance(str_to_compare, (list, tuple)):
+            str_to_compare = "(" + ", ".join(text_format.MessageToString(m) for m in str_to_compare) + ")"
+        else:
+            str_to_compare = str(str_to_compare)
+        f.write(str_to_compare)

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "tensorboardX"
 dynamic = ["version", "readme"]
 description = "TensorBoardX lets you watch Tensors Flow without Tensorflow"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license ="MIT"
 authors = [
     {name = "Tzu-Wei Huang", email = "huang.dexter@gmail.com"}
@@ -16,7 +16,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -66,9 +65,11 @@ dev = [
     "soundfile>=0.12.1",
 
     "onnx>=1.17.0",
-    "imageio==2.27",
+    "imageio>=2.29.0",
+    "moviepy>=2.0.0",
     "ruff>=0.8.4",
     "pillow==11.0.0",
+    "setuptools==81.0.0",
 ]
 
 [tool.ruff]
@@ -86,10 +87,6 @@ select = [
     "E",
     # Pyflakes
     "F",
-    # pyupgrade
-    "UP",
-    # flake8-bugbear
-#    "B",
     # flake8-simplify
     "SIM",
     # isort
