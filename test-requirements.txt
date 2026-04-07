@@ -9,7 +9,6 @@ boto3
 matplotlib
 moto<5
 soundfile
-visdom
 onnx
 pytest-cov
 imageio>=2.29.0
