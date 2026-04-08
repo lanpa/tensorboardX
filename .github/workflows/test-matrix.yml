@@ -54,7 +54,7 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         uv venv --python 3.13
         source .venv/bin/activate
-        uv pip install six tensorboard pytest matplotlib torchvision==0.25.0 torch==2.10.0 protobuf==4.22.3 moviepy>=2.0.0 imageio>=2.29.0 --index-url https://download.pytorch.org/whl/cpu
+        uv pip install six tensorboard pytest matplotlib torchvision==0.25.0 torch==2.10.0 protobuf==4.22.3 moviepy>=2.0.0 imageio>=2.29.0 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
         python examples/demo.py
         python examples/demo_graph.py
         python examples/demo_embedding.py
