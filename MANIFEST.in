@@ -1,6 +1,7 @@
 include HISTORY.rst
 include LICENSE
 include compile.sh
+include tensorboardX/py.typed
 recursive-include tensorboardX/proto *
 recursive-exclude test *
 recursive-exclude examples *

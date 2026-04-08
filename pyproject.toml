@@ -71,6 +71,7 @@ dev = [
     "ruff>=0.8.4",
     "pillow==11.0.0",
     "setuptools==81.0.0",
+    "mypy>=1.14.1",
 ]
 
 [tool.ruff]
@@ -94,4 +95,11 @@ select = [
     "I",
 ]
 ignore = ["F401", "E501", "E721", "E741"]
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = [
+    'tensorboardX/proto/',
+]
+disable_error_code = ["attr-defined", "name-defined", "arg-type", "var-annotated"]
 
