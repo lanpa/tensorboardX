@@ -3,7 +3,6 @@
 
 from .global_writer import GlobalSummaryWriter
 from .record_writer import RecordWriter
-from .torchvis import TorchVis
 from .writer import FileWriter, SummaryWriter
 
 try:
