@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "numpy",
@@ -55,8 +56,8 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
     "protobuf==5.29.6",
-    "torch>=2.5.1",
-    "torchvision==0.20.1",
+    "torch==2.10.0",
+    "torchvision==0.25.0",
     "numpy>=2.0.2",
     "tensorboard>=2.18.0",
     "boto3>=1.35.81",
