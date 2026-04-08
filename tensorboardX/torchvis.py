@@ -1,13 +1,9 @@
-
 import gc
-import time
-from functools import wraps
 
-from .visdom_writer import VisdomWriter
 from .writer import SummaryWriter
 
-# Supports both TensorBoard and Visdom (no embedding or graph visualization with Visdom)
-vis_formats = {'tensorboard': SummaryWriter, 'visdom': VisdomWriter}
+# Supports TensorBoard visualization
+vis_formats = {'tensorboard': SummaryWriter}
 
 
 class TorchVis:
@@ -15,10 +11,8 @@ class TorchVis:
         """
         Args:
             args (list of strings): The name of the visualization target(s).
-              Accepted targets are 'tensorboard' and 'visdom'.
-            init_kwargs: Additional keyword parameters for the visdom writer (For example, server IP).
-              See `visdom doc <https://github.com/facebookresearch/visdom/blob
-              /master/README.md#visdom-arguments-python-only>`_ for more.
+              Accepted targets are 'tensorboard'.
+            init_kwargs: Additional keyword parameters for the writer.
         """
         self.subscribers = {}
         self.register(*args, **init_kwargs)
@@ -32,18 +26,20 @@ class TorchVis:
 
     def unregister(self, *args):
         for format in args:
-            self.subscribers[format].close()
-            del self.subscribers[format]
-            gc.collect()
+            if format in self.subscribers:
+                self.subscribers[format].close()
+                del self.subscribers[format]
+        gc.collect()
 
     def __getattr__(self, attr):
-        for _, subscriber in self.subscribers.items():
-            def wrapper(*args, **kwargs):
-                for _, subscriber in self.subscribers.items():
-                    if hasattr(subscriber, attr):
-                        getattr(subscriber, attr)(*args, **kwargs)
-            return wrapper
-        raise AttributeError
+        if not self.subscribers:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attr}'")
+
+        def wrapper(*args, **kwargs):
+            for _, subscriber in self.subscribers.items():
+                if hasattr(subscriber, attr):
+                    getattr(subscriber, attr)(*args, **kwargs)
+        return wrapper
 
     # Handle writer management (open/close) for the user
     def __del__(self):

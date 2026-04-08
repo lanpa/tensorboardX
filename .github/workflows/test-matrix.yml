@@ -35,7 +35,6 @@ jobs:
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
       run: |
         source .venv/bin/activate
-        visdom &
         pytest --cov=tensorboardX --cov-report=xml tests/
 
     - name: Upload coverage to Codecov
