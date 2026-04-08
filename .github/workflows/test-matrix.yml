@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies and setup Python environment
@@ -38,7 +38,7 @@ jobs:
         pytest --cov=tensorboardX --cov-report=xml tests/
 
     - name: Upload coverage to Codecov
-      if: ${{ !cancelled() && matrix.python-version == '3.11' }}
+      if: ${{ !cancelled() && matrix.python-version == '3.13' }}
       run: |
         curl -Os https://cli.codecov.io/latest/linux/codecov
         chmod +x codecov
@@ -52,7 +52,7 @@ jobs:
     - name: Install dependencies and run examples
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
-        uv venv --python 3.10
+        uv venv --python 3.13
         source .venv/bin/activate
         uv pip install six tensorboard pytest matplotlib torchvision protobuf==4.22.3 moviepy>=2.0.0 imageio>=2.29.0
         python examples/demo.py
@@ -71,10 +71,10 @@ jobs:
         protobuf-version: ["3.20", "4.21", "4.22", "4.23"]
     steps:
     - uses: actions/checkout@v2
-    - name: Install python 3.11 and setup environment
+    - name: Install python 3.13 and setup environment
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
-        uv venv --python 3.11
+        uv venv --python 3.13
  
     - name: Run basic import check
       run: |

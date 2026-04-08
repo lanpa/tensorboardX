@@ -1,5 +1,12 @@
 History
 =======
+2.6.6 (2026-04-06)
+-------------------
+* Add support for Python 3.13 and 3.14
+* Upgrade development environment to use uv
+* Remove obsolete visdom support
+* Improve test coverage for x2num and utils modules
+
 2.6.5 (2026-04-03)
 -------------------
 * Fix SummaryWriter writing to disk when write_to_disk=False in add_scalars (#748)
