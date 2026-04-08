@@ -2,7 +2,7 @@ History
 =======
 2.6.6 (2026-04-06)
 -------------------
-* Add support for Python 3.13 and 3.14
+* Add support for Python 3.13
 * Upgrade development environment to use uv
 * Remove obsolete visdom support
 * Improve test coverage for x2num and utils modules
