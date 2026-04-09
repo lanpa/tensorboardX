@@ -8,7 +8,7 @@ import json
 import logging
 import os
 import time
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy
 
@@ -38,12 +38,9 @@ from .utils import figure_to_image
 
 logger = logging.getLogger(__name__)
 
-numpy_compatible = numpy.ndarray
-try:
+numpy_compatible = Any
+with contextlib.suppress(ImportError):
     import torch
-    numpy_compatible = torch.Tensor
-except ImportError:
-    pass
 
 
 class DummyFileWriter:
@@ -264,7 +261,7 @@ class SummaryWriter:
     def __init__(
             self,
             logdir: Optional[str] = None,
-            comment: Optional[str] = "",
+            comment: str = "",
             purge_step: Optional[int] = None,
             max_queue: Optional[int] = 10,
             flush_secs: Optional[int] = 120,
@@ -327,7 +324,7 @@ class SummaryWriter:
             from datetime import datetime
             current_time = datetime.now().strftime('%b%d_%H-%M-%S')
             logdir = os.path.join(
-                'runs', current_time + '_' + socket.gethostname() + comment)
+                'runs', current_time + '_' + socket.gethostname() + (comment if comment else ""))
         self.logdir = logdir
         self.purge_step = purge_step
         self._max_queue = max_queue
@@ -340,7 +337,8 @@ class SummaryWriter:
 
         # Initialize the file writers, but they can be cleared out on close
         # and recreated later as needed.
-        self.file_writer = self.all_writers = None
+        self.file_writer: Optional[Union[FileWriter, DummyFileWriter]] = None
+        self.all_writers: Optional[dict[str, Union[FileWriter, DummyFileWriter]]] = None
         self._get_file_writer()
 
         # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard
@@ -367,7 +365,7 @@ class SummaryWriter:
         self.scalar_dict[tag].append(
             [timestamp, global_step, float(make_np(scalar_value).squeeze())])
 
-    def _get_file_writer(self):
+    def _get_file_writer(self) -> Union[FileWriter, DummyFileWriter]:
         """Returns the default FileWriter instance. Recreates it if closed."""
         if not self._write_to_disk:
             self.file_writer = DummyFileWriter(logdir=self.logdir)
@@ -434,10 +432,10 @@ class SummaryWriter:
         if not name:
             name = str(time.time())
 
-        with SummaryWriter(logdir=os.path.join(self.file_writer.get_logdir(), name)) as w_hp:
-            w_hp.file_writer.add_summary(exp)
-            w_hp.file_writer.add_summary(ssi)
-            w_hp.file_writer.add_summary(sei)
+        with SummaryWriter(logdir=os.path.join(self._get_file_writer().get_logdir(), name)) as w_hp:
+            w_hp._get_file_writer().add_summary(exp)
+            w_hp._get_file_writer().add_summary(ssi)
+            w_hp._get_file_writer().add_summary(sei)
             for k, v in metric_dict.items():
                 w_hp.add_scalar(k, v, global_step)
         self._get_comet_logger().log_parameters(hparam_dict, step=global_step)
@@ -517,6 +515,8 @@ class SummaryWriter:
         """
         walltime = time.time() if walltime is None else walltime
         fw_logdir = self._get_file_writer().get_logdir()
+        if self.all_writers is None:
+            self.all_writers = {}
         for tag, scalar_value in tag_scalar_dict.items():
             fw_tag = os.path.join(str(fw_logdir), main_tag, tag)
             if fw_tag in self.all_writers:
@@ -551,7 +551,7 @@ class SummaryWriter:
             tag: str,
             values: numpy_compatible,
             global_step: Optional[int] = None,
-            bins: Optional[str] = 'tensorflow',
+            bins: Union[Optional[str], list, Any] = 'tensorflow',
             walltime: Optional[float] = None,
             max_bins=None):
         """Add histogram to summary.
@@ -755,7 +755,7 @@ class SummaryWriter:
 
         """
         if isinstance(img_tensor, list):  # a list of tensors in CHW or HWC
-            if dataformats.upper() != 'CHW' and dataformats.upper() != 'HWC':
+            if dataformats is None or (dataformats.upper() != 'CHW' and dataformats.upper() != 'HWC'):
                 print('A list of image is passed, but the dataformat is neither CHW nor HWC.')
                 print('Nothing is written.')
                 return
@@ -766,7 +766,7 @@ class SummaryWriter:
                 import numpy as np
                 img_tensor = np.stack(img_tensor, 0)
 
-            dataformats = 'N' + dataformats
+            dataformats = 'N' + (dataformats if dataformats else "")
 
         summary = image(tag, img_tensor, dataformats=dataformats)
         encoded_image_string = summary.value[0].image.encoded_image_string
@@ -967,7 +967,7 @@ class SummaryWriter:
             self,
             mat: numpy_compatible,
             metadata=None,
-            label_img: numpy_compatible = None,
+            label_img: Optional[numpy_compatible] = None,
             global_step: Optional[int] = None,
             tag='default',
             metadata_header=None):
@@ -1202,8 +1202,8 @@ class SummaryWriter:
             self,
             tag: str,
             vertices: numpy_compatible,
-            colors: numpy_compatible = None,
-            faces: numpy_compatible = None,
+            colors: Optional[numpy_compatible] = None,
+            faces: Optional[numpy_compatible] = None,
             config_dict=None,
             global_step: Optional[int] = None,
             walltime: Optional[float] = None):
