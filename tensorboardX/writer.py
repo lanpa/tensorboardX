@@ -115,15 +115,21 @@ class FileWriter:
         self.event_writer = EventFileWriter(
             logdir, max_queue, flush_secs, filename_suffix)
 
-        def cleanup():
-            self.event_writer.close()
-
-        atexit.register(cleanup)
+        self._pid = os.getpid()
+        atexit.register(_clean_up_file_writer, self)
         self._default_metadata = {}
 
     def get_logdir(self):
         """Returns the directory where event file will be written."""
         return self.event_writer.get_logdir()
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state['event_writer'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
 
     def add_event(self, event, step=None, walltime=None):
         """Adds an event to the event file.
@@ -247,6 +253,11 @@ class FileWriter:
         self._default_metadata = {}
 
 
+def _clean_up_file_writer(writer):
+    if os.getpid() == writer._pid:
+        writer.close()
+
+
 class SummaryWriter:
     """Writes entries directly to event files in the logdir to be
     consumed by TensorBoard.
@@ -353,6 +364,22 @@ class SummaryWriter:
 
         self.scalar_dict = {}
         self._default_metadata = {}
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Do not pickle the writers and comet logger as they are not picklable
+        # or contain resources that should not be shared across processes.
+        state['file_writer'] = None
+        state['all_writers'] = None
+        state['_comet_logger'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # Note: We do NOT call self._get_file_writer() here.
+        # It will be lazily re-initialized when add_scalar/etc is called in the child process.
+        # This ensures the child process gets its own clean writer/queue state if needed,
+        # or just works with the existing logic.
 
     def __append_to_scalar_dict(self, tag, scalar_value, global_step,
                                 timestamp):
