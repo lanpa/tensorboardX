@@ -109,9 +109,24 @@ class EventFileWriter:
 
         self._worker.start()
 
+    def start(self):
+        self._worker.start()
+
     def get_logdir(self):
         """Returns the directory where event file will be written."""
         return self._logdir
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Do not pickle the thread and the internal writer (which contains file handles)
+        state['_worker'] = None
+        state['_ev_writer'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # In child processes, we don't start a new thread.
+        # add_event will continue to work as it only uses self._event_queue.
 
     def reopen(self):
         """Reopens the EventFileWriter.
@@ -133,6 +148,8 @@ class EventFileWriter:
           event: An `Event` protocol buffer.
         """
         if not self._closed:
+            if isinstance(event, event_pb2.Event):
+                event = event.SerializeToString()
             self._event_queue.put(event)
 
     def flush(self):
@@ -202,7 +219,10 @@ class _EventLoggerThread(threading.Thread):
 
                 if type(data) == type(self._shutdown_signal):
                     return
-                self._record_writer.write_event(data)
+                if isinstance(data, bytes):
+                    self._record_writer._write_serialized_event(data)
+                else:
+                    self._record_writer.write_event(data)
                 self._has_pending_data = True
             except queue.Empty:
                 pass
