@@ -46,3 +46,7 @@ class SummaryWriterTest(unittest.TestCase):
         with SummaryWriter('/', write_to_disk=False) as writer:
             writer.add_scalar('test', 1)
             writer.flush()
+
+    def test_comet_config_is_rejected_for_dummy_writer(self):
+        with self.assertRaisesRegex(TypeError, "unexpected keyword argument 'comet_config'"):
+            SummaryWriter(write_to_disk=False, comet_config={"disabled": True})
