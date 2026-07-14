@@ -312,6 +312,10 @@ class SummaryWriter:
             # folder location: runs/May04_22-14-54_s-MacBook-Pro.localLR_0.1_BATCH_16/
 
         """
+        if "comet_config" in kwargs:
+            raise TypeError(
+                "SummaryWriter.__init__() got an unexpected keyword argument 'comet_config'"
+            )
         if log_dir is not None and logdir is None:
             logdir = log_dir
         if not logdir:
