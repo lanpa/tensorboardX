@@ -432,7 +432,8 @@ class SummaryWriter:
         if not name:
             name = str(time.time())
 
-        with SummaryWriter(logdir=os.path.join(self._get_file_writer().get_logdir(), name)) as w_hp:
+        with SummaryWriter(logdir=os.path.join(self._get_file_writer().get_logdir(), name),
+                           write_to_disk=self._write_to_disk) as w_hp:
             w_hp._get_file_writer().add_summary(exp)
             w_hp._get_file_writer().add_summary(ssi)
             w_hp._get_file_writer().add_summary(sei)
@@ -1011,6 +1012,9 @@ class SummaryWriter:
             writer.add_embedding(torch.randn(100, 5), label_img=label_img)
             writer.add_embedding(torch.randn(100, 5), metadata=meta)
         """
+
+        if not self._write_to_disk:
+            return
 
         # programmer's note: This function has nothing to do with event files.
         # The hard-coded projector_config.pbtxt is the only source for TensorBoard's
