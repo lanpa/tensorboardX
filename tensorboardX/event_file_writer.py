@@ -15,6 +15,7 @@
 """Writes events to disk in a logdir."""
 
 
+import itertools
 import multiprocessing
 import os
 import queue
@@ -25,6 +26,8 @@ import time
 from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check
 
+_global_uid = itertools.count()
+
 
 class EventsWriter:
     '''Writes `Event` protocol buffers to an event file.'''
@@ -32,10 +35,10 @@ class EventsWriter:
     def __init__(self, file_prefix, filename_suffix=''):
         '''
         Events files have a name of the form
-        '/some/file/path/events.out.tfevents.[timestamp].[hostname]'
+        '/some/file/path/events.out.tfevents.[timestamp].[hostname].[pid].[uid]'
         '''
         self._file_name = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." +\
-            socket.gethostname() + filename_suffix
+            socket.gethostname() + "." + str(os.getpid()) + "." + str(next(_global_uid)) + filename_suffix
         self._num_outstanding_events = 0
         self._py_recordio_writer = RecordWriter(self._file_name)
         # Initialize an event instance.
