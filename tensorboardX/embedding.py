@@ -1,6 +1,8 @@
 import os
 import sys
 
+from google.protobuf.text_encoding import CEscape
+
 # Maximum sprite size allowed by TB frontend,
 # see https://github.com/lanpa/tensorboardX/issues/516
 TB_MAX_SPRITE_SIZE = 8192
@@ -89,17 +91,17 @@ def make_sprite(label_img, save_path):
 def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
     from posixpath import join
     named_path = os.path.join(save_path, 'projector_config.pbtxt')
-    with open(named_path, 'a') as f:
+    with open(named_path, 'a', encoding='utf8') as f:
         # step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
-        f.write(f'tensor_name: "{tag}:{str(global_step).zfill(5)}"\n')
-        f.write('tensor_path: "{}"\n'.format(join(subdir, 'tensors.tsv')))
+        f.write(f'tensor_name: "{CEscape(tag, as_utf8=True)}:{str(global_step).zfill(5)}"\n')
+        f.write('tensor_path: "{}"\n'.format(CEscape(join(subdir, 'tensors.tsv'), as_utf8=True)))
         if metadata is not None:
             f.write('metadata_path: "{}"\n'.format(
-                join(subdir, 'metadata.tsv')))
+                CEscape(join(subdir, 'metadata.tsv'), as_utf8=True)))
         if label_img is not None:
             f.write('sprite {\n')
-            f.write('image_path: "{}"\n'.format(join(subdir, 'sprite.png')))
+            f.write('image_path: "{}"\n'.format(CEscape(join(subdir, 'sprite.png'), as_utf8=True)))
             f.write(f'single_image_dim: {label_img.shape[3]}\n')
             f.write(f'single_image_dim: {label_img.shape[2]}\n')
             f.write('}\n')
