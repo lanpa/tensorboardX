@@ -415,23 +415,23 @@ def make_video(tensor, fps):
     with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as fp:
         filename = fp.name
 
-        if moviepy_version < Version("1.0.0"):
-            logger.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
-            clip.write_gif(filename, verbose=False)
-        elif moviepy_version < Version("2.0.0dev1"):
-            # moviepy >= 1.0.0 use logger=None to suppress output.
-            clip.write_gif(filename, verbose=False, logger=None)
-        else:
-            # Moviepy >= 2.0.0.dev1 removed the verbose argument
-            clip.write_gif(filename, logger=None)
+    if moviepy_version < Version("1.0.0"):
+        logger.warning('Upgrade to moviepy >= 1.0.0 to supress the progress bar.')
+        clip.write_gif(filename, verbose=False)
+    elif moviepy_version < Version("2.0.0dev1"):
+        # moviepy >= 1.0.0 use logger=None to suppress output.
+        clip.write_gif(filename, verbose=False, logger=None)
+    else:
+        # Moviepy >= 2.0.0.dev1 removed the verbose argument
+        clip.write_gif(filename, logger=None)
 
-        with open(filename, 'rb') as f:
-            tensor_string = f.read()
+    with open(filename, 'rb') as f:
+        tensor_string = f.read()
 
-        try:
-            os.remove(filename)
-        except OSError:
-            logger.warning('The temporary file used by moviepy cannot be deleted.')
+    try:
+        os.remove(filename)
+    except OSError:
+        logger.warning('The temporary file used by moviepy cannot be deleted.')
 
     return Summary.Image(height=h, width=w, colorspace=c, encoded_image_string=tensor_string)
 

@@ -1,6 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import io
+import os
+import tempfile
+from unittest import mock
 from tensorboardX import summary
 from .expect_reader import compare_proto, write_proto
 import numpy as np
@@ -116,6 +119,25 @@ class SummaryTest(unittest.TestCase):
             )
         summary.video('dummy', tensor_N(shape=(16, 48, 1, 28, 28)))
         summary.video('dummy', tensor_N(shape=(20, 7, 1, 8, 8)))
+
+    def test_video_removes_temporary_gif(self):
+        try:
+            import moviepy
+        except ImportError:
+            self.skipTest('moviepy not installed')
+        created = []
+        named_temporary_file = tempfile.NamedTemporaryFile
+
+        def tracking_named_temporary_file(*args, **kwargs):
+            fp = named_temporary_file(*args, **kwargs)
+            created.append(fp.name)
+            return fp
+
+        with mock.patch('tempfile.NamedTemporaryFile', tracking_named_temporary_file):
+            summary.video('dummy', tensor_N(shape=(4, 3, 1, 8, 8)))
+        gifs = [name for name in created if name.endswith('.gif')]
+        self.assertEqual(len(gifs), 1)
+        self.assertFalse(os.path.exists(gifs[0]))
 
     def test_audio(self):
         compare_proto(summary.audio('dummy', tensor_N(shape=(42,))), self)
