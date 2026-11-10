@@ -102,12 +102,12 @@ def hparams(hparam_dict=None, metric_dict=None):
             hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_STRING")))
             continue
 
-        if isinstance(v, bool):
-            ssi.hparams[k].bool_value = v
+        if isinstance(v, (bool, np.bool_)):
+            ssi.hparams[k].bool_value = bool(v)
             hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_BOOL")))
             continue
 
-        if isinstance(v, (int, float)):
+        if isinstance(v, (int, float, np.integer, np.floating)):
             v = float(make_np(v))
             ssi.hparams[k].number_value = v
             hps.append(HParamInfo(name=k, type=DataType.Value("DATA_TYPE_FLOAT64")))

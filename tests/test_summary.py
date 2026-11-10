@@ -175,6 +175,14 @@ class SummaryTest(unittest.TestCase):
         mt = {'accuracy': 0.1}
         compare_proto(summary.hparams(hp, mt), self)
 
+    def test_hparams_numpy_scalars(self):
+        mt = {'accuracy': 0.1}
+        for np_value, py_value in [(np.int64(4), 4), (np.float32(0.5), 0.5), (np.bool_(True), True)]:
+            expected = summary.hparams({'v': py_value}, mt)
+            actual = summary.hparams({'v': np_value}, mt)
+            for e, a in zip(expected, actual):
+                self.assertEqual(e, a)
+
     def test_hparams_smoke(self):
         hp = {'lr': 0.1, 'bsize': 4}
         mt = {'accuracy': 0.1, 'loss': 10}
