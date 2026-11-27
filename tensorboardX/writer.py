@@ -432,7 +432,9 @@ class SummaryWriter:
         if not name:
             name = str(time.time())
 
-        with SummaryWriter(logdir=os.path.join(self._get_file_writer().get_logdir(), name)) as w_hp:
+        with SummaryWriter(
+                logdir=os.path.join(self._get_file_writer().get_logdir(), name),
+                write_to_disk=self._write_to_disk) as w_hp:
             w_hp._get_file_writer().add_summary(exp)
             w_hp._get_file_writer().add_summary(ssi)
             w_hp._get_file_writer().add_summary(sei)
@@ -1020,28 +1022,32 @@ class SummaryWriter:
         if global_step is None:
             global_step = 0
             # clear pbtxt?
-        # Maybe we should encode the tag so slashes don't trip us up?
-        # I don't think this will mess us up, but better safe than sorry.
-        subdir = f"{str(global_step).zfill(5)}/{self._encode(tag)}"
-        save_path = os.path.join(self._get_file_writer().get_logdir(), subdir)
-        try:
-            os.makedirs(save_path)
-        except OSError:
-            print(
-                'warning: Embedding dir exists, did you set global_step for add_embedding()?')
         if metadata is not None:
             assert mat.shape[0] == len(
                 metadata), '#labels should equal with #data points'
-            make_tsv(metadata, save_path, metadata_header=metadata_header)
         if label_img is not None:
             assert mat.shape[0] == label_img.shape[0], '#images should equal with #data points'
             assert label_img.shape[2] == label_img.shape[3], 'Image should be square, see tensorflow/tensorboard#670'
-            make_sprite(label_img, save_path)
         assert mat.ndim == 2, 'mat should be 2D, where mat.size(0) is the number of data points'
-        make_mat(mat, save_path)
-        # new funcion to append to the config file a new embedding
-        append_pbtxt(metadata, label_img,
-                     self._get_file_writer().get_logdir(), subdir, global_step, tag)
+
+        if self._write_to_disk:
+            # Maybe we should encode the tag so slashes don't trip us up?
+            # I don't think this will mess us up, but better safe than sorry.
+            subdir = f"{str(global_step).zfill(5)}/{self._encode(tag)}"
+            save_path = os.path.join(self._get_file_writer().get_logdir(), subdir)
+            try:
+                os.makedirs(save_path)
+            except OSError:
+                print(
+                    'warning: Embedding dir exists, did you set global_step for add_embedding()?')
+            if metadata is not None:
+                make_tsv(metadata, save_path, metadata_header=metadata_header)
+            if label_img is not None:
+                make_sprite(label_img, save_path)
+            make_mat(mat, save_path)
+            # new funcion to append to the config file a new embedding
+            append_pbtxt(metadata, label_img,
+                         self._get_file_writer().get_logdir(), subdir, global_step, tag)
         template_filename = f'{tag}.json' if tag is not None else None
 
         self._get_comet_logger().log_embedding(mat, metadata, label_img, template_filename=template_filename)
