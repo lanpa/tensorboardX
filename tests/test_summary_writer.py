@@ -1,6 +1,10 @@
-from tensorboardX import SummaryWriter
+import os
 import tempfile
 import unittest
+
+import numpy as np
+
+from tensorboardX import SummaryWriter
 
 
 class SummaryWriterTest(unittest.TestCase):
@@ -46,3 +50,23 @@ class SummaryWriterTest(unittest.TestCase):
         with SummaryWriter('/', write_to_disk=False) as writer:
             writer.add_scalar('test', 1)
             writer.flush()
+
+    def test_write_to_disk_false_add_embedding(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            logdir = os.path.join(tmpdir, 'nonexistent')
+            with SummaryWriter(logdir, write_to_disk=False) as writer:
+                writer.add_embedding(
+                    np.zeros((3, 4), dtype=np.float32),
+                    metadata=['a', 'b', 'c'],
+                    label_img=np.zeros((3, 3, 4, 4), dtype=np.float32),
+                    global_step=1,
+                    tag='emb',
+                )
+            self.assertFalse(os.path.exists(logdir))
+
+    def test_write_to_disk_false_add_hparams(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            logdir = os.path.join(tmpdir, 'nonexistent')
+            with SummaryWriter(logdir, write_to_disk=False) as writer:
+                writer.add_hparams({'lr': 0.1}, {'acc': 0.9}, name='trial1', global_step=1)
+            self.assertFalse(os.path.exists(logdir))
