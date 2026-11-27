@@ -25,6 +25,16 @@ import time
 from .proto import event_pb2
 from .record_writer import RecordWriter, directory_check
 
+_event_file_counter_lock = threading.Lock()
+_event_file_counter = 0
+
+
+def _next_event_file_id():
+    global _event_file_counter
+    with _event_file_counter_lock:
+        _event_file_counter += 1
+        return _event_file_counter
+
 
 class EventsWriter:
     '''Writes `Event` protocol buffers to an event file.'''
@@ -32,10 +42,13 @@ class EventsWriter:
     def __init__(self, file_prefix, filename_suffix=''):
         '''
         Events files have a name of the form
-        '/some/file/path/events.out.tfevents.[timestamp].[hostname]'
+        '/some/file/path/events.out.tfevents.[timestamp].[hostname].[pid].[uid]'
         '''
-        self._file_name = file_prefix + ".out.tfevents." + str(time.time())[:10] + "." +\
-            socket.gethostname() + filename_suffix
+        self._file_name = (
+            f"{file_prefix}.out.tfevents.{int(time.time())}."
+            f"{socket.gethostname()}.{os.getpid()}.{_next_event_file_id()}"
+            f"{filename_suffix}"
+        )
         self._num_outstanding_events = 0
         self._py_recordio_writer = RecordWriter(self._file_name)
         # Initialize an event instance.
