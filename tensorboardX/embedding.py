@@ -86,20 +86,28 @@ def make_sprite(label_img, save_path):
     maybe_upload_file(named_path)
 
 
+def _escape_pbtxt_string(value):
+    from google.protobuf.text_encoding import CEscape
+    return CEscape(value, True)
+
+
 def append_pbtxt(metadata, label_img, save_path, subdir, global_step, tag):
     from posixpath import join
     named_path = os.path.join(save_path, 'projector_config.pbtxt')
-    with open(named_path, 'a') as f:
+    tensor_name = _escape_pbtxt_string(f'{tag}:{str(global_step).zfill(5)}')
+    tensor_path = _escape_pbtxt_string(join(subdir, 'tensors.tsv'))
+    with open(named_path, 'a', encoding='utf8') as f:
         # step = os.path.split(save_path)[-1]
         f.write('embeddings {\n')
-        f.write(f'tensor_name: "{tag}:{str(global_step).zfill(5)}"\n')
-        f.write('tensor_path: "{}"\n'.format(join(subdir, 'tensors.tsv')))
+        f.write(f'tensor_name: "{tensor_name}"\n')
+        f.write(f'tensor_path: "{tensor_path}"\n')
         if metadata is not None:
-            f.write('metadata_path: "{}"\n'.format(
-                join(subdir, 'metadata.tsv')))
+            metadata_path = _escape_pbtxt_string(join(subdir, 'metadata.tsv'))
+            f.write(f'metadata_path: "{metadata_path}"\n')
         if label_img is not None:
+            image_path = _escape_pbtxt_string(join(subdir, 'sprite.png'))
             f.write('sprite {\n')
-            f.write('image_path: "{}"\n'.format(join(subdir, 'sprite.png')))
+            f.write(f'image_path: "{image_path}"\n')
             f.write(f'single_image_dim: {label_img.shape[3]}\n')
             f.write(f'single_image_dim: {label_img.shape[2]}\n')
             f.write('}\n')
